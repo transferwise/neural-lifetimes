@@ -21,7 +21,7 @@ class MonitorProjection(pl.Callback):
                 pass
 
             loader = trainer.datamodule.val_dataloader()
-            logger = trainer.logger[0]
+            logger = trainer.logger
 
             encoded_data = []
             labels = []

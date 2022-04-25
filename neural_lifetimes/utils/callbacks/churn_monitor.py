@@ -16,7 +16,7 @@ class MonitorChurn(pl.Callback):
         _, x_remove_initial = remove_initial_event(batch, out)  # TODO Cornelius: why how what?
         _, x_last = get_last(batch, out)  # TODO Cornelius: why how what?
 
-        logger = trainer.logger[0]
+        logger = trainer.logger
 
         if "p" in batch.keys():
             actual_mean_p_churn = batch["p"][batch["p"] != np.array(None)].mean()
@@ -57,7 +57,7 @@ class MonitorChurn(pl.Callback):
         _, x_remove_initial = remove_initial_event(batch.copy(), out)
         _, x_last = get_last(batch.copy(), out)
 
-        logger = trainer.logger[0]
+        logger = trainer.logger
         logger.log_metrics(
             {"p_churn/mean_val": x_remove_initial["p_churn"].mean()},
             step=trainer.global_step,

@@ -143,7 +143,7 @@ class TestRunModel:
             run_mode="none",
             loggers=loggers,
         )
-        assert isinstance(trainer.logger[0], CSVLogger)
+        assert isinstance(trainer.logger, CSVLogger)
 
     def test_custom_logger_kwargs(
         self,
@@ -161,8 +161,8 @@ class TestRunModel:
             run_mode="none",
             logger_kwargs=logger_kwargs,
         )
-        assert trainer.logger[0].version == 42
-        assert trainer.logger[0].save_dir == "directory123"
+        assert trainer.logger.version == 42
+        assert trainer.logger.save_dir == "directory123"
 
     def test_custom_logger_raises_error(
         self,

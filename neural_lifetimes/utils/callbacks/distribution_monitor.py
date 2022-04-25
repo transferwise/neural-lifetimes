@@ -24,7 +24,7 @@ class MonitorDistr(pl.Callback):
         - the time to next event
         """
         loader = trainer.datamodule.val_dataloader()
-        logger = trainer.logger[0]
+        logger = trainer.logger
 
         # max_batches = 10
         lambdas = []
@@ -70,7 +70,7 @@ class MonitorDistr(pl.Callback):
             y_pred = out["next_dt"][batch["offsets"][1:].detach().cpu().numpy() - 2]
             lambda_ = 1 / y_pred
 
-            logger = trainer.logger[0]
+            logger = trainer.logger
             logger.experiment.add_histogram(
                 "time_intervals/t_to_next_lambda",
                 lambda_.cpu().detach().numpy(),
