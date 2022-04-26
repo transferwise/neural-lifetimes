@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Optional
 
 import numpy as np
 import pytorch_lightning as pl
@@ -14,6 +14,8 @@ from ..nets.embedder import CombinedEmbedder
 from ..nets.encoder_decoder import VariationalEncoderDecoder
 from ..nets.event_model import EventEncoder
 from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, ExponentialHeadNoLoss, NormalHead
+
+from .configure_optimizers import configure_optimizers
 
 
 class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder
@@ -87,10 +89,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder
         }
 
     def configure_optimizers(self):
-        """Pytorch lightning automatically calls this to configure the optimizers."""
-        return Adam(self.parameters(), lr=self.lr)
-
-    # def distribution(self, params: Dict[str, torch.Tensor]) ->
+        return configure_optimizers(self.parameters(), self.lr, optimizer="Adam", scheduler="ReduceLROnPlateau")
 
     def forward(self, x: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """Conducts a forward pass of this model.
