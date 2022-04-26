@@ -15,6 +15,7 @@ Welcome to Neural Lifetimes' documentation!
    high_level_overview
    _notebook_BTYD_visualisation
    _notebook_use_own_dataset
+   variable_overview
    modules
 
 
