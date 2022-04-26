@@ -20,6 +20,7 @@ def run_model(
     run_mode: str = "train",
     val_check_interval: Union[int, float] = 1.0,
     limit_val_batches: Union[int, float] = 1.0,
+    gradient_clipping: float = 0.1,
     trainer_kwargs: Optional[Dict[str, Any]] = None,
     loggers: Optional[List[LightningLoggerBase]] = None,
     logger_kwargs: Optional[Dict[str, Any]] = None,
@@ -48,6 +49,9 @@ def run_model(
         limit_val_batches (int | float): Limits the number of batches of the validation set that is run by the Trainer.
             See: https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html#limit-val-batches.
             Default is ``1.0``.
+        gradient_clipping (float): sets the threshold L2 norm for clipping the gradients.
+            See: https://pytorch-lightning.readthedocs.io/en/latest/common/trainer.html#gradient-clip-val.
+            Default is ``0.1``.
         trainer_kwargs (Dict(str, Any)): Forward any keyword argument to the `Trainer <pytorch_lightning.Trainer>`.
             Any argument passed here, will be set in the Trainer constructor. Default is ``None``.
         loggers (Optional[List[LightningLoggerBase]]): This function uses the TensorboardLogger by default. If you wish
@@ -118,6 +122,10 @@ def run_model(
             "max_epochs": num_epochs,
             "val_check_interval": val_check_interval,
             "limit_val_batches": limit_val_batches,
+            "amp_backend": "native",
+            "precision": 16,
+            "track_grad_norm": 2,
+            "gradient_clip_val": gradient_clipping,
         },
         **trainer_kwargs,
     )
