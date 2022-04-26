@@ -11,7 +11,7 @@ from neural_lifetimes.models.modules import ClassicModel
 from neural_lifetimes.models.nets import CombinedEmbedder
 from examples import eventsprofiles_datamodel
 
-LOG_DIR = str(Path(__file__).parent / "logs")
+LOG_DIR = str(Path(__file__).parent)
 
 if torch.cuda.is_available():
     device = torch.device("cuda:0")

@@ -330,6 +330,20 @@ class BTYD(SequenceDataset):
             self.cache[customer_id] = self._single_sample()
         return len(next(iter(self.cache[customer_id].values())))
 
+    def build_parameter_dict(self):
+        return {
+            "num_customers": len(self),
+            "a": str(self.a),
+            "b": str(self.b),
+            "alpha": str(self.alpha),
+            "r": str(self.r),
+            "start_date": self.start_date,
+            "start_limit_date": self.start_limit_date,
+            "end_date": self.end_date,
+            "mode_ratios": str(self.mode_ratios),
+            "seq_gen_dynamic": self.seq_gen_dynamic,
+        }
+
     # def _length_of_cached_transaction_sequence(self, customer_id: int) -> int:
     #     """
     #     Get the length of the transaction sequence which has been cached for a given

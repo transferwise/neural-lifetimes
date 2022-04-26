@@ -32,7 +32,7 @@ class SliceableDataset(Dataset, ABC):
         Negative slicing `dataset[-1:2:-3]` not yet supported.
     """
 
-    _item_getter = '_load_batch'
+    _item_getter = "_load_batch"
 
     @abstractmethod
     def __len__(self):
@@ -71,8 +71,8 @@ class SliceableDataset(Dataset, ABC):
             return item_getter(item)
         else:
             raise TypeError(
-                f'{type(self).__name__} indices must be integers, slices or iterable over integers, not'
-                f' {type(item).__name__}.'
+                f"{type(self).__name__} indices must be integers, slices or iterable over integers, not"
+                f" {type(item).__name__}."
             )
 
     @abstractmethod
@@ -125,6 +125,9 @@ class SequenceSubset(SliceableSubset):
             int: _description_
         """
         return self.dataset.get_seq_len(idx)
+
+    def build_parameter_dict(self):
+        return self.dataset.build_parameter_dict()
 
 
 class SequenceDataset(SliceableDataset):

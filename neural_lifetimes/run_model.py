@@ -73,8 +73,9 @@ def run_model(
         logger_kwargs = dict(
             {
                 "save_dir": log_dir,
-                "default_hp_metric": False,
-                "log_graph": True,
+                "default_hp_metric": True,
+                "log_graph": False,
+                "name": "logs",
             },
             **logger_kwargs,
         )
