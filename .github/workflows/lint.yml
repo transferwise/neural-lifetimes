@@ -1,0 +1,28 @@
+name: Linter
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checking out repo
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: make venv
+
+      - name: Linting
+        run: make lint

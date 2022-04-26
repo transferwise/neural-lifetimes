@@ -1,0 +1,32 @@
+on:
+  release:
+    types: [published]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-20.04
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        fetch-depth: 0
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: make venv
+
+    - name: Build documentation
+      uses: docker://pandoc/core:2.9
+      run: |
+        make docs
+
+    - name: Publish documentation
+      if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+      run: |
+        make publishdocs
