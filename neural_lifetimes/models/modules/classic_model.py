@@ -1,10 +1,9 @@
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, Dict, List, Union
 
 import numpy as np
 import pytorch_lightning as pl
 import torch
 from torch import nn
-from torch.optim import Adam
 from torchmetrics import Accuracy, MeanAbsoluteError, MetricCollection
 
 from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss, VariationalEncoderDecoderLoss
