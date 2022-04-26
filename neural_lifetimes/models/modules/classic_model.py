@@ -12,7 +12,7 @@ from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss, VariationalEnco
 from ...data.dataloaders.sequence_loader import trim_last
 from ..nets.embedder import CombinedEmbedder
 from ..nets.encoder_decoder import VariationalEncoderDecoder
-from ..nets.neural_lifetimes import EventEncoder
+from ..nets.event_model import EventEncoder
 from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, ExponentialHeadNoLoss, NormalHead
 
 
@@ -164,6 +164,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder
             {
                 "train_metrics": metrics.clone(prefix="train_metrics/"),
                 "val_metrics": metrics.clone(prefix="val_metrics/"),
+                "test_metrics": metrics.clone(prefix="test_metrics/"),
             }
         )
 
