@@ -10,16 +10,6 @@ class MonitorProjection(pl.Callback):
 
     def on_train_epoch_end(self, trainer, net):
         if trainer.current_epoch % self.mod == 0:
-            import tensorboard as tb
-
-            try:
-                # this fix is needed if tensorflow is installed
-                import tensorflow as tf
-
-                tf.io.gfile = tb.compat.tensorflow_stub.io.gfile
-            except Exception:
-                pass
-
             loader = trainer.datamodule.val_dataloader()
             logger = trainer.logger
 

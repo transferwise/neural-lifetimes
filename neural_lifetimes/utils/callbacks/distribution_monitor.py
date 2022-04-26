@@ -64,7 +64,8 @@ class MonitorDistr(pl.Callback):
             global_step=trainer.global_step,  # add 0.001 for make log(0) finite.
         )
 
-    def on_validation_batch_end(self, trainer, net, output, batch, batch_idx, dataloader_idx):
+    # TODO update call signature: remove `unused` as soon as plt patches
+    def on_validation_batch_end(self, trainer: pl.Trainer, net: pl.LightningModule, outputs, batch, batch_idx, unused):
         if batch_idx % self.mod == 0:  # trainer.log_every_n_steps
             out = net(batch)
             y_pred = out["next_dt"][batch["offsets"][1:].detach().cpu().numpy() - 2]
