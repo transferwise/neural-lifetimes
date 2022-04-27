@@ -337,7 +337,7 @@ class RandomSequenceIterator:
 
 
 # TODO move to data
-def torchify(x: Dict[str, np.ndarray], device: torch.device) -> Dict[str, Union[np.ndarray, torch.Tensor]]:
+def torchify(x: Dict[str, np.ndarray]) -> Dict[str, Union[np.ndarray, torch.Tensor]]:
     """
     Cast all numerical elements to tensors, forcing float64 to float32.
 
@@ -352,7 +352,7 @@ def torchify(x: Dict[str, np.ndarray], device: torch.device) -> Dict[str, Union[
     for k, v in x.items():
         if is_numeric_dtype(v.dtype):
             nice_type = normalize_types(v.dtype)
-            out[k] = torch.tensor(v.astype(nice_type), device=device)
+            out[k] = torch.tensor(v.astype(nice_type))
         else:
             out[k] = v
     return out

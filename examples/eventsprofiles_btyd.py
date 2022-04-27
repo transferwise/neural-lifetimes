@@ -1,8 +1,6 @@
 import datetime
 from pathlib import Path
 
-import torch
-
 from neural_lifetimes import run_model
 from neural_lifetimes.data.datamodules import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
@@ -12,13 +10,6 @@ from neural_lifetimes.models.nets import CombinedEmbedder
 from examples import eventsprofiles_datamodel
 
 LOG_DIR = str(Path(__file__).parent / "logs")
-
-if torch.cuda.is_available():
-    device = torch.device("cuda:0")
-    device_type = "gpu"
-else:
-    device = torch.device("cpu")
-    device_type = "cpu"
 
 START_TOKEN_DISCR = "StartToken"
 COLS = eventsprofiles_datamodel.target_cols + eventsprofiles_datamodel.cont_feat + eventsprofiles_datamodel.discr_feat
@@ -67,14 +58,13 @@ target_transform = TargetCreator(
     max_item_len=100,
     start_token_discr=START_TOKEN_DISCR,
     start_token_cont=0,
-).to(device=device)
+)
 
 datamodule = SequenceDataModule(
     dataset=btyd_dataset,
     target_transform=target_transform,
     test_size=0.2,
     batch_points=1024,
-    device=device,
     min_points=1,
 )
 
@@ -94,7 +84,6 @@ run_model(
     datamodule,
     net,
     log_dir=LOG_DIR,
-    device_type=device_type,
     num_epochs=50,
     val_check_interval=20,
     limit_val_batches=20,
