@@ -1,7 +1,6 @@
-from typing import Optional, Any, Callable
+from typing import Dict, Optional, Any
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions.kl import kl_divergence
 
@@ -9,14 +8,8 @@ import torchmetrics
 
 
 class KullbackLeiblerDivergence(torchmetrics.Metric):
-    def __init__(
-        self,
-        compute_on_step: bool = True,
-        dist_sync_on_step: bool = False,
-        process_group: Optional[Any] = None,
-        dist_sync_fn: Callable = None,
-    ) -> None:
-        super().__init__(compute_on_step, dist_sync_on_step, process_group, dist_sync_fn)
+    def __init__(self, compute_on_step: Optional[bool] = None, **kwargs: Dict[str, Any]) -> None:
+        super().__init__(compute_on_step, **kwargs)
         self.add_state("kl", default=[], dist_reduce_fx="cat")
 
     def update(self, preds: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
@@ -31,12 +24,10 @@ class ParametricKullbackLeiblerDivergence(torchmetrics.Metric):
     def __init__(
         self,
         distribution: torch.distributions.Distribution,
-        compute_on_step: bool = True,
-        dist_sync_on_step: bool = False,
-        process_group: Optional[Any] = None,
-        dist_sync_fn: Callable = None,
+        compute_on_step: Optional[bool] = None,
+        **kwargs: Dict[str, Any]
     ) -> None:
-        super().__init__(compute_on_step, dist_sync_on_step, process_group, dist_sync_fn)
+        super().__init__(compute_on_step, **kwargs)
         self.add_state("kl", default=[], dist_reduce_fx="cat")
         self.distribution = distribution
 
