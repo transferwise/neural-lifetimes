@@ -22,6 +22,7 @@ class WassersteinMetric(torchmetrics.Metric):
             "``preds`` and ``target`` need to have the same shape. "
             + f"Got ``{preds.shape}`` and ``{target.shape}`` instead."
         )
+        preds, target = preds.flatten(), target.flatten()
         assert preds.dim() == 1, f"The input tensors need to be one-dimensional. Got {preds.dim()} dimensions."
         self.preds.append(preds)
         self.target.append(target)
@@ -29,5 +30,5 @@ class WassersteinMetric(torchmetrics.Metric):
     def compute(self):
         preds = torch.cat(self.preds)
         target = torch.cat(self.target)
-        metric = wasserstein_distance(preds, target)
+        metric = wasserstein_distance(preds.cpu().numpy(), target.cpu().numpy())
         return metric
