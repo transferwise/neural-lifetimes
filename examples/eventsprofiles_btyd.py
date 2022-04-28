@@ -1,7 +1,6 @@
 import datetime
 from pathlib import Path
 
-import torch
 import pytorch_lightning as pl
 
 from neural_lifetimes import run_model
