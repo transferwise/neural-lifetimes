@@ -1093,6 +1093,19 @@ def expected_num_transactions_from_parameters_and_history(
     num_transactions: List[float],
     last_transaction: List[float],
 ) -> List[float]:
+    """Computes the expected number of future transactions given parameters and observations.
+
+    Args:
+        p (List[float]): The churn parameter ``p``.
+        lambda_ (List[float]): The time interval parameter ``lambda_``.
+        time_interval (float): The time interval of the observations.
+        asof_time (float): The current time.
+        num_transactions (List[float]): The observed number of transactions.
+        last_transaction (List[float]): The time of the last observed transaction.
+
+    Returns:
+        List[float]: The expected number of future transactions, i.e. the conditional expected CLV.
+    """
     assert len(p) == len(lambda_) == len(num_transactions) == len(last_transaction)
     p_list, lambda_list = p, lambda_
 
@@ -1114,6 +1127,19 @@ def expected_num_transactions_from_parameters_and_history(
 
 
 def marginal_parameter_likelihood(p: float, lambda_: float, x: int, tx: float, T: float) -> float:
+    """Computes the marginal likelihood of the parameters lambda and p, given the transaction history.
+    See http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf equation (3).
+
+    Args:
+        p (float): The churn parameter ``p``.
+        lambda_ (float): The time interval parameter ``lambda``.
+        x (int): The number of events observed.
+        tx (float): The time of the last transaction observed.
+        T (float): The current time (``asof_time``).
+
+    Returns:
+        float: The likelihood
+    """
     z1 = (1 - p) ** x * lambda_**x * math.exp(-lambda_ * T)
     delta = int(x > 0)
     z2 = delta * p * (1 - p) ** (x - 1) * lambda_**x * math.exp(-lambda_ * tx)
