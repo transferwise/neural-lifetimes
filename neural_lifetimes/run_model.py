@@ -16,7 +16,6 @@ def run_model(
     log_dir: str,
     num_epochs: int = 100,
     checkpoint_path: Optional[str] = None,
-    device_type: str = "cpu",  # TODO remove in future version and let pt lightning handle this automatically
     run_mode: str = "train",
     val_check_interval: Union[int, float] = 1.0,
     limit_val_batches: Union[int, float] = 1.0,
@@ -40,7 +39,6 @@ def run_model(
         log_dir (str): Path into which model checkpoints and tensorboard logs will be written.
         num_epochs (int): Number of epochs to train for. Default is 100.
         checkpoint_path (Optional[str]): Path to a model to load. If is ``None`` (default), we will train a new model.
-        device_type (str): Device type to use. Default is ``cpu``.
         run_mode (str): 'train': Train the model 'test': run an inference pass. 'none': Do neither.
             Default is ``train``.
         val_check_interval (int | float): sets the frequency of running the model on the validation set.
@@ -105,18 +103,12 @@ def run_model(
         MonitorChurn(),
     ]
 
-    # TODO Pt Lightning automatically selects these devices if they are available in later versions.
-    tpus = 1 if device_type == "tpu" else None
-    gpus = 1 if device_type == "gpu" else None
-
     # process user arguments for Trainer
     if trainer_kwargs is None:
         trainer_kwargs = {}
     # ensure the user can overwrite anything they want
     trainer_kwargs = dict(
         {
-            "tpu_cores": tpus,
-            "gpus": gpus,
             "callbacks": callbacks,
             "logger": loggers,
             "max_epochs": num_epochs,
