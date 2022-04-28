@@ -14,7 +14,6 @@ from neural_lifetimes.models.nets import CombinedEmbedder
 from ..test_datasets.datamodels import EventprofilesDataModel
 
 DISCRETE_START_TOKEN = "StartToken"
-DEVICE_TYPE = "cpu"
 
 
 @pytest.fixture
@@ -68,7 +67,6 @@ class TestClassicModel:
             target_transform=target_transform,
             test_size=0.2,
             batch_points=256,
-            device=DEVICE_TYPE,
             min_points=1,
         )
 
@@ -89,7 +87,6 @@ class TestClassicModel:
             datamodule,
             model,
             log_dir=log_dir,
-            device_type=DEVICE_TYPE,
             num_epochs=2,
             val_check_interval=2,
             limit_val_batches=2,

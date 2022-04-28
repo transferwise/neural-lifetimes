@@ -26,7 +26,6 @@ class SequenceDataModule(pl.LightningDataModule):
         test_size (float): The proportion of data points that will be part of the validation set. 0 < test_size < 1
         batch_points (int): Batch size
         target_transform (TargetCreator): A class that transforms the targets.
-        device (torch.device): The device to use.
     """
 
     def __init__(
@@ -35,7 +34,6 @@ class SequenceDataModule(pl.LightningDataModule):
         test_size: float,
         batch_points: int,
         target_transform: TargetCreator,
-        device: torch.device,
         min_points: int,
     ):
         super().__init__()
@@ -43,7 +41,6 @@ class SequenceDataModule(pl.LightningDataModule):
         self.test_size = test_size
         self.batch_points = batch_points
         self.target_transform = target_transform
-        self.device = device
         self.min_points = min_points
 
         self.train_inds: List[int] = []
@@ -97,7 +94,6 @@ class SequenceDataModule(pl.LightningDataModule):
             self.batch_points,
             self.min_points,
             self.target_transform,
-            self.device,
         )
 
     def train_dataloader(self):

@@ -9,14 +9,14 @@ from .embedder import CombinedEmbedder
 
 # TODO rename
 class EventEncoder(nn.Module):
-    def __init__(
-        self,
-        emb: CombinedEmbedder,
-        rnn_dim: int,
-        drop_rate: float = 0.0,
-    ):
+    def __init__(self, emb: CombinedEmbedder, rnn_dim: int, drop_rate: float = 0.0, num_layers: int = 1):
         super().__init__()
         self.emb = emb
+
+        if num_layers == 1:
+            drop_rate = 0.0
+            print("Dropout for RNN was set to 0, because num_layers=1.")
+
         self.rnn = nn.GRU(
             input_size=emb.output_shape[1],
             hidden_size=rnn_dim,
