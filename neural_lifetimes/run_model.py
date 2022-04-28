@@ -93,7 +93,7 @@ def run_model(
     callbacks = [
         ModelCheckpoint(
             dirpath=os.path.join(log_dir, f"version_{loggers[0].version}"),
-            filename="{epoch}-{step}-{loss_total_val:.2f}",
+            filename="{epoch}-{step}-{val_loss/total:.2f}",
             monitor="val_loss/total",
             mode="min",
             save_last=True,
