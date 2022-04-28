@@ -16,7 +16,6 @@ class SequenceLoader:
         max_points (int): maximum number of points in a batch
         min_points (int): minimum number of points in a batch. Defaults to 2.
         transform (Optional[Callable]): function to transform the data. Defaults to ``None``.
-        device (Optional[torch.device]): device to put the data on. If ``None``, data is left as ``np.arrays``.
 
     Attributes:
         data (Subset): Subset of SequenceSamplingDataset.
@@ -24,7 +23,6 @@ class SequenceLoader:
         min_points (int): minimum number of points in a batch.
         next_ind (int): index of the next item to be returned. Initialised to 0.
         transform (Optional[Callable]): function to transform the data.
-        device (Optional[torch.device]): device to put the data on.
     """
 
     def __init__(
@@ -33,14 +31,12 @@ class SequenceLoader:
         max_points: int,
         min_points: int = 2,
         transform: Optional[Callable] = None,
-        device: Optional[torch.device] = None,  # data left as np.arrays if this is null
     ):
         self.data = data
         self.max_points = max_points
         self.min_points = min_points
         self.next_ind = 0
         self.transform = transform
-        self.device = device
 
     def __iter__(self):
         """Get self as iterator of sequence batches."""
@@ -86,9 +82,7 @@ class SequenceLoader:
         # get data for all those IDs, in one call so it's faster
         pre_out = self.data[inds]
         out = self.bulk_transform(pre_out)
-        if self.device is not None:
-            out = torchify(out, self.device)
-
+        out = torchify(out)
         return out
 
     def bulk_transform(self, seqs: Sequence[Dict[str, np.ndarray]]) -> Dict[str, np.ndarray]:

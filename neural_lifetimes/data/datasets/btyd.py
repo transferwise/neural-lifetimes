@@ -500,14 +500,15 @@ class BTYD(SequenceDataset):
         discrete_funcs = {}
         discrete_feat_values = self.get_discrete_feature_values()
         for k, v in discrete_feat_values.items():
-            discrete_funcs[k] = lambda input_: self._feature_select_discrete(input_[0], input_[1], v, k)
+            discrete_funcs[k] = lambda input_, v=v, k=k: self._feature_select_discrete(input_[0], input_[1], v, k)
 
         # get continuous values
         continuous_features = self.continuous_feature_names
         cont_funcs = {}
         for feature in continuous_features:
-            cont_funcs[feature] = lambda input_: self._feature_select_cont(input_[0], input_[1], feature)
-
+            cont_funcs[feature] = lambda input_, feature=feature: self._feature_select_cont(
+                input_[0], input_[1], feature
+            )
         # user id
         special_feat = {"USER_PROFILE_ID": lambda input_: np.full(shape=input_[0], fill_value=str(uuid4()))}
 

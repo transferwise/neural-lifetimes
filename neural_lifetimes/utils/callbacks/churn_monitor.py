@@ -11,7 +11,7 @@ class MonitorChurn(pl.Callback):
         self.max_batches = max_batches
         self.hist_mod = hist_mod
 
-    def on_train_batch_end(self, trainer, net, output, batch, batch_idx, dataloader_idx):
+    def on_train_batch_end(self, trainer, net, outputs, batch, batch_idx):
         out = net(batch)
         _, x_remove_initial = remove_initial_event(batch, out)  # TODO Cornelius: why how what?
         _, x_last = get_last(batch, out)  # TODO Cornelius: why how what?
@@ -49,7 +49,8 @@ class MonitorChurn(pl.Callback):
                 global_step=trainer.global_step,
             )
 
-    def on_validation_batch_end(self, trainer, net, output, batch, batch_idx, dataloader_idx):
+    # TODO update call signature: remove `unused` as soon as plt patches
+    def on_validation_batch_end(self, trainer: pl.Trainer, net: pl.LightningModule, outputs, batch, batch_idx, unused):
         if batch_idx == 0:
             return
 

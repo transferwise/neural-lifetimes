@@ -17,7 +17,6 @@ from neural_lifetimes.models.nets import CombinedEmbedder
 from ..test_datasets.datamodels import EventprofilesDataModel
 
 DISCRETE_START_TOKEN = "StartToken"
-DEVICE_TYPE = "cpu"
 
 
 @pytest.fixture
@@ -69,7 +68,6 @@ def data_and_model() -> Tuple[SequenceDataModule, ClassicModel]:
         target_transform=target_transform,
         test_size=0.2,
         batch_points=256,
-        device=DEVICE_TYPE,
         min_points=1,
     )
 
@@ -103,7 +101,6 @@ class TestRunModel:
             model,
             log_dir=log_dir,
             num_epochs=2,
-            device_type=DEVICE_TYPE,
             run_mode=run_mode,
         )
 
@@ -118,7 +115,6 @@ class TestRunModel:
             model,
             log_dir=log_dir,
             checkpoint_path=None,
-            device_type=DEVICE_TYPE,
             run_mode="none",
             trainer_kwargs={"accumulate_grad_batches": 2, "callbacks": []},
         )
@@ -139,7 +135,6 @@ class TestRunModel:
             model,
             log_dir=log_dir,
             checkpoint_path=None,
-            device_type=DEVICE_TYPE,
             run_mode="none",
             loggers=loggers,
         )
@@ -157,7 +152,6 @@ class TestRunModel:
             model,
             log_dir=log_dir,
             checkpoint_path=None,
-            device_type=DEVICE_TYPE,
             run_mode="none",
             logger_kwargs=logger_kwargs,
         )
@@ -178,7 +172,6 @@ class TestRunModel:
                 model,
                 log_dir=log_dir,
                 checkpoint_path=None,
-                device_type=DEVICE_TYPE,
                 run_mode="none",
                 loggers=loggers,
                 logger_kwargs=logger_kwargs,

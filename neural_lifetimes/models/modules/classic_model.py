@@ -4,7 +4,6 @@ import numpy as np
 import pytorch_lightning as pl
 import torch
 from torch import nn
-from torch.optim import Adam
 from torchmetrics import Accuracy, MeanAbsoluteError, MetricCollection
 
 from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss, VariationalEncoderDecoderLoss
@@ -16,9 +15,10 @@ from ..nets.event_model import EventEncoder
 from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, ExponentialHeadNoLoss, NormalHead
 
 from neural_lifetimes.utils.callbacks import GitInformationLogger
+from .configure_optimizers import configure_optimizers
 
 
-class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder
+class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder, Add better docstring
     """Initialises a ClassicModel instance.
 
     This is the model class. Each different model / method gets their own class.
@@ -44,6 +44,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder
         vae_sample_z: bool = True,
         vae_sampling_scaler: float = 1.0,
         vae_KL_weight: float = 1.0,
+        optimizer_kwargs: Dict[str, Any] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -57,6 +58,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder
         self.vae_sample_z = vae_sample_z
         self.vae_KL_weight = vae_KL_weight
         self.vae_sampling_scaler = vae_sampling_scaler
+        self.optimizer_kwargs = optimizer_kwargs if optimizer_kwargs is not None else {}
 
         self.head = self.configure_heads(emb)
         self.net = VariationalEncoderDecoder(
@@ -92,10 +94,9 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder
         return {f"model/{k}": v for k, v in hparams.items()}
 
     def configure_optimizers(self):
-        """Pytorch lightning automatically calls this to configure the optimizers."""
-        return Adam(self.parameters(), lr=self.lr)
-
-    # def distribution(self, params: Dict[str, torch.Tensor]) ->
+        return configure_optimizers(
+            self.parameters(), self.lr, optimizer="Adam", scheduler="ReduceLROnPlateau", **self.optimizer_kwargs
+        )
 
     def forward(self, x: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """Conducts a forward pass of this model.
