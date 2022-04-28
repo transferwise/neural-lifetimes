@@ -79,7 +79,7 @@ class DistributionMonitor(pl.Callback):
 
             t_to_next.append(batch["next_dt"])
 
-        if len(lambdas) > 1:
+        if len(lambdas) > 0:
             lambdas = np.concatenate(lambdas)
             self.clip_lambda_val = np.quantile(lambdas, self.clip_lambda_quantile)
             logger.experiment.add_histogram(
@@ -92,7 +92,7 @@ class DistributionMonitor(pl.Callback):
                     + "Please try again using `clip_lambda=False`."
                 )
 
-        if len(p) > 1:
+        if len(p) > 0:
             p = np.concatenate(p)
             logger.experiment.add_histogram("p_churn/True", p, global_step=trainer.global_step)
 
