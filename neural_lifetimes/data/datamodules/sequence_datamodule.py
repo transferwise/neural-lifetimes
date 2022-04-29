@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List
 
 import pytorch_lightning as pl
 import torch
@@ -33,6 +33,7 @@ class SequenceDataModule(pl.LightningDataModule):
         dataset: SequenceDataset,
         test_size: float,
         batch_points: int,
+        transform: Callable,
         target_transform: TargetCreator,
         min_points: int,
     ):
@@ -40,6 +41,7 @@ class SequenceDataModule(pl.LightningDataModule):
         self.dataset = dataset
         self.test_size = test_size
         self.batch_points = batch_points
+        self.transform = transform
         self.target_transform = target_transform
         self.min_points = min_points
 
@@ -93,6 +95,7 @@ class SequenceDataModule(pl.LightningDataModule):
             SequenceSubset(self.dataset, indices),
             self.batch_points,
             self.min_points,
+            self.transform,
             self.target_transform,
         )
 

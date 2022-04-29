@@ -42,17 +42,16 @@ class TargetCreator(nn.Module):
     def __init__(
         self,
         cols: List[str],
-        emb: CombinedEmbedder,
+        encoder: CombinedEmbedder,  # TODO change data type
         max_item_len: int = 100,
         start_token_discr: str = "StartToken",
         start_token_cont: int = -1e6,
     ):
         super().__init__()
-        self.enc = emb.enc
+        self.encoder = encoder
         self.cols = cols
         self.t_name = "t"
         self.max_item_len = max_item_len
-        self.pre_encode_features = emb.pre_encoded
         self.start_token_discr = start_token_discr
         self.start_token_cont = start_token_cont
 
@@ -66,7 +65,6 @@ class TargetCreator(nn.Module):
             "columns": self.cols,
             "time_column": self.t_name,
             "max_item_len": self.max_item_len,
-            "pre_encode_features": self.pre_encode_features,
             "start_token_discrete": self.start_token_discr,
             "start_token_continuous": self.start_token_cont,
         }
@@ -104,50 +102,50 @@ class TargetCreator(nn.Module):
         asof_time: datetime.date,
     ) -> Dict[str, Union[torch.Tensor, Sequence[str]]]:
 
-        x["t"] = self.datetime2tensor(x["t"])
-        asof_time = self.datetime2tensor(np.array([asof_time]))
+        # x["t"] = self.datetime2tensor(x["t"])
+        # asof_time = self.datetime2tensor(np.array([asof_time]))
 
-        # trim the too long sequences
-        x = {k: v[-(self.max_item_len) :] for k, v in x.items()}
+        # # trim the too long sequences
+        # x = {k: v[-(self.max_item_len) :] for k, v in x.items()}
 
-        # Add starting tokens
-        # TODO The copy on 102 and 125 look useless
-        x_token = x.copy()
-        x_token["dt"] = np.append([self.start_token_cont, 0], x_token["t"][1:] - x_token["t"][:-1]).astype(np.float32)
-        x_token["t"] = x_token["t"].astype(np.float32)
+        # # Add starting tokens
+        # # TODO The copy on 102 and 125 look useless
+        # x_token = x.copy()
+        # x_token["dt"] = np.append([self.start_token_cont, 0], x_token["t"][1:] - x_token["t"][:-1]).astype(np.float32)
+        # x_token["t"] = x_token["t"].astype(np.float32)
 
-        for k, v in x_token.items():
-            if k == "dt":
-                continue
-            if k in self.cols:
-                if k in self.enc.keys():
-                    x_token[k] = np.append([self.start_token_discr], v)
-                else:
-                    x_token[k] = np.append([self.start_token_cont], v)
-            else:
-                x_token[k] = np.append([None], v)
+        # for k, v in x_token.items():
+        #     if k == "dt":
+        #         continue
+        #     if k in self.cols:
+        #         if k in self.enc.keys():
+        #             x_token[k] = np.append([self.start_token_discr], v)
+        #         else:
+        #             x_token[k] = np.append([self.start_token_cont], v)
+        #     else:
+        #         x_token[k] = np.append([None], v)
 
-        assert len(x_token["dt"]) == len(x_token["t"])
-        if len(x_token["dt"]) > 2:
-            assert (
-                sum(x_token["dt"][2:] < 0) == 0
-            ), "We're getting negative time intervals, are you slicing by profile correctly? "
+        # assert len(x_token["dt"]) == len(x_token["t"])
+        # if len(x_token["dt"]) > 2:
+        #     assert (
+        #         sum(x_token["dt"][2:] < 0) == 0
+        #     ), "We're getting negative time intervals, are you slicing by profile correctly? "
 
-        x_out = x_token.copy()
-        x_out["t_to_now"] = asof_time - x_token["t"][-1]
+        # x_out = x_token.copy()
+        # x_out["t_to_now"] = asof_time - x_token["t"][-1]
         for c in self.cols + ["dt"]:
-            x_out[f"next_{c}"] = x_out[c][1:]
+            x[f"next_{c}"] = x[c][1:]
 
-            if c in self.enc.keys():
-                # if the variable is categorical and needs encoding, pre-encode the targets
-                x_out[f"next_{c}"] = self.enc[c].transform(x_out[f"next_{c}"]).reshape(-1)
-                if self.pre_encode_features:
-                    # and encode all categorical features
-                    x_out[c] = self.enc[c].transform(x_out[c]).reshape(-1)
+            # if c in self.enc.keys():
+            #     # if the variable is categorical and needs encoding, pre-encode the targets
+            #     x_out[f"next_{c}"] = self.enc[c].transform(x_out[f"next_{c}"]).reshape(-1)
+            #     if self.pre_encode_features:
+            #         # and encode all categorical features
+            #         x_out[c] = self.enc[c].transform(x_out[c]).reshape(-1)
 
-            assert len(x_out[f"next_{c}"]) == len(x_out["t"]) - 1
+            assert len(x[f"next_{c}"]) == len(x["t"]) - 1
 
-        return x_out
+        return x
 
 
 class TargetCreatorFraud(TargetCreator):

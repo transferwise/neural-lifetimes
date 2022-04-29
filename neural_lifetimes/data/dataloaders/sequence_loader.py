@@ -1,10 +1,13 @@
-from typing import Callable, Dict, Optional, Sequence
+from ast import Call
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional, Sequence
 
 import numpy as np
 import torch
 
 from ..datasets.sequence_dataset import SequenceSubset
-from ..datasets.sequence_sampling_dataset import torchify
+
+# from ..datasets.sequence_sampling_dataset import torchify
 
 
 class SequenceLoader:
@@ -29,14 +32,24 @@ class SequenceLoader:
         self,
         data: SequenceSubset,  # Subset of SequenceSamplingDataset,
         max_points: int,
+        # tokenizer: Callable,
         min_points: int = 2,
         transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None,
     ):
         self.data = data
         self.max_points = max_points
         self.min_points = min_points
         self.next_ind = 0
         self.transform = transform
+        self.target_transform = target_transform
+        # self.tokenizer = Tokenizer(
+        #     continuous_features=self.transform.continuous_features, discrete_features=self.transform.discrete_features
+        # )
+        self.start_token_discr = 0
+        self.start_token_cont = np.nan
+        self.start_token_other = np.nan
+        self.max_item_len = 120
 
     def __iter__(self):
         """Get self as iterator of sequence batches."""
@@ -69,7 +82,7 @@ class SequenceLoader:
                 break
 
             next_len = self.data.get_seq_len(self.next_ind)
-            next_len = self.transform.output_len(next_len)  # cut the length if necessary
+            next_len = self.target_transform.output_len(next_len)  # cut the length if necessary
 
             if total_size + next_len <= self.max_points:
                 if next_len >= self.min_points:
@@ -83,6 +96,8 @@ class SequenceLoader:
         pre_out = self.data[inds]
         out = self.bulk_transform(pre_out)
         out = torchify(out)
+        for val in out.values():
+            assert isinstance(val, torch.Tensor)
         return out
 
     def bulk_transform(self, seqs: Sequence[Dict[str, np.ndarray]]) -> Dict[str, np.ndarray]:
@@ -101,7 +116,45 @@ class SequenceLoader:
         offsets = [0]  # the 0 is included for convenience in later processing
         pre_out = []
         for s in seqs:
-            next_out = self.transform(s, self.data.asof_time)
+            s = self.transform(s)
+
+            # convet timestamps to float
+            s["t"] = self.datetime2tensor(s["t"])
+            asof_time = self.datetime2tensor(np.array([self.data.asof_time]))
+
+            # trim the too long sequences
+            s = {k: v[-(self.max_item_len) :] for k, v in s.items()}
+
+            # add dt
+            s["dt"] = np.append([self.start_token_cont, 0], s["t"][1:] - s["t"][:-1]).astype(np.float32)
+            s["t"] = s["t"].astype(np.float32)
+
+            # add start tokens
+            # tokenize(s, self.start_token_cont, self.start_token_discr, self.transform.features,)
+            for k, v in s.items():
+                if k == "dt":
+                    continue
+                if k in self.transform.features:
+                    if k in self.transform.discrete_features.keys():
+                        s[k] = np.append([self.start_token_discr], v).astype(np.int64)
+                    else:
+                        s[k] = np.append([self.start_token_cont], v).astype(np.float32)
+                else:
+                    s[k] = np.append([self.start_token_other], v)
+
+            # assert that all dts are postitive
+            assert len(s["dt"]) == len(s["t"])
+            if len(s["dt"]) > 2:
+                assert (
+                    sum(s["dt"][2:] < 0) == 0
+                ), "We're getting negative time intervals, are you slicing by profile correctly? "
+
+            s["t_to_now"] = asof_time - s["t"][-1]
+
+            # create next_ shifted variables
+            next_out = self.target_transform(s, self.data.asof_time)
+
+            # append offset
             if next_out is not None:
                 offsets.append(offsets[-1] + next_out["t"].shape[0])  # the offsets refer to the features
                 pre_out.append(next_out)
@@ -112,7 +165,7 @@ class SequenceLoader:
                 if k == "t_to_now":
                     assert len(v) == 1
                 # we don't have targets, or time to next event, for the last event in the sequence
-                elif k == "next_dt" or k[:5] == "next_":
+                elif k[:5] == "next_":
                     assert len(v) == d - 1
                 # but we do keep that last sequence element's features, to model churn
                 else:
@@ -126,6 +179,21 @@ class SequenceLoader:
         out["offsets"] = np.array(offsets)
 
         return out
+
+    def datetime2tensor(self, x: np.ndarray):
+        """
+        Create a timestamp(seconds) in hours since epoch.
+
+        Args:
+            x (np.ndarray): The array of datetimes to convert.
+
+        Returns:
+            np.ndarray[np.float64]: int64 / float64 to maintain precision.
+
+        Note:
+            This should be converted to float32 before training using astype(np.float32)
+        """
+        return x.astype("datetime64[us]").astype(np.int64).astype(np.float64) / (1e6 * 60 * 60)
 
 
 # # doesn't seem like it's used anywhere
@@ -172,3 +240,37 @@ def get_last(batch: Dict[str, torch.Tensor], model_out: Dict[str, torch.Tensor])
     out = {k: v[pre_final] for k, v in model_out.items()}
 
     return batch, out
+
+
+@dataclass
+class Tokenizer:
+    continuous_features: List[str]
+    discrete_features: List[str]
+    start_token_continuous: Any = 0
+    start_token_discrete: Any = None
+
+    def __call__(self, x: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
+        for k, v in x.items():
+            if k == "dt":
+                continue
+            if k in self.features:
+                if k in self.discrete_features.keys():
+                    x[k] = np.append([self.start_token_discr], v, dtype=np.int64)
+                else:
+                    x[k] = np.append([self.start_token_cont], v, dtype=np.float32)
+            else:
+                x[k] = np.append([None], v)
+        return x
+
+    def features(self):
+        return self.continuous_features + self.discrete_features
+
+
+def torchify(x: Dict[str, np.ndarray]) -> Dict[str, torch.Tensor]:
+    out = {}
+    for key, val in x.items():
+        try:
+            out[key] = torch.from_numpy(val)
+        except TypeError:  # TODO pass
+            pass
+    return out

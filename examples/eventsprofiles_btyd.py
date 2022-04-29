@@ -8,7 +8,9 @@ from neural_lifetimes.data.datamodules import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
 from neural_lifetimes.models import TargetCreator
 from neural_lifetimes.models.modules import ClassicModel
-from neural_lifetimes.models.nets import CombinedEmbedder
+from neural_lifetimes.data.encoder import CombinedFeatureEncoder
+from neural_lifetimes.data.datamodel import DataModel
+
 from examples import eventsprofiles_datamodel
 
 LOG_DIR = str(Path(__file__).parent / "logs")
@@ -37,36 +39,40 @@ if __name__ == "__main__":
         track_statistics=True,
     )
 
-    btyd_dataset[:]
-    print(f"Expected Num Transactions per mode: {btyd_dataset.expected_num_transactions_from_priors()}")
-    print(f"Expected p churn per mode: {btyd_dataset.expected_p_churn_from_priors()}")
-    print(f"Expected time interval per mode: {btyd_dataset.expected_time_interval_from_priors()}")
-    print(f"Truncated sequences: {btyd_dataset.truncated_sequences}")
+    # btyd_dataset[:]
+    # print(f"Expected Num Transactions per mode: {btyd_dataset.expected_num_transactions_from_priors()}")
+    # print(f"Expected p churn per mode: {btyd_dataset.expected_p_churn_from_priors()}")
+    # print(f"Expected time interval per mode: {btyd_dataset.expected_time_interval_from_priors()}")
+    # print(f"Truncated sequences: {btyd_dataset.truncated_sequences}")
 
-    btyd_dataset.plot_tracked_statistics().show()
+    # btyd_dataset.plot_tracked_statistics().show()
 
     discrete_values = btyd_dataset.get_discrete_feature_values(
         start_token=START_TOKEN_DISCR,
+    )  # TODO START_TOKEN SHOULD NOT BE PROCESSED here
+
+    # TODO clean this up in this file. Move DataModel to seperate file
+    datamodel = DataModel(
+        continuous_features=eventsprofiles_datamodel.cont_feat,
+        discrete_features=btyd_dataset.get_discrete_feature_values(),
+        start_tokens={"discrete": START_TOKEN_DISCR, "continuous": 0},
+        targets=eventsprofiles_datamodel.target_cols,
     )
 
-    emb = CombinedEmbedder(
-        continuous_features=btyd_dataset.continuous_feature_names,
-        category_dict=discrete_values,
-        embed_dim=256,
-        drop_rate=0.5,
-        pre_encoded=False,
-    )
+    transform = CombinedFeatureEncoder(datamodel.continuous_features, datamodel.discrete_features)
 
     target_transform = TargetCreator(
-        cols=COLS,
-        emb=emb,
+        cols=datamodel.columns,
+        encoder=transform,
         max_item_len=100,
-        start_token_discr=START_TOKEN_DISCR,
-        start_token_cont=0,
+        start_token_discr=datamodel.start_tokens["discrete"],
+        start_token_cont=datamodel.start_tokens["continuous"],
     )
 
+    # state_full datamodule
     datamodule = SequenceDataModule(
         dataset=btyd_dataset,
+        transform=transform,
         target_transform=target_transform,
         test_size=0.2,
         batch_points=1024,
@@ -74,15 +80,15 @@ if __name__ == "__main__":
     )
 
     net = ClassicModel(
-        emb,
+        data_config=datamodel.to_dict(),
         rnn_dim=256,
         drop_rate=0.5,
         bottleneck_dim=32,
         lr=0.001,
-        target_cols=target_transform.cols,
         vae_sample_z=True,
         vae_sampling_scaler=1.0,
         vae_KL_weight=0.01,
+        encoder=transform,
     )
 
     run_model(

@@ -34,12 +34,14 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
 
     def __init__(
         self,
-        emb: CombinedEmbedder,
+        # emb: CombinedEmbedder,
+        data_config: Dict[str, Any],
         rnn_dim: int,
         drop_rate: float,
         bottleneck_dim: int,
         lr: float,
-        target_cols: List[str],
+        encoder,
+        # target_cols: List[str],
         vae_sample_z: bool = True,
         vae_sampling_scaler: float = 1.0,
         vae_KL_weight: float = 1.0,
@@ -47,21 +49,36 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
+        self.data_config = data_config
+        self.target_cols = self.data_config["targets"]
+
         self.rnn_dim = rnn_dim
         self.drop_rate = drop_rate
         self.bottleneck_dim = bottleneck_dim
         self.lr = lr
-        self.target_cols = target_cols
-        self.emb = emb
-        self.encoder = EventEncoder(emb, rnn_dim, drop_rate)
+
         self.vae_sample_z = vae_sample_z
         self.vae_KL_weight = vae_KL_weight
         self.vae_sampling_scaler = vae_sampling_scaler
         self.optimizer_kwargs = optimizer_kwargs if optimizer_kwargs is not None else {}
 
-        self.head = self.configure_heads(emb)
+        # embedder
+        self.emb = CombinedEmbedder(
+            continuous_features=data_config["continuous_features"],
+            discrete_features=data_config["discrete_features"],
+            embed_dim=256,
+            drop_rate=0.5,
+        )
+
+        # time series encoder
+        self.rnn_encoder = EventEncoder(self.emb, rnn_dim, drop_rate)
+
+        # decoder heads
+        self.head = self.configure_heads(self.emb)
+
+        # Encoder decoder
         self.net = VariationalEncoderDecoder(
-            self.encoder,
+            self.rnn_encoder,
             self.head,
             sample_z=vae_sample_z,
             epsilon_std=vae_sampling_scaler,
@@ -70,6 +87,11 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         self.criterion = self.configure_criterion()
         self.save_hyperparameters(self.build_parameter_dict())
         self.configure_metrics()
+
+    def on_fit_start(self) -> None:
+        # encoder = self.trainer.datamodule.transform
+        print("A")
+        return super().on_fit_start()
 
     def build_parameter_dict(self) -> Dict[str, Any]:
         """Return a dictionary of parameters.
@@ -128,14 +150,14 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         def categorical_head_template(feature: str):
             return CategoricalHead(
                 self.bottleneck_dim,
-                1 if feature not in emb.enc else len(emb.enc[feature]),
+                1 if feature not in emb.discrete_features else len(emb.discrete_features[feature]),
                 self.drop_rate,
             )
 
         head_continuous = {
             f"next_{f}": NormalHead(self.bottleneck_dim, self.drop_rate) for f in emb.continuous_features
         }
-        head_discrete = {f"next_{f}": categorical_head_template(f) for f in emb.enc.keys()}
+        head_discrete = {f"next_{f}": categorical_head_template(f) for f in emb.discrete_features.keys()}
         head_extra = {
             # "next_btyd_mode": categorical_head_template("btyd_mode"),
             "next_dt": ExponentialHeadNoLoss(self.bottleneck_dim, self.drop_rate),
@@ -158,7 +180,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         """
         # add MAE for continuous features
         metrics_cont_feat = {n: MeanAbsoluteError() for n in self.emb.continuous_features}
-        metrics_discr_feat = {n: Accuracy() for n in self.emb.enc}
+        metrics_discr_feat = {n: Accuracy() for n in self.emb.discrete_features}
 
         metrics = MetricCollection({**metrics_cont_feat, **metrics_discr_feat})
 
