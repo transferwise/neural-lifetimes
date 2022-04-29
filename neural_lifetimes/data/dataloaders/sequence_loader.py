@@ -82,7 +82,7 @@ class SequenceLoader:
                 break
 
             next_len = self.data.get_seq_len(self.next_ind)
-            next_len = self.target_transform.output_len(next_len)  # cut the length if necessary
+            next_len = min(self.max_item_len, next_len)  # cut the length if necessary
 
             if total_size + next_len <= self.max_points:
                 if next_len >= self.min_points:
