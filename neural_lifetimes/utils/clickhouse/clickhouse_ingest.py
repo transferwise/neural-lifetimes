@@ -4,7 +4,7 @@ from typing import Callable, Dict, Sequence
 import numpy as np
 from clickhouse_driver import Client
 
-from neural_lifetimes.data.data_processing import normalize_types
+from neural_lifetimes.data.utils import normalize_types
 from neural_lifetimes.utils.aws import caching_query
 
 from .schema import make_clickhouse_schema
