@@ -98,9 +98,9 @@ def run_model(
             save_top_k=3,
             verbose=True,
         ),
-        DistributionMonitor(),
-        MonitorProjection(),
-        MonitorChurn(),
+        # DistributionMonitor(),
+        # MonitorProjection(),
+        # MonitorChurn(),
     ]
 
     # process user arguments for Trainer

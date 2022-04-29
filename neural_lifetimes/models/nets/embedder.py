@@ -40,7 +40,7 @@ class CombinedEmbedder(nn.Module):
         self.emb = nn.ModuleDict()
         for name in discrete_features:
             # need to remember the Unknown value
-            self.emb[name] = nn.Embedding(len(discrete_features[name]) + 1, embed_dim)  # TODO use encoder dimensions
+            self.emb[name] = nn.Embedding(len(discrete_features[name]) + 2, embed_dim)  # TODO use encoder dimensions
 
         self.output_shape = [None, embed_dim]
 

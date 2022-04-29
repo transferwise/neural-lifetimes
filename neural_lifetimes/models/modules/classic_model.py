@@ -40,7 +40,6 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         drop_rate: float,
         bottleneck_dim: int,
         lr: float,
-        encoder,
         # target_cols: List[str],
         vae_sample_z: bool = True,
         vae_sampling_scaler: float = 1.0,
@@ -150,7 +149,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         def categorical_head_template(feature: str):
             return CategoricalHead(
                 self.bottleneck_dim,
-                1 if feature not in emb.discrete_features else len(emb.discrete_features[feature]),
+                1 if feature not in emb.discrete_features else len(emb.discrete_features[feature]) + 1,
                 self.drop_rate,
             )
 
@@ -267,10 +266,10 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         """
         metric_values = {}
 
-        for name, encoder in self.emb.enc.items():
-            discr_pred = y_pred[f"next_{name}"].argmax(dim=-1, keepdim=True).detach().cpu()
-            discr_true = torch.tensor(encoder.transform(y_true[name]))
-            metric_values[name] = self.metrics[f"{split}_metrics"][name](discr_pred, discr_true)
+        # for name, encoder in self.emb.discrete_features.items():
+        #     discr_pred = y_pred[f"next_{name}"].argmax(dim=-1, keepdim=True).detach().cpu()
+        #     discr_true = torch.tensor(encoder.transform(y_true[name]))
+        #     metric_values[name] = self.metrics[f"{split}_metrics"][name](discr_pred, discr_true)
 
         for name in self.emb.continuous_features:
             cont_pred = y_pred[f"next_{name}"][:, 0]

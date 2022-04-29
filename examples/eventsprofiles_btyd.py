@@ -88,7 +88,6 @@ if __name__ == "__main__":
         vae_sample_z=True,
         vae_sampling_scaler=1.0,
         vae_KL_weight=0.01,
-        encoder=transform,
     )
 
     run_model(
