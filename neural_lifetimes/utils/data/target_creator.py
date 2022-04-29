@@ -5,9 +5,9 @@ import numpy as np
 import torch
 from torch import nn
 
-from neural_lifetimes.utils import OrdinalEncoderWithUnknown
+from .encoder_with_unknown import OrdinalEncoderWithUnknown
 
-from .nets.embedder import CombinedEmbedder
+from neural_lifetimes.models.nets import CombinedEmbedder
 
 
 class DummyTransform:
@@ -146,76 +146,5 @@ class TargetCreator(nn.Module):
                     x_out[c] = self.enc[c].transform(x_out[c]).reshape(-1)
 
             assert len(x_out[f"next_{c}"]) == len(x_out["t"]) - 1
-
-        return x_out
-
-
-class TargetCreatorFraud(TargetCreator):
-    """
-    A TargetCreator class for fraud detection.
-
-    Args:
-        cols (List[str]): The list of columns to use as features.
-        enc (Dict[str, OrdinalEncoderWithUnknown]): The encoders to use for each feature.
-        max_item_len (int): The maximum length of the sequence. Defaults to ``100``.
-        pre_encode_features (bool): Whether to pre-encode the features. Defaults to ``False``.
-    Note we use the default values for start_token_discr and start_token_cont.
-
-    Attributes:
-        enc (Dict[str, OrdinalEncoderWithUnknown]): The encoders to use for each feature.
-        cols (List[str]): The list of columns to use as features.
-        t_name (str): The name of the time feature. Is always ``"t"``.
-        max_item_len (int): The maximum length of the sequence.
-        pre_encode_features (bool): Whether to pre-encode the features.
-        start_token_discr (str): The token to use for the start of a discrete feature.
-            Uses the default value for TargetCreator.
-        start_token_cont (int): The token to use for the start of a continuous feature.
-            Uses the default value for TargetCreator.
-    """
-
-    def __init__(
-        self,
-        cols: List[str],
-        enc: Dict[str, OrdinalEncoderWithUnknown],
-        max_item_len: int = 100,
-        pre_encode_features: bool = False,
-    ):
-        super().__init__(
-            cols,
-            enc,
-            max_item_len=max_item_len,
-            pre_encode_features=pre_encode_features,
-        )
-
-    def __call__(
-        self, x: Dict[str, np.ndarray], asof_time: datetime.date
-    ) -> Dict[str, Union[torch.Tensor, Sequence[str]]]:
-        x["t"] = self.datetime2tensor(x["t"])
-        asof_time = self.datetime2tensor(np.array([asof_time]))
-
-        # no observed future to predict; we'll allow these cases once we also have a separate initial state
-        if len(x["t"]) <= 1:
-            # TODO: This is a really bad way to handle error cases
-            return None
-
-        # TODO: A bunch of this stuff here is duplicated
-        # trim the too long sequences
-        x = {k: v[-(self.max_item_len) :] for k, v in x.items()}
-
-        # create the time to previous event as a new feature
-        x["dt"] = np.append([-1], x["t"][1:] - x["t"][:-1])
-        assert len(x["dt"]) == len(x["t"])
-        assert (
-            x["dt"][1:] < 0
-        ).sum() == 0, "We're getting negative time intervals, are you slicing by profile correctly? "
-
-        x_out = x.copy()
-
-        x_out["t_to_now"] = asof_time - x["t"][-1]
-
-        if self.pre_encode_features:
-            for c in self.cols + ["dt"]:
-                if c in self.enc.keys():
-                    x_out[c] = self.enc[c].transform(x_out[c]).reshape(-1)
 
         return x_out

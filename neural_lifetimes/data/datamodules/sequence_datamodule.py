@@ -4,7 +4,8 @@ import pytorch_lightning as pl
 import torch
 from sklearn.model_selection import train_test_split
 
-from ...models.targets import TargetCreator
+from neural_lifetimes.utils.data import TargetCreator
+
 from ..dataloaders.sequence_loader import SequenceLoader
 from ..datasets.sequence_dataset import SequenceDataset, SequenceSubset
 

@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from neural_lifetimes.utils.encoder_with_unknown import OrdinalEncoderWithUnknown
+from neural_lifetimes.utils.data.encoder_with_unknown import OrdinalEncoderWithUnknown
 
 
 class CombinedEmbedder(nn.Module):

@@ -4,7 +4,7 @@ import numpy as np
 import torch
 
 from ..datasets.sequence_dataset import SequenceSubset
-from ..datasets.sequence_sampling_dataset import torchify
+from ...data.utils import torchify
 
 
 class SequenceLoader:
