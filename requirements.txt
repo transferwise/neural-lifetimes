@@ -1,6 +1,6 @@
 boto3~=1.17
 botocore~=1.20
-clickhouse_driver~=0.2.0
+clickhouse_driver~=0.2.3
 cloudpickle~=2.0
 ctgan~=0.5.1
 deepecho~=0.3.0.post1
