@@ -8,7 +8,18 @@ import torch
 from pandas.api.types import is_float_dtype, is_integer_dtype, is_numeric_dtype
 
 
-def torchify(x: Dict[str, np.ndarray]) -> Dict[str, Union[np.ndarray, torch.Tensor]]:
+def torchify(x: Dict[str, np.ndarray]) -> Dict[str, torch.Tensor]:
+    out = {}
+    for key, val in x.items():
+        try:
+            out[key] = torch.from_numpy(val)
+        except TypeError:
+            out[key] = val
+    return out
+
+
+# TODO: remove if no longer needed
+def torchify_old(x: Dict[str, np.ndarray]) -> Dict[str, Union[np.ndarray, torch.Tensor]]:
     """
     Cast all numerical elements to tensors, forcing float64 to float32.
 

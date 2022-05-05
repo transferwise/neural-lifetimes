@@ -14,6 +14,8 @@ from ..nets.encoder_decoder import VariationalEncoderDecoder
 from ..nets.event_model import EventEncoder
 from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, ExponentialHeadNoLoss, NormalHead
 
+from neural_lifetimes.utils.data import FeatureDictionaryEncoder
+
 from neural_lifetimes.utils.callbacks import GitInformationLogger
 from .configure_optimizers import configure_optimizers
 
@@ -35,7 +37,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
 
     def __init__(
         self,
-        emb: CombinedEmbedder,
+        feature_encoder_config: Dict[str, Any],
         rnn_dim: int,
         drop_rate: float,
         bottleneck_dim: int,
@@ -53,16 +55,25 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         self.bottleneck_dim = bottleneck_dim
         self.lr = lr
         self.target_cols = target_cols
-        self.emb = emb
-        self.encoder = EventEncoder(emb, rnn_dim, drop_rate)
+        # the reconstruction of the feature encoder requires it to be deterministic
+        self.feature_encoder = FeatureDictionaryEncoder.from_dict(feature_encoder_config)
+
+        # TODO add arguments for setting NN parameters
+        self.emb = CombinedEmbedder(
+            feature_encoder=self.feature_encoder,
+            embed_dim=256,
+            drop_rate=0.5,
+        )
+
+        self.event_encoder = EventEncoder(self.emb, rnn_dim, drop_rate)
         self.vae_sample_z = vae_sample_z
         self.vae_KL_weight = vae_KL_weight
         self.vae_sampling_scaler = vae_sampling_scaler
         self.optimizer_kwargs = optimizer_kwargs if optimizer_kwargs is not None else {}
 
-        self.head = self.configure_heads(emb)
+        self.head = self.configure_heads(self.feature_encoder)
         self.net = VariationalEncoderDecoder(
-            self.encoder,
+            self.event_encoder,
             self.head,
             sample_z=vae_sample_z,
             epsilon_std=vae_sampling_scaler,
@@ -128,20 +139,19 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         loss_fn = VariationalEncoderDecoderLoss(pre_loss, reg_weight=self.vae_KL_weight if self.vae_sample_z else None)
         return loss_fn
 
-    def configure_heads(self, emb: nn.Module) -> nn.Module:
+    def configure_heads(self, feature_encoder: FeatureDictionaryEncoder) -> nn.Module:
         def categorical_head_template(feature: str):
             return CategoricalHead(
                 self.bottleneck_dim,
-                1 if feature not in emb.enc else len(emb.enc[feature]),
+                1 if feature not in feature_encoder.discrete_features else feature_encoder.feature_size(feature),
                 self.drop_rate,
             )
 
         head_continuous = {
-            f"next_{f}": NormalHead(self.bottleneck_dim, self.drop_rate) for f in emb.continuous_features
+            f"next_{f}": NormalHead(self.bottleneck_dim, self.drop_rate) for f in feature_encoder.continuous_features
         }
-        head_discrete = {f"next_{f}": categorical_head_template(f) for f in emb.enc.keys()}
+        head_discrete = {f"next_{f}": categorical_head_template(f) for f in feature_encoder.discrete_features.keys()}
         head_extra = {
-            # "next_btyd_mode": categorical_head_template("btyd_mode"),
             "next_dt": ExponentialHeadNoLoss(self.bottleneck_dim, self.drop_rate),
             "p_churn": ChurnProbabilityHead(self.bottleneck_dim, self.drop_rate),
         }
@@ -249,10 +259,11 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         """
         metric_values = {}
 
-        for name, encoder in self.emb.enc.items():
-            discr_pred = y_pred[f"next_{name}"].argmax(dim=-1, keepdim=True).detach().cpu()
-            discr_true = torch.tensor(encoder.transform(y_true[name]))
-            metric_values[name] = self.metrics[f"{split}_metrics"][name](discr_pred, discr_true)
+        # TODO uncomment
+        # for name, encoder in self.emb.enc.items():
+        #     discr_pred = y_pred[f"next_{name}"].argmax(dim=-1, keepdim=True).detach().cpu()
+        #     discr_true = torch.tensor(encoder.transform(y_true[name]))
+        #     metric_values[name] = self.metrics[f"{split}_metrics"][name](discr_pred, discr_true)
 
         for name in self.emb.continuous_features:
             cont_pred = y_pred[f"next_{name}"][:, 0]

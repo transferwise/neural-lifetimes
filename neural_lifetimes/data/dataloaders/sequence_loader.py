@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Optional, Sequence
+from typing import Callable, Dict, Sequence
 
 import numpy as np
 import torch
@@ -28,15 +28,19 @@ class SequenceLoader:
     def __init__(
         self,
         data: SequenceSubset,  # Subset of SequenceSamplingDataset,
+        transform: Callable,
+        target_transform: Callable,
+        tokenizer: Callable,
         max_points: int,
         min_points: int = 2,
-        transform: Optional[Callable] = None,
     ):
         self.data = data
         self.max_points = max_points
         self.min_points = min_points
         self.next_ind = 0
         self.transform = transform
+        self.target_transform = target_transform
+        self.tokenizer = tokenizer
 
     def __iter__(self):
         """Get self as iterator of sequence batches."""
@@ -69,7 +73,7 @@ class SequenceLoader:
                 break
 
             next_len = self.data.get_seq_len(self.next_ind)
-            next_len = self.transform.output_len(next_len)  # cut the length if necessary
+            next_len = min(self.tokenizer.max_item_len, next_len)
 
             if total_size + next_len <= self.max_points:
                 if next_len >= self.min_points:
@@ -83,6 +87,20 @@ class SequenceLoader:
         pre_out = self.data[inds]
         out = self.bulk_transform(pre_out)
         out = torchify(out)
+
+        # assert that all relevant elements are tensors (if the original are tensors, so are the 'next_' shifted)
+        required_tensors = self.transform.features + ["dt", "t"]
+        for name, val in out.items():
+            if name in required_tensors:
+                assert isinstance(val, torch.Tensor)
+
+        # assert that discrete tensors are int64 and continuous float32
+        for key, val in out.items():
+            if key in self.transform.discrete_features.keys():
+                assert val.dtype == torch.int64
+            elif key in self.transform.continuous_features:  # TODO will fail on BTYD mode
+                assert val.dtype == torch.float32
+
         return out
 
     def bulk_transform(self, seqs: Sequence[Dict[str, np.ndarray]]) -> Dict[str, np.ndarray]:
@@ -101,7 +119,35 @@ class SequenceLoader:
         offsets = [0]  # the 0 is included for convenience in later processing
         pre_out = []
         for s in seqs:
-            next_out = self.transform(s, self.data.asof_time)
+
+            # convert timestamps to float
+            s["t"] = self.datetime2tensor(s["t"])
+            asof_time = self.datetime2tensor(np.array([self.data.asof_time]))
+
+            # add dt
+            s["dt"] = np.append([0], s["t"][1:] - s["t"][:-1]).astype(np.float32)
+            s["t"] = s["t"].astype(np.float32)
+
+            # tokenize: add tokens and truncate sequences
+            s = self.tokenizer(s)
+
+            # encoder features
+            s = self.transform(s)
+
+            # assert that all dts are postitive
+            assert len(s["dt"]) == len(s["t"])
+            if len(s["dt"]) > 2:
+                assert (
+                    sum(s["dt"][2:] < 0) == 0
+                ), "We're getting negative time intervals, are you slicing by profile correctly? "
+
+            # add to to now
+            s["t_to_now"] = asof_time - s["t"][-1]
+
+            # create next_ shifted variables
+            next_out = self.target_transform(s)
+
+            # append offset
             if next_out is not None:
                 offsets.append(offsets[-1] + next_out["t"].shape[0])  # the offsets refer to the features
                 pre_out.append(next_out)
@@ -112,7 +158,7 @@ class SequenceLoader:
                 if k == "t_to_now":
                     assert len(v) == 1
                 # we don't have targets, or time to next event, for the last event in the sequence
-                elif k == "next_dt" or k[:5] == "next_":
+                elif k[:5] == "next_":
                     assert len(v) == d - 1
                 # but we do keep that last sequence element's features, to model churn
                 else:
@@ -120,31 +166,28 @@ class SequenceLoader:
 
         # collate all the sequences
         out = {}
-        for key, val in pre_out[0].items():
-            out[key] = np.concatenate([x[key] for x in pre_out], axis=0)
+        for name in pre_out[0].keys():
+            out[name] = np.concatenate([x[name] for x in pre_out], axis=0)
 
         out["offsets"] = np.array(offsets)
 
         return out
 
+    # TODO: check duplicate with date_arithmetic
+    def datetime2tensor(self, x: np.ndarray):
+        """
+        Create a timestamp(seconds) in hours since epoch.
 
-# # doesn't seem like it's used anywhere
-# def last_slices(
-#     batch: Dict[str, torch.Tensor], model_out: Dict[str, torch.Tensor]
-# ) -> Dict[str, torch.Tensor]:
-#     """
-#     The raw model output contains concatenated sequences for several users
-#     This just takes the last value from each sequence
+        Args:
+            x (np.ndarray): The array of datetimes to convert.
 
-#     :param x: Output of the event model
-#     :return: Same, but subsampled to only contain the last element in each sequence
-#     """
-#     # TODO: append userid
-#     final = [i - 1 for i in batch["offsets"][1:]]
-#     out = {k: v[final] for k, v in model_out.items()}
-#     out["seq_len"] = np.diff(np.array(batch["offsets"]))
+        Returns:
+            np.ndarray[np.float64]: int64 / float64 to maintain precision.
 
-#     return out
+        Note:
+            This should be converted to float32 before training using astype(np.float32)
+        """
+        return x.astype("datetime64[us]").astype(np.int64).astype(np.float64) / (1e6 * 60 * 60)
 
 
 def trim_last(batch: Dict[str, torch.Tensor], model_out: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:

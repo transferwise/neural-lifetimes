@@ -1,6 +1,8 @@
 import datetime
 from pathlib import Path
 
+import numpy as np
+
 import pytorch_lightning as pl
 
 from neural_lifetimes import run_model
@@ -8,7 +10,7 @@ from neural_lifetimes.data.datamodules import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
 from neural_lifetimes.utils.data import TargetCreator
 from neural_lifetimes.models.modules import ClassicModel
-from neural_lifetimes.models.nets import CombinedEmbedder
+from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer
 from examples import eventsprofiles_datamodel
 
 
@@ -38,36 +40,35 @@ if __name__ == "__main__":
         track_statistics=True,
     )
 
-    btyd_dataset[:]
-    print(f"Expected Num Transactions per mode: {btyd_dataset.expected_num_transactions_from_priors()}")
-    print(f"Expected p churn per mode: {btyd_dataset.expected_p_churn_from_priors()}")
-    print(f"Expected time interval per mode: {btyd_dataset.expected_time_interval_from_priors()}")
-    print(f"Truncated sequences: {btyd_dataset.truncated_sequences}")
+    # btyd_dataset[:]
+    # print(f"Expected Num Transactions per mode: {btyd_dataset.expected_num_transactions_from_priors()}")
+    # print(f"Expected p churn per mode: {btyd_dataset.expected_p_churn_from_priors()}")
+    # print(f"Expected time interval per mode: {btyd_dataset.expected_time_interval_from_priors()}")
+    # print(f"Truncated sequences: {btyd_dataset.truncated_sequences}")
 
-    btyd_dataset.plot_tracked_statistics().show()
+    # btyd_dataset.plot_tracked_statistics().show()
 
     discrete_values = btyd_dataset.get_discrete_feature_values(
         start_token=START_TOKEN_DISCR,
     )
 
-    emb = CombinedEmbedder(
-        continuous_features=btyd_dataset.continuous_feature_names,
-        category_dict=discrete_values,
-        embed_dim=256,
-        drop_rate=0.5,
-        pre_encoded=False,
+    encoder = FeatureDictionaryEncoder(eventsprofiles_datamodel.cont_feat, discrete_values)
+
+    tokenizer = Tokenizer(
+        continuous_features=eventsprofiles_datamodel.cont_feat,
+        discrete_features=discrete_values,
+        start_token_continuous=np.nan,
+        start_token_discrete=START_TOKEN_DISCR,
+        start_token_other=np.nan,
+        max_item_len=100,
     )
 
-    target_transform = TargetCreator(
-        cols=COLS,
-        emb=emb,
-        max_item_len=100,
-        start_token_discr=START_TOKEN_DISCR,
-        start_token_cont=0,
-    )
+    target_transform = TargetCreator(cols=COLS)
 
     datamodule = SequenceDataModule(
         dataset=btyd_dataset,
+        tokenizer=tokenizer,
+        transform=encoder,
         target_transform=target_transform,
         test_size=0.2,
         batch_points=1024,
@@ -75,12 +76,12 @@ if __name__ == "__main__":
     )
 
     net = ClassicModel(
-        emb,
+        feature_encoder_config=encoder.config_dict(),
         rnn_dim=256,
         drop_rate=0.5,
         bottleneck_dim=32,
         lr=0.001,
-        target_cols=target_transform.cols,
+        target_cols=COLS,
         vae_sample_z=True,
         vae_sampling_scaler=1.0,
         vae_KL_weight=0.01,

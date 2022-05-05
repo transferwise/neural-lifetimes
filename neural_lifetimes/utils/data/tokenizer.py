@@ -9,21 +9,27 @@ import numpy as np
 class Tokenizer:
     continuous_features: List[str]
     discrete_features: List[str]
-    start_token_continuous: Any = 0
-    start_token_discrete: Any = None
+    max_item_len: int
+    start_token_continuous: np.float32
+    start_token_discrete: Any
+    start_token_other: np.float32
 
     def __call__(self, x: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
+
+        # truncate sequence
+        x = {k: v[-(self.max_item_len) :] for k, v in x.items()}
+
+        # add start tokens
         for k, v in x.items():
-            if k == "dt":
-                continue
             if k in self.features:
                 if k in self.discrete_features.keys():
-                    x[k] = np.append([self.start_token_discr], v, dtype=np.int64)
+                    x[k] = np.append([self.start_token_discrete], v)
                 else:
-                    x[k] = np.append([self.start_token_cont], v, dtype=np.float32)
+                    x[k] = np.append([self.start_token_continuous], v)
             else:
-                x[k] = np.append([None], v)
+                x[k] = np.append([self.start_token_other], v)
         return x
 
+    @property
     def features(self):
-        return self.continuous_features + self.discrete_features
+        return self.continuous_features + list(self.discrete_features.keys())
