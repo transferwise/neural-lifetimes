@@ -63,7 +63,7 @@ class TargetCreator(nn.Module):
             Dict[str, Any]: A dictionary of the target transform parameters
         """
         return {
-            "columns": self.cols,
+            "columns": str(self.cols),
             "time_column": self.t_name,
             "max_item_len": self.max_item_len,
             "pre_encode_features": self.pre_encode_features,
