@@ -1,4 +1,4 @@
-from typing import Dict, List, Any, Union
+from typing import Dict, List, Any, Optional, Union
 
 import numpy as np
 import torch
@@ -8,13 +8,21 @@ from .encoder_with_unknown import OrdinalEncoderWithUnknown
 
 class FeatureDictionaryEncoder:
     def __init__(
-        self, continuous_features: List[str], discrete_features: Dict[str, List[Any]], pre_encoded: bool = False
+        self,
+        continuous_features: List[str],
+        discrete_features: Dict[str, np.ndarray],
+        pre_encoded: bool = False,
+        start_token_discrete: Optional[str] = None,
     ) -> None:
         self.continuous_features = continuous_features
         self.discrete_features = discrete_features
         self.pre_encoded = pre_encoded
+        self._start_token_discrete = start_token_discrete
+
         self.enc = {}
         for name, values in discrete_features.items():
+            if start_token_discrete is not None:
+                values = np.concatenate(values, self._start_token_discrete).astype(values.dtype)
             self.enc[name] = OrdinalEncoderWithUnknown()
             self.enc[name].fit(values)
 

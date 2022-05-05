@@ -52,7 +52,6 @@ if __name__ == "__main__":
         start_token=START_TOKEN_DISCR,
     )
 
-    # TODO The encoder requires the start token to be in the discrete dict already. be more explicit about it.
     encoder = FeatureDictionaryEncoder(eventsprofiles_datamodel.cont_feat, discrete_values)
 
     tokenizer = Tokenizer(
