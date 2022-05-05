@@ -264,7 +264,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         metric_values = {}
 
         for name in self.feature_encoder.discrete_features:
-            discr_pred = y_pred[f"next_{name}"].argmax(dim=-1, keepdim=True).detach().cpu()
+            discr_pred = y_pred[f"next_{name}"].argmax(dim=-1, keepdim=True)
             metric_values[name] = self.metrics[f"{split}_metrics"][name](discr_pred.squeeze(), y_true[name])
 
         for name in self.feature_encoder.continuous_features:
