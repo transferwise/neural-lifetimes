@@ -67,12 +67,12 @@ class DistributionMonitor(pl.Callback):
                 break
 
             if "lambda" in batch.keys():
-                x = batch["lambda"][batch["offsets"][1:].detach().cpu().numpy() - 1].astype("float")
+                x = batch["lambda"][batch["offsets"][1:] - 1].detach().cpu().numpy()
                 x = x[~np.isnan(x)]
                 lambdas.append(x)
 
             if "p" in batch.keys():
-                x = batch["p"][batch["offsets"][1:].detach().cpu().numpy() - 1].astype("float")
+                x = batch["p"][batch["offsets"][1:] - 1].detach().cpu().numpy()
                 x = x[~np.isnan(x)]
                 p.append(x)
 

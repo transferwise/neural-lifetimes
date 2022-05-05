@@ -2,6 +2,7 @@ import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Tuple
+import numpy as np
 
 import pytest
 from pytorch_lightning import LightningDataModule, LightningModule
@@ -10,9 +11,8 @@ from pytorch_lightning.loggers import CSVLogger
 from neural_lifetimes import run_model
 from neural_lifetimes.data.datamodules.sequence_datamodule import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
-from neural_lifetimes.utils.data import TargetCreator
 from neural_lifetimes.models.modules import ClassicModel
-from neural_lifetimes.models.nets import CombinedEmbedder
+from neural_lifetimes.utils.data import Tokenizer, FeatureDictionaryEncoder, TargetCreator
 
 from ..test_datasets.datamodels import EventprofilesDataModel
 
@@ -47,25 +47,17 @@ def data_and_model() -> Tuple[SequenceDataModule, ClassicModel]:
         discrete_features=data_model.discr_feat,
     )
 
-    embedder = CombinedEmbedder(
-        continuous_features=dataset.continuous_feature_names,
-        category_dict=dataset.get_discrete_feature_values(start_token=DISCRETE_START_TOKEN),
-        embed_dim=256,
-        drop_rate=0.5,
-        pre_encoded=False,
-    )
+    discr_values = dataset.get_discrete_feature_values("<StartToken>")
 
-    target_transform = TargetCreator(
-        cols=(data_model.target_cols + data_model.cont_feat + data_model.discr_feat),
-        emb=embedder,
-        max_item_len=100,
-        start_token_discr=DISCRETE_START_TOKEN,
-        start_token_cont=0,
-    )
+    transform = FeatureDictionaryEncoder(data_model.cont_feat, discr_values)
+    target_transform = TargetCreator(cols=data_model.target_cols + data_model.cont_feat + data_model.discr_feat)
+    tokenizer = Tokenizer(data_model.cont_feat, discr_values, 100, np.nan, "<StartToken>", np.nan)
 
     datamodule = SequenceDataModule(
         dataset=dataset,
+        transform=transform,
         target_transform=target_transform,
+        tokenizer=tokenizer,
         test_size=0.2,
         batch_points=256,
         min_points=1,
@@ -73,7 +65,7 @@ def data_and_model() -> Tuple[SequenceDataModule, ClassicModel]:
 
     # create model
     model = ClassicModel(
-        embedder,
+        feature_encoder_config=transform.config_dict(),
         rnn_dim=256,
         drop_rate=0.5,
         bottleneck_dim=32,

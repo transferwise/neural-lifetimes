@@ -28,7 +28,7 @@ if __name__ == "__main__":
             GenMode(a=1.5, b=20, r=1, alpha=14),
             GenMode(a=2, b=50, r=2, alpha=6),
         ],
-        num_customers=1000,
+        num_customers=10000,
         mode_ratios=[2.5, 1],  # generate equal number of transactions from each mode
         seq_gen_dynamic=False,
         start_date=datetime.datetime(2019, 1, 1, 0, 0, 0),

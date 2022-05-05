@@ -11,7 +11,7 @@ class Tokenizer:
     discrete_features: List[str]
     max_item_len: int
     start_token_continuous: np.float32
-    start_token_discrete: Any
+    start_token_discrete: str
     start_token_other: np.float32
 
     def __call__(self, x: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
