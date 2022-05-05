@@ -7,7 +7,7 @@ import pytest
 from neural_lifetimes import run_model
 from neural_lifetimes.data.datamodules.sequence_datamodule import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
-from neural_lifetimes.models import TargetCreator
+from neural_lifetimes.utils.data import TargetCreator
 from neural_lifetimes.models.modules import ClassicModel
 from neural_lifetimes.models.nets import CombinedEmbedder
 
