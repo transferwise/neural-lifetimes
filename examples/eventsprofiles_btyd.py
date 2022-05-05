@@ -92,7 +92,7 @@ if __name__ == "__main__":
         net,
         log_dir=LOG_DIR,
         num_epochs=50,
-        val_check_int00erval=20,
+        val_check_interval=20,
         limit_val_batches=20,
         gradient_clipping=0.0000001,
     )
