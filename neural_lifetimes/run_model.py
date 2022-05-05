@@ -7,7 +7,7 @@ from pytorch_lightning.loggers import LightningLoggerBase, TensorBoardLogger
 
 from .data.datamodules.sequence_datamodule import SequenceDataModule
 from .models.modules.classic_model import ClassicModel
-from .utils.callbacks import MonitorChurn, MonitorDistr, MonitorProjection
+from .utils.callbacks import MonitorChurn, DistributionMonitor, MonitorProjection
 
 
 def run_model(
@@ -75,8 +75,9 @@ def run_model(
         logger_kwargs = dict(
             {
                 "save_dir": log_dir,
-                "default_hp_metric": False,
-                "log_graph": True,
+                "default_hp_metric": True,
+                "log_graph": False,
+                "name": "logs",
             },
             **logger_kwargs,
         )
@@ -98,7 +99,7 @@ def run_model(
             save_top_k=3,
             verbose=True,
         ),
-        MonitorDistr(),
+        DistributionMonitor(),
         MonitorProjection(),
         MonitorChurn(),
     ]

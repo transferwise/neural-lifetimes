@@ -11,7 +11,8 @@ from neural_lifetimes.models.modules import ClassicModel
 from neural_lifetimes.models.nets import CombinedEmbedder
 from examples import eventsprofiles_datamodel
 
-LOG_DIR = str(Path(__file__).parent / "logs")
+
+LOG_DIR = str(Path(__file__).parent)
 data_dir = str(Path(__file__).parent.absolute())
 
 START_TOKEN_DISCR = "StartToken"

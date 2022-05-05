@@ -1,5 +1,7 @@
 from .churn_monitor import MonitorChurn
-from .distribution_monitor import MonitorDistr
-from .projection_monitor import MonitorProjection
+from .distribution_monitor import DistributionMonitor
 
-__all__ = [MonitorChurn, MonitorDistr, MonitorProjection]
+from .projection_monitor import MonitorProjection
+from .git import GitInformationLogger
+
+__all__ = [DistributionMonitor, GitInformationLogger, MonitorChurn, MonitorProjection]

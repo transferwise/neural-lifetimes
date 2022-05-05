@@ -44,6 +44,8 @@ class SequenceDataModule(pl.LightningDataModule):
         self.target_transform = target_transform
         self.min_points = min_points
 
+        self.save_hyperparameters(self.build_parameter_dict())
+
         self.train_inds: List[int] = []
         self.predict_inds: List[int] = []
         self.test_inds: List[int] = []
@@ -74,12 +76,31 @@ class SequenceDataModule(pl.LightningDataModule):
         Returns:
             Dict[str, Any]: Parameters of the datamodule
         """
-        return {
+        hparams = {
             "test_size": self.test_size,
             "batch_points": self.batch_points,
             "min_points": self.min_points,
-            **self.target_transform.build_parameter_dict(),
         }
+
+        hparams = {f"datamodule/{k}": v for k, v in hparams.items()}
+        # return {**hparams, **self.dataset.build_parameter_dict(), **self.target_transform.build_parameter_dict()}
+
+        # get target creator parameters
+        # TODO improve documentation on this
+        try:
+            hparams.update(
+                {f"target_transform/{k}": v for k, v in self.target_transform.build_parameter_dict().items()}
+            )
+        except AttributeError:
+            pass
+
+        # get dataset parameters
+        try:
+            hparams.update({f"dataset/{k}": v for k, v in self.dataset.build_parameter_dict().items()})
+        except AttributeError:
+            pass
+
+        return hparams
 
     def _build_dataloader(self, indices: List[int]) -> SequenceLoader:
         """Build a dataloader over the provided index list.

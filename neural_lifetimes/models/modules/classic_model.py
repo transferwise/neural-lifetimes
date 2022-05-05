@@ -14,6 +14,7 @@ from ..nets.encoder_decoder import VariationalEncoderDecoder
 from ..nets.event_model import EventEncoder
 from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, ExponentialHeadNoLoss, NormalHead
 
+from neural_lifetimes.utils.callbacks import GitInformationLogger
 from .configure_optimizers import configure_optimizers
 
 
@@ -68,7 +69,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         )
 
         self.criterion = self.configure_criterion()
-        self.save_hyperparameters(self.build_parameter_dict())
+        # The awkward inclusion of git information is necessary for Tensorboard
+        self.save_hyperparameters({**self.build_parameter_dict(), **GitInformationLogger().data_dict()})
         self.configure_metrics()
 
     def build_parameter_dict(self) -> Dict[str, Any]:
@@ -77,7 +79,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         Returns:
             Dict[str, Any]: Parameters of the ClassicModel instance
         """
-        return {
+        hparams = {
             "rnn_dim": self.rnn_dim,
             "drop_rate": self.drop_rate,
             "bottleneck_dim": self.bottleneck_dim,
@@ -88,6 +90,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
             "vae_KL_weight": self.vae_KL_weight,
             **self.emb.build_parameter_dict(),
         }
+
+        return {f"model/{k}": v for k, v in hparams.items()}
 
     def configure_optimizers(self):
         return configure_optimizers(
@@ -183,7 +187,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         """
         loss, loss_components = self.criterion(y_pred, y_true)
         loss_components = {f"{split}_{name}": loss for name, loss in loss_components.items()}
-        self.log_dict(loss_components)
+        self.log_dict(loss_components, batch_size=y_true["next_dt"].shape[0])
         return loss
 
     def get_and_log_clv(self, output, batch, split):
@@ -267,7 +271,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
 
         metric_values = {f"{split}_metrics/{k}": v for k, v in metric_values.items()}
 
-        self.log_dict(metric_values)
+        self.log_dict(metric_values, batch_size=y_true["next_dt"].shape[0])
         return metric_values
 
     def training_step(self, *args, **kwargs) -> torch.Tensor:

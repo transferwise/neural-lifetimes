@@ -6,7 +6,12 @@ from typing import Iterable, List, Optional
 import numpy as np
 import pytest
 
-from neural_lifetimes.data.datasets.btyd import BTYD, GenMode, NotTrackedError
+from neural_lifetimes.data.datasets.btyd import (
+    BTYD,
+    GenMode,
+    NotTrackedError,
+    expected_num_transactions_from_parameters_and_history,
+)
 from neural_lifetimes.data.datasets.sequence_dataset import SequenceDataset, SliceableDataset
 
 from .datamodels import DataModel, EventprofilesDataModel
@@ -609,3 +614,17 @@ class TestTimeConversions:
         dataset = self._construct_dataset(data_dir, data_model)
         assert isinstance(dataset.time_interval, float)
         assert dataset.time_interval == float(365 + 366)  # does not count end date
+
+
+class TestFormulas:
+    @staticmethod
+    def test_expected_num_transactions_from_parameters_and_history():
+        # expected value for a=2, b=20, r=1, alpha=50, t=180, T=180, tx=29.002, x=2 is 0.6215754775615621
+
+        p, lambda_ = [2 / 22], [1 / 50]
+        time_interval, asof_time = 180, 200
+        num_transactions, last_transaction = [2], [29.002]
+        (res,) = expected_num_transactions_from_parameters_and_history(
+            p, lambda_, time_interval, asof_time, num_transactions, last_transaction
+        )
+        assert math.isclose(res, 0.7568101, rel_tol=1e-4)
