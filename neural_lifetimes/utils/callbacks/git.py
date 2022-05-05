@@ -18,6 +18,14 @@ class GitInformationLogger(pl.Callback):
         self.prefix = prefix
         self.verbose = verbose
 
+        # check whether run started in git repo:
+        out = subprocess.run(["git", "status", "-s"], stdout=subprocess.PIPE)
+        if out.stdout.startswith("fatal: not a git repository"):
+            raise SystemError(
+                "The entrypoint for the script is not inside a git repository. Consider running `git init` "
+                + f"in you shell or remove the {self.__class__.__name__} callback."
+            )
+
     def on_fit_start(self, trainer: pl.Trainer, pl_module: pl.LightningModule) -> None:
         self._log(trainer, pl_module)
         return super().on_fit_start(trainer, pl_module)
@@ -87,12 +95,8 @@ def get_git_commit_date():
 
 
 def get_git_repository_status():
-    status = "unknown"
-    try:
-        status = subprocess.check_output("[[ -n \"$(git status -s)\" ]] && echo 'dirty'", shell=True).strip()
-    except subprocess.CalledProcessError:
-        status = subprocess.check_output("[[ -z $(git status -s) ]] && echo 'clean'", shell=True).strip()
-    return status
+    out = subprocess.run(["git", "status", "-s"], stdout=subprocess.PIPE)
+    return "dirty" if out.stdout else "clean"
 
 
 def get_git_branch():
