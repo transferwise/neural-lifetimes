@@ -118,9 +118,9 @@ class TestRunModel:
             run_mode="none",
             trainer_kwargs={"accumulate_grad_batches": 2, "callbacks": []},
         )
-        assert (
-            len(trainer.callbacks) <= 4
-        )  # progressbar, model summary and model checkpoints are turned on by default. Gradient Accummulation also enables => max 4 callbacks expected
+        assert len(trainer.callbacks) <= 4
+        # progressbar, model summary and model checkpoints are turned on by default.
+        # Gradient Accummulation also enabled => max 4 callbacks expected
         assert trainer.accumulate_grad_batches == 2
 
     def test_custom_logger_class(
