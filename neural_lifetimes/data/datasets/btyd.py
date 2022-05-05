@@ -1,10 +1,11 @@
 import datetime
+import math
 import numbers
 import os
 import pickle
 import random
 from collections import deque
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Union
 from uuid import uuid4
 
 import numpy as np
@@ -586,7 +587,7 @@ class BTYD(SequenceDataset):
             float: Expected number of transactions
         """
         with torch.no_grad():
-            return 1 / p - 1 / p * torch.exp(-lambda_ * p * torch.tensor(self.time_interval))
+            return expected_num_transactions_from_parameters(p, lambda_, self.time_interval)
 
     def expected_p_churn_from_priors(
         self,
@@ -610,12 +611,7 @@ class BTYD(SequenceDataset):
         else:
             as_, bs = a, b
 
-        e_per_mode = []
-
-        for a, b in zip(as_, bs):
-            assert a > 0 and b > 0, "Parameters must have positive values."
-            e_per_mode.append(a / (a + b))
-        return e_per_mode
+        return expected_p_churn_from_priors(as_, bs)
 
     def expected_time_interval_from_priors(
         self,
@@ -639,12 +635,7 @@ class BTYD(SequenceDataset):
         else:
             rs, alphas = r, alpha
 
-        e_per_mode = []
-
-        for r, alpha in zip(rs, alphas):
-            assert r > 0 and alpha > 0, "Parameters must have positive values."
-            e_per_mode.append(alpha / r)
-        return e_per_mode
+        return expected_time_interval_from_priors(rs, alphas)
 
     def expected_num_transactions_from_priors(
         self,
@@ -688,16 +679,7 @@ class BTYD(SequenceDataset):
             as_, bs = a, b
             rs, alphas = r, alpha
 
-        e_per_mode = []
-        eps = 0.00001
-        for a, b, r, alpha, t_i in zip(as_, bs, rs, alphas, time_interval):
-            z1 = (a + b - 1) / (a - 1 + eps)
-            z2 = (alpha / (alpha + t_i)) ** r
-            z3 = hyp2f1(r, b, a + b - 1, t_i / (alpha + t_i))
-            # hyp2f1(r,b;a+b-1;t/(t+alpha))
-            z4 = 1 - z2 * z3
-            e_per_mode.append(z1 * z4)
-        return e_per_mode
+        return expected_num_transactions_from_priors(as_, bs, rs, alphas, time_interval)
 
     def expected_num_transactions_from_priors_and_history(
         self,
@@ -764,19 +746,9 @@ class BTYD(SequenceDataset):
             t = time_interval
             T = asof_time
 
-        e_per_customer = []
-        eps = 0.00001
-        for a, b, r, alpha, x, tx in zip(a_list, b_list, r_list, alpha_list, num_transactions, last_transaction):
-            z1 = (a + b + x - 1) / (a - 1 + eps)
-            z2 = ((alpha + T) / (alpha + T + t)) ** (r + x)
-            z3 = hyp2f1(r + x, b + x, a + b + x - 1, t / (alpha + T + t + eps))  # noqa: E226
-            z4 = 1 - z2 * z3
-            z5 = z1 * z4
-            z6 = a / (b + x - 1 + eps)  # noqa: E226
-            z7 = ((alpha + T) / (alpha + tx + eps)) ** (r + x)  # noqa: E226
-            z8 = 1 + z6 * z7 if x > 0 else 1
-            e_per_customer.append(z5 / z8)
-        return e_per_customer
+        return expected_num_transactions_from_priors_and_history(
+            a_list, b_list, r_list, alpha_list, t, T, num_transactions, last_transaction
+        )
 
     def _not_tracked_warning(self, var) -> None:
         raise NotTrackedError(f"`{var}` not tracked. Set `track_statistics=True`")
@@ -975,3 +947,215 @@ PRESET_MODES = {
     "forex": GenMode(a=5, b=2, r=5, alpha=15)
     # + Other Preset Modes that we write up
 }
+
+
+def expected_num_transactions_from_parameters(p: float, lambda_: float, time_interval: float) -> float:
+    """Compute the expected number of transactions for a customer with parameters `p` and `lambda`.
+
+    Args:
+        p (float): The churn probability
+        lambda_ (float): The rate parameter
+
+    Returns:
+        float: Expected number of transactions
+    """
+    with torch.no_grad():
+        return 1 / p - 1 / p * torch.exp(-lambda_ * p * torch.tensor(time_interval))
+
+
+def expected_p_churn_from_priors(a: Union[List[float], float], b: Union[List[float], float]) -> List[float]:
+    """Compute the expected churn probablity from priors per mode.
+
+    Args:
+        a (Union[float, List[float]]): Parameter of the Beta distribution.
+        b (Union[float, List[float]]): Parameter of the Beta distribution.
+    Returns:
+        List[float]: List containing expected churn probabilities.
+    """
+    assert type(a) == type(b)
+    if isinstance(a, Iterable):
+        a_list, b_list = a, b
+    else:
+        a_list, b_list = [a], [b]
+    assert len(a) == len(b)
+
+    e_per_mode = []
+    for a, b in zip(a_list, b_list):
+        assert a > 0 and b > 0, "Parameters must have positive values."
+        e_per_mode.append(a / (a + b))
+    return e_per_mode
+
+
+def expected_time_interval_from_priors(r: Union[float, List[float]], alpha: Union[float, List[float]]) -> List[float]:
+    """Compute the expected time between transactions from priors per mode.
+
+    Args:
+        a (Optional[Union[float, List[float]]], optional): Parameter of the Gamma distribution.
+        b (Optional[Union[float, List[float]]], optional): Parameter of the Gamma distribution.
+    Returns:
+        List[float]: List containing expected time intervals.
+    """
+    assert type(r) == type(alpha)
+    if isinstance(r, Iterable):
+        rs, alphas = r, alpha
+    else:
+        rs, alphas = [r], [alpha]
+
+    e_per_mode = []
+
+    for r, alpha in zip(rs, alphas):
+        assert r > 0 and alpha > 0, "Parameters must have positive values."
+        e_per_mode.append(alpha / r)
+    return e_per_mode
+
+
+def expected_num_transactions_from_priors(
+    a: List[float], b: List[float], r: List[float], alpha: List[float], time_interval: List[float]
+) -> List[float]:
+    """
+    Compute the expected number of transactions per customer from priors per mode.
+
+    If parameters are provided, these will be used to to calculated the expected value.
+
+    Otherwise, the internal priors are used.
+
+    See Fader et al. (http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf) for details.
+
+    Args:
+        a (List[float]): Parameter of the Beta distribution.
+        b (List[float]): Parameter of the Beta distribution.
+        r (List[float]): Parameter of the Gamma distribution.
+        alpha (List[float]): Parameter of the Gamma distribution.
+        time_interval (List[float]): The time interval for the expected number of transactions.
+            These determine the integration bounds. Must be finite.
+
+    Returns:
+        List[float]: Expected customer lifetime values.
+    """
+
+    as_, bs = a, b
+    rs, alphas = r, alpha
+
+    e_per_mode = []
+    eps = 0.00001
+    for a, b, r, alpha, t_i in zip(as_, bs, rs, alphas, time_interval):
+        z1 = (a + b - 1) / (a - 1 + eps)
+        z2 = (alpha / (alpha + t_i)) ** r
+        z3 = hyp2f1(r, b, a + b - 1, t_i / (alpha + t_i))
+        # hyp2f1(r,b;a+b-1;t/(t+alpha))
+        z4 = 1 - z2 * z3
+        e_per_mode.append(z1 * z4)
+    return e_per_mode
+
+
+def expected_num_transactions_from_priors_and_history(
+    a: List[float],
+    b: List[float],
+    r: List[float],
+    alpha: List[float],
+    time_interval: float,
+    asof_time: float,
+    num_transactions: List[float],
+    last_transaction: List[float],
+) -> List[float]:
+    """Compute the expected number of transactions per customer from priors and past transactions per customer.
+
+    If parameters are provided, these will be used to to calculated the expected value. Otherwise, the internal
+    data are used.
+
+    See Fader et al. (http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf) Eq 10 for details.
+
+    Args:
+        a (List[float]): Parameter of the Beta distribution.
+        b (List[float]): Parameter of the Beta distribution.
+        r (List[float]): Parameter of the Gamma
+        alpha (List[float]): Parameter of the Gamma
+        time_interval (float): The time interval for the expected number of transactions.
+            These determine the integration bounds. Must be finite.
+        asof_time (float): The time from which the predictions should be done.
+        num_transactions (List[float]): The number of transactions observed per customer.
+        last_transaction (List[float]): The date (as float) of the last transaction per customer.
+
+    Returns:
+        List[float]: Expected number of transactions per customer.
+    """
+    assert len(a) == len(b) == len(r) == len(alpha) == len(num_transactions) == len(last_transaction)
+    a_list, b_list, r_list, alpha_list = a, b, r, alpha
+
+    t = time_interval
+    T = asof_time
+
+    e_per_customer = []
+    eps = 0.00001
+    for a, b, r, alpha, x, tx in zip(a_list, b_list, r_list, alpha_list, num_transactions, last_transaction):
+        z1 = (a + b + x - 1) / (a - 1 + eps)
+        z2 = ((alpha + T) / (alpha + T + t)) ** (r + x)
+        z3 = hyp2f1(r + x, b + x, a + b + x - 1, t / (alpha + T + t + eps))  # noqa: E226
+        z4 = 1 - z2 * z3
+        z5 = z1 * z4
+        z6 = a / (b + x - 1 + eps)  # noqa: E226
+        z7 = ((alpha + T) / (alpha + tx + eps)) ** (r + x)  # noqa: E226
+        z8 = 1 + z6 * z7 if x > 0 else 1
+        e_per_customer.append(z5 / z8)
+    return e_per_customer
+
+
+def expected_num_transactions_from_parameters_and_history(
+    p: List[float],
+    lambda_: List[float],
+    time_interval: float,
+    asof_time: float,
+    num_transactions: List[float],
+    last_transaction: List[float],
+) -> List[float]:
+    """Computes the expected number of future transactions given parameters and observations.
+
+    Args:
+        p (List[float]): The churn parameter ``p``.
+        lambda_ (List[float]): The time interval parameter ``lambda_``.
+        time_interval (float): The time interval of the observations.
+        asof_time (float): The current time.
+        num_transactions (List[float]): The observed number of transactions.
+        last_transaction (List[float]): The time of the last observed transaction.
+
+    Returns:
+        List[float]: The expected number of future transactions, i.e. the conditional expected CLV.
+    """
+    assert len(p) == len(lambda_) == len(num_transactions) == len(last_transaction)
+    p_list, lambda_list = p, lambda_
+
+    t = time_interval
+    T = asof_time
+
+    e_per_customer = []
+
+    eps = 1e-10
+    for p, lambda_, x, tx in zip(p_list, lambda_list, num_transactions, last_transaction):
+        assert p > 0 and lambda_ > 0, "Parameters lambda and p must be strictly positive."
+        z1 = 1 / p * (1 - p) ** x * lambda_**x
+        z2 = math.exp(-lambda_ * T)
+        z3 = math.exp(-lambda_ * (T + p * t))
+        z4 = z1 * (z2 - z3)
+        z5 = marginal_parameter_likelihood(p, lambda_, x, tx, T) + eps
+        e_per_customer.append(z4 / z5)
+    return e_per_customer
+
+
+def marginal_parameter_likelihood(p: float, lambda_: float, x: int, tx: float, T: float) -> float:
+    """Computes the marginal likelihood of the parameters lambda and p, given the transaction history.
+    See http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf equation (3).
+
+    Args:
+        p (float): The churn parameter ``p``.
+        lambda_ (float): The time interval parameter ``lambda``.
+        x (int): The number of events observed.
+        tx (float): The time of the last transaction observed.
+        T (float): The current time (``asof_time``).
+
+    Returns:
+        float: The likelihood
+    """
+    z1 = (1 - p) ** x * lambda_**x * math.exp(-lambda_ * T)
+    delta = int(x > 0)
+    z2 = delta * p * (1 - p) ** (x - 1) * lambda_**x * math.exp(-lambda_ * tx)
+    return z1 + z2
