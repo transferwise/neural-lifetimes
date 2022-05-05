@@ -81,7 +81,11 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
 
         self.criterion = self.configure_criterion()
         # The awkward inclusion of git information is necessary for Tensorboard
-        self.save_hyperparameters({**self.build_parameter_dict(), })  # **GitInformationLogger().data_dict()})
+        self.save_hyperparameters(
+            {
+                **self.build_parameter_dict(),
+            }
+        )  # **GitInformationLogger().data_dict()})
         self.configure_metrics()
 
     def build_parameter_dict(self) -> Dict[str, Any]:
@@ -171,8 +175,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
             nn.ModuleDict[str, torchmetrics.Metric]: dictionary with metric instances
         """
         # add MAE for continuous features
-        metrics_cont_feat = {n: MeanAbsoluteError() for n in self.emb.continuous_features}
-        metrics_discr_feat = {n: Accuracy() for n in self.emb.enc}
+        metrics_cont_feat = {n: MeanAbsoluteError() for n in self.feature_encoder.continuous_features}
+        metrics_discr_feat = {n: Accuracy() for n in self.feature_encoder.discrete_features}
 
         metrics = MetricCollection({**metrics_cont_feat, **metrics_discr_feat})
 
@@ -259,13 +263,11 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         """
         metric_values = {}
 
-        # TODO uncomment
-        # for name, encoder in self.emb.enc.items():
-        #     discr_pred = y_pred[f"next_{name}"].argmax(dim=-1, keepdim=True).detach().cpu()
-        #     discr_true = torch.tensor(encoder.transform(y_true[name]))
-        #     metric_values[name] = self.metrics[f"{split}_metrics"][name](discr_pred, discr_true)
+        for name in self.feature_encoder.discrete_features:
+            discr_pred = y_pred[f"next_{name}"].argmax(dim=-1, keepdim=True).detach().cpu()
+            metric_values[name] = self.metrics[f"{split}_metrics"][name](discr_pred.squeeze(), y_true[name])
 
-        for name in self.emb.continuous_features:
+        for name in self.feature_encoder.continuous_features:
             cont_pred = y_pred[f"next_{name}"][:, 0]
             metric_values[name] = self.metrics[f"{split}_metrics"][name](cont_pred, y_true[name])
 
