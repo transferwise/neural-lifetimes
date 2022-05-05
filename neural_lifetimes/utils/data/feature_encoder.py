@@ -1,4 +1,4 @@
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Union
 
 import numpy as np
 import torch
@@ -39,7 +39,7 @@ class FeatureDictionaryEncoder:
         return encoded
 
     # decode single item
-    def decode(self, name: str, x: np.ndarray) -> torch.Tensor:
+    def decode(self, name: str, x: Union[np.ndarray, torch.Tensor]) -> np.ndarray:
         if self.pre_encoded or name not in self.discrete_features:
             decoded = x
         else:
@@ -57,7 +57,7 @@ class FeatureDictionaryEncoder:
     def features(self):
         return list(self.discrete_features.keys()) + self.continuous_features
 
-    def config_dict(self):
+    def config_dict(self) -> Dict[str, Any]:
         return {
             "continuous_features": self.continuous_features,
             "discrete_features": self.discrete_features,

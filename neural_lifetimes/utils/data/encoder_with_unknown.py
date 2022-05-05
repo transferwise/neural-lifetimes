@@ -1,6 +1,8 @@
+from typing import Union
 import numpy as np
 from sklearn.preprocessing import OrdinalEncoder
 
+import torch
 
 # TODO What does this function actually do? it doesn't normalize the data
 def normalize(x):
@@ -37,7 +39,7 @@ class OrdinalEncoderWithUnknown(OrdinalEncoder):
     """An ordinal encoder that encodes unknown values as 0."""
 
     # uses 0 to encode unknown values
-    def transform(self, x):
+    def transform(self, x: np.ndarray) -> np.ndarray:
         x = normalize(x)
         out = np.zeros(x.shape).astype(int)
         # The below was the old implementation
@@ -48,9 +50,22 @@ class OrdinalEncoderWithUnknown(OrdinalEncoder):
             out[known] = super(OrdinalEncoderWithUnknown, self).transform(np.array(x)[known]) + 1
         return out
 
-    def fit(self, x):
+    def fit(self, x: np.ndarray) -> None:
         x = normalize(x)
         return super().fit(x)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.categories_[0]) + 1
+
+    def inverse_transform(self, x: Union[np.ndarray, torch.Tensor]) -> np.ndarray:
+        if isinstance(x, torch.Tensor):
+            x = x.detach().cpu().numpy()
+        out = np.full_like(x, "<Unknown>", dtype=self.categories_[0].dtype)
+        known = x > 0
+        if any(known):
+            out[known] = (
+                super(OrdinalEncoderWithUnknown, self)
+                .inverse_transform(np.expand_dims(x[known], axis=-1) - 1)
+                .reshape(-1)
+            )
+        return out
