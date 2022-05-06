@@ -99,7 +99,7 @@ def run_model(
             verbose=True,
         ),
         DistributionMonitor(),
-        # MonitorProjection(),
+        MonitorProjection(),
         MonitorChurn(),
     ]
 

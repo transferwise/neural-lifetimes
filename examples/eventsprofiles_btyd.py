@@ -8,9 +8,8 @@ import pytorch_lightning as pl
 from neural_lifetimes import run_model
 from neural_lifetimes.data.datamodules import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
-from neural_lifetimes.utils.data import TargetCreator
 from neural_lifetimes.models.modules import ClassicModel
-from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer
+from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer, TargetCreator
 from examples import eventsprofiles_datamodel
 
 
@@ -28,7 +27,7 @@ if __name__ == "__main__":
             GenMode(a=1.5, b=20, r=1, alpha=14),
             GenMode(a=2, b=50, r=2, alpha=6),
         ],
-        num_customers=10000,
+        num_customers=1000,
         mode_ratios=[2.5, 1],  # generate equal number of transactions from each mode
         seq_gen_dynamic=False,
         start_date=datetime.datetime(2019, 1, 1, 0, 0, 0),
@@ -40,13 +39,13 @@ if __name__ == "__main__":
         track_statistics=True,
     )
 
-    # btyd_dataset[:]
-    # print(f"Expected Num Transactions per mode: {btyd_dataset.expected_num_transactions_from_priors()}")
-    # print(f"Expected p churn per mode: {btyd_dataset.expected_p_churn_from_priors()}")
-    # print(f"Expected time interval per mode: {btyd_dataset.expected_time_interval_from_priors()}")
-    # print(f"Truncated sequences: {btyd_dataset.truncated_sequences}")
+    btyd_dataset[:]
+    print(f"Expected Num Transactions per mode: {btyd_dataset.expected_num_transactions_from_priors()}")
+    print(f"Expected p churn per mode: {btyd_dataset.expected_p_churn_from_priors()}")
+    print(f"Expected time interval per mode: {btyd_dataset.expected_time_interval_from_priors()}")
+    print(f"Truncated sequences: {btyd_dataset.truncated_sequences}")
 
-    # btyd_dataset.plot_tracked_statistics().show()
+    btyd_dataset.plot_tracked_statistics().show()
 
     discrete_values = btyd_dataset.get_discrete_feature_values(
         start_token=START_TOKEN_DISCR,
@@ -94,6 +93,5 @@ if __name__ == "__main__":
         num_epochs=50,
         val_check_interval=20,
         limit_val_batches=20,
-        # gradient_clipping=0.1,
-        trainer_kwargs={"accelerator": "gpu", "devices": 1},
+        gradient_clipping=0.0000001,
     )

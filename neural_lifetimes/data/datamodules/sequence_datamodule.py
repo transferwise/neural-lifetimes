@@ -3,11 +3,9 @@ from typing import Any, Dict, List
 import pytorch_lightning as pl
 from sklearn.model_selection import train_test_split
 
-from neural_lifetimes.utils.data import TargetCreator
-
 from ..dataloaders.sequence_loader import SequenceLoader
 from ..datasets.sequence_dataset import SequenceDataset, SequenceSubset
-from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer
+from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer, TargetCreator
 
 
 class SequenceDataModule(pl.LightningDataModule):

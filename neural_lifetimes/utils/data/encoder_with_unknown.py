@@ -4,6 +4,7 @@ from sklearn.preprocessing import OrdinalEncoder
 
 import torch
 
+
 # TODO What does this function actually do? it doesn't normalize the data
 def normalize(x):
     """
@@ -19,17 +20,14 @@ def normalize(x):
         Since we are using np.array, it may lead to errors with GPUs.
     """
     try:
-        # wrap the import into try-except so the code works even when no Pytorch installed
-        from torch import Tensor
-
-        if isinstance(x, Tensor):
+        if isinstance(x, torch.Tensor):
             x = x.detach().cpu().numpy()
     except Exception:
         pass
 
-    x = np.array(x)  # leads to error with GPU
+    x = np.array(x)  # TODO Why copy the data?
     if len(x.shape) == 1:
-        x = x[:, None]
+        x = x[:, None]  # TODO is this the same as np.expand_dims() ?
 
     assert x.shape[1] == 1  # only handle one encoding at a time
     return x

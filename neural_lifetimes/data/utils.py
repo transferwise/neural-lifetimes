@@ -8,7 +8,7 @@ import torch
 from pandas.api.types import is_float_dtype, is_integer_dtype, is_numeric_dtype
 
 
-def torchify(x: Dict[str, np.ndarray]) -> Dict[str, torch.Tensor]:
+def torchify(x: Dict[str, np.ndarray]) -> Dict[str, Union[np.ndarray, torch.Tensor]]:
     out = {}
     for key, val in x.items():
         try:
@@ -19,6 +19,7 @@ def torchify(x: Dict[str, np.ndarray]) -> Dict[str, torch.Tensor]:
 
 
 # TODO: remove if no longer needed
+# torchify: copies dtype and references data. this function: forces dtype and copies data.
 def torchify_old(x: Dict[str, np.ndarray]) -> Dict[str, Union[np.ndarray, torch.Tensor]]:
     """
     Cast all numerical elements to tensors, forcing float64 to float32.
@@ -40,6 +41,7 @@ def torchify_old(x: Dict[str, np.ndarray]) -> Dict[str, Union[np.ndarray, torch.
     return out
 
 
+# TODO: remove if no longer needed
 def normalize_types(x: np.dtype):
     """
     Find the type to be cast to for a given dtype: np.float32 for floats, np.int64 for ints.
@@ -57,6 +59,7 @@ def normalize_types(x: np.dtype):
         return x
 
 
+# TODO: remove if no longer needed
 def remove_isolated_transactions(df: pd.DataFrame, uid_name: str):
     """
     Delete users which only have 1 transaction.
@@ -90,6 +93,7 @@ def detorch(x: Union[torch.Tensor, np.ndarray]) -> np.ndarray:
         return x
 
 
+# TODO: remove if no longer needed
 def batch_to_dataframe(x: Dict[str, Union[torch.Tensor, np.ndarray]]) -> pd.DataFrame:
     """
     Convert a dictionary of tensors or numpy arrays to a pandas dataframe. Drops the "offsets" column.

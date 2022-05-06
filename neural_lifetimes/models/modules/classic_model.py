@@ -81,11 +81,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
 
         self.criterion = self.configure_criterion()
         # The awkward inclusion of git information is necessary for Tensorboard
-        self.save_hyperparameters(
-            {
-                **self.build_parameter_dict(),
-            }
-        )  # **GitInformationLogger().data_dict()})
+        self.save_hyperparameters({**self.build_parameter_dict(), **GitInformationLogger().data_dict()})
         self.configure_metrics()
 
     def build_parameter_dict(self) -> Dict[str, Any]:
