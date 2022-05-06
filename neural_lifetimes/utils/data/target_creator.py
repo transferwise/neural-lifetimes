@@ -1,8 +1,6 @@
 from typing import Any, Dict, List, Sequence, Union
 
 import numpy as np
-import torch
-from torch import nn
 
 
 class DummyTransform:
@@ -13,9 +11,9 @@ class DummyTransform:
         return input_len
 
 
-class TargetCreator(nn.Module):
+class TargetCreator:
     """
-    A class to create targets for a sequence of events. Is an instance of nn.Module.
+    A class to create targets for a sequence of events.
 
     Args:
         cols (List[str]): The list of columns to use as features.
@@ -31,7 +29,7 @@ class TargetCreator(nn.Module):
         super().__init__()
         self.cols = cols
 
-    def build_parameter_dict(self) -> Dict[str, Any]:
+    def build_parameter_dict(self) -> Dict[str, str]:
         """Return a dictionary of parameters.
 
         Returns:
@@ -41,11 +39,15 @@ class TargetCreator(nn.Module):
             "columns": str(self.cols),
         }
 
-    def __call__(
-        self,
-        x: Dict[str, np.ndarray],
-    ) -> Dict[str, Union[np.ndarray, Sequence[str]]]:
+    def __call__(self, x: Dict[str, np.ndarray]) -> Dict[str, Union[np.ndarray, Sequence[str]]]:
+        """Appends the data dict ``x`` with right-shifted copies for all keys specified in ``cols`` and ``dt``.
 
+        Args:
+            x (Dict[str, np.ndarray]): data dictionary.
+
+        Returns:
+            Dict[str, Union[np.ndarray, Sequence[str]]]: The appended data dictionary.
+        """
         for c in self.cols + ["dt"]:
             x[f"next_{c}"] = x[c][1:]
             assert len(x[f"next_{c}"]) == len(x["t"]) - 1
