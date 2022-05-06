@@ -20,7 +20,7 @@ class GitInformationLogger(pl.Callback):
 
         # check whether run started in git repo:
         out = subprocess.run(["git", "status", "-s"], stdout=subprocess.PIPE)
-        if out.stdout.startswith("fatal: not a git repository"):
+        if out.stdout.startswith(b"fatal: not a git repository"):
             raise SystemError(
                 "The entrypoint for the script is not inside a git repository. Consider running `git init` "
                 + f"in you shell or remove the {self.__class__.__name__} callback."
@@ -100,7 +100,7 @@ def get_git_repository_status():
 
 
 def get_git_branch():
-    return subprocess.check_output(["git", "branch", "--show-current"]).strip()
+    return subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip()
 
 
 def get_hostname():
