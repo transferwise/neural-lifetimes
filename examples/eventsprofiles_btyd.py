@@ -70,7 +70,7 @@ if __name__ == "__main__":
         transform=encoder,
         target_transform=target_transform,
         test_size=0.2,
-        batch_points=4096,
+        batch_points=1024,
         min_points=1,
     )
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         net,
         log_dir=LOG_DIR,
         num_epochs=50,
-        val_check_interval=20,
+        val_check_interval=10,
         limit_val_batches=20,
         gradient_clipping=0.0000001,
     )
