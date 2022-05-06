@@ -40,6 +40,7 @@ class CombinedEmbedder(nn.Module):
         self.enc = {}
         self.emb = nn.ModuleDict()
         for name in self.discrete_features:
+            # self.encoder.categories_[0].__len__() + 1
             self.emb[name] = nn.Embedding(self.encoder.feature_size(name), embed_dim)
 
         self.output_shape = [None, embed_dim]
