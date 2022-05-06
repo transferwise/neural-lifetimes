@@ -22,12 +22,17 @@ class FeatureDictionaryEncoder:
         self.enc = {}
         for name, values in discrete_features.items():
             if start_token_discrete is not None:
-                values = np.concatenate(values, self._start_token_discrete).astype(values.dtype)
+                values = np.concatenate(([self._start_token_discrete], values)).astype(values.dtype)
             self.enc[name] = OrdinalEncoderWithUnknown()
             self.enc[name].fit(values)
 
     def feature_size(self, name: str) -> int:
-        return len(self.enc[name])
+        if name in self.discrete_features:
+            return len(self.enc[name])
+        elif name in self.continuous_features:
+            return 1
+        else:
+            raise KeyError(f"'{name}' unknown.")
 
     # encode single item
     def encode(self, name: str, x: np.ndarray) -> np.ndarray:
@@ -63,7 +68,7 @@ class FeatureDictionaryEncoder:
 
     @property
     def features(self):
-        return list(self.discrete_features.keys()) + self.continuous_features
+        return self.continuous_features + list(self.discrete_features.keys())
 
     def config_dict(self) -> Dict[str, Any]:
         return {
