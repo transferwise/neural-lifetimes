@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Dict, Union
 import numpy as np
 from sklearn.preprocessing import OrdinalEncoder
 
@@ -39,6 +39,10 @@ class OrdinalEncoderWithUnknown(OrdinalEncoder):
 
     The OrdinalEncoderWithUnknown works with unknown values. If an unknown value is passed into ``transform()``,
     it will be encoded as ``0``. The ``inverse_transform`` maps ``0`` to ``<Unknown>``.
+    The encoder acts as a surjective mapping.
+
+    Attributes:
+        levels (np.ndarray): The raw levels that can be decoded to. Includes the ``<Unknown>`` token.
 
     Basis:
         ``sklearn.preprocessing.OrdinalEncoder``
@@ -104,3 +108,15 @@ class OrdinalEncoderWithUnknown(OrdinalEncoder):
                 .reshape(-1)
             )
         return out
+
+    @property
+    def levels(self):
+        return np.concatenate((np.array(["<Unknown>"]).astype(self.categories_[0].dtype), self.categories_[0]))
+
+    def to_dict(self) -> Dict[str, int]:
+        """Converts the encoder into a dictionary structure mapping raw to encoded values. Includes unknown token.
+
+        Returns:
+            Dict[str, int]: Dictionary of form ``raw: encoded``.
+        """
+        return {level: self.transform(np.array([level])).item() for level in self.levels}
