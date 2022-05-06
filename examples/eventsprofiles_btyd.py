@@ -92,8 +92,8 @@ if __name__ == "__main__":
         net,
         log_dir=LOG_DIR,
         num_epochs=50,
-        val_check_interval=2,
+        val_check_interval=20,
         limit_val_batches=20,
-        gradient_clipping=0.1,
+        # gradient_clipping=0.1,
         trainer_kwargs={"accelerator": "gpu", "devices": 1},
     )

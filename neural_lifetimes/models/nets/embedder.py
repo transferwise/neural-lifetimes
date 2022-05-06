@@ -40,7 +40,6 @@ class CombinedEmbedder(nn.Module):
         self.enc = {}
         self.emb = nn.ModuleDict()
         for name in self.discrete_features:
-            # self.encoder.categories_[0].__len__() + 1
             self.emb[name] = nn.Embedding(self.encoder.feature_size(name), embed_dim)
 
         self.output_shape = [None, embed_dim]
@@ -73,5 +72,8 @@ class CombinedEmbedder(nn.Module):
         # batch x embed_dim
         out = F.dropout(F.relu(self.c2(out)), self.drop_rate, self.training)
         assert not torch.isnan(out.sum())
+
+        for name in self.discrete_features:
+            out += F.dropout(self.emb[name](x[name]))
 
         return out
