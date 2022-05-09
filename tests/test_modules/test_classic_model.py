@@ -2,14 +2,15 @@ import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+import numpy as np
+
 import pytest
 
 from neural_lifetimes import run_model
 from neural_lifetimes.data.datamodules.sequence_datamodule import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
-from neural_lifetimes.models import TargetCreator
 from neural_lifetimes.models.modules import ClassicModel
-from neural_lifetimes.models.nets import CombinedEmbedder
+from neural_lifetimes.utils.data import FeatureDictionaryEncoder, TargetCreator, Tokenizer
 
 from ..test_datasets.datamodels import EventprofilesDataModel
 
@@ -46,24 +47,17 @@ class TestClassicModel:
             discrete_features=data_model.discr_feat,
         )
 
-        embedder = CombinedEmbedder(
-            continuous_features=dataset.continuous_feature_names,
-            category_dict=dataset.get_discrete_feature_values(start_token=DISCRETE_START_TOKEN),
-            embed_dim=256,
-            drop_rate=0.5,
-            pre_encoded=False,
-        )
+        discr_values = dataset.get_discrete_feature_values("<StartToken>")
 
-        target_transform = TargetCreator(
-            cols=(data_model.target_cols + data_model.cont_feat + data_model.discr_feat),
-            emb=embedder,
-            max_item_len=100,
-            start_token_discr=DISCRETE_START_TOKEN,
-            start_token_cont=0,
-        )
+        tokenizer = Tokenizer(data_model.cont_feat, discr_values, 100, np.nan, "<StartToken>", np.nan)
+        transform = FeatureDictionaryEncoder(data_model.cont_feat, discr_values)
+
+        target_transform = TargetCreator(cols=(data_model.target_cols + data_model.cont_feat + data_model.discr_feat))
 
         datamodule = SequenceDataModule(
             dataset=dataset,
+            tokenizer=tokenizer,
+            transform=transform,
             target_transform=target_transform,
             test_size=0.2,
             batch_points=256,
@@ -72,7 +66,7 @@ class TestClassicModel:
 
         # create model
         model = ClassicModel(
-            embedder,
+            feature_encoder_config=transform.config_dict(),
             rnn_dim=256,
             drop_rate=0.5,
             bottleneck_dim=32,

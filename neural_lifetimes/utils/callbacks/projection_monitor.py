@@ -22,7 +22,7 @@ class MonitorProjection(pl.Callback):
                 emb_lastevent = embedded[batch_offsets]
                 encoded_data.append(emb_lastevent)
                 if "btyd_mode" in mini_batch.keys():
-                    mode = torch.tensor(mini_batch["btyd_mode"][batch_offsets.cpu().numpy()].astype(int))
+                    mode = mini_batch["btyd_mode"][batch_offsets].to(torch.uint8)
                     labels.append(mode)
 
                 if len(encoded_data) > self.max_batches:

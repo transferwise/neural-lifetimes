@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from neural_lifetimes.utils.encoder_with_unknown import OrdinalEncoderWithUnknown
+from neural_lifetimes.utils.data import FeatureDictionaryEncoder
 
 
 class CombinedEmbedder(nn.Module):
@@ -22,16 +22,14 @@ class CombinedEmbedder(nn.Module):
 
     def __init__(
         self,
-        continuous_features: List[str],
-        category_dict: Dict[str, List],
+        feature_encoder: FeatureDictionaryEncoder,
         embed_dim: int,
         drop_rate: float = 0.0,
-        pre_encoded: bool = False,
     ):
         super().__init__()
         self.embed_dim = embed_dim
         self.drop_rate = drop_rate
-        self.continuous_features = continuous_features
+        self.encoder = feature_encoder
 
         # create the continuous feature encoding, with one hidden layer for good measure
         num_cf = len(self.continuous_features)
@@ -41,14 +39,18 @@ class CombinedEmbedder(nn.Module):
         # create the discrete feature encoding
         self.enc = {}
         self.emb = nn.ModuleDict()
-        for name, values in category_dict.items():
-            self.enc[name] = OrdinalEncoderWithUnknown()
-            self.enc[name].fit(values)
-            # need to remember the Unknown value
-            self.emb[name] = nn.Embedding(len(self.enc[name].categories_[0]) + 1, embed_dim)
+        for name in self.discrete_features:
+            self.emb[name] = nn.Embedding(self.encoder.feature_size(name), embed_dim)
 
         self.output_shape = [None, embed_dim]
-        self.pre_encoded = pre_encoded
+
+    @property
+    def continuous_features(self):
+        return self.encoder.continuous_features
+
+    @property
+    def discrete_features(self):
+        return self.encoder.discrete_features
 
     def build_parameter_dict(self) -> Dict[str, Any]:
         """Return a dict of parameters.
@@ -59,19 +61,7 @@ class CombinedEmbedder(nn.Module):
         return {
             "embed_dim": self.embed_dim,
             "embedder_drop_rate": self.drop_rate,
-            "pre_encoded_features": self.pre_encoded,
         }
-
-    def encode(self, name: str, x: np.ndarray) -> torch.Tensor:
-        device = self.emb[name].weight.device
-        if self.pre_encoded:
-            encoded = x
-        else:
-            encoded = self.enc[name].transform(x).reshape(-1)
-
-        if not isinstance(encoded, torch.Tensor):
-            encoded = torch.tensor(encoded, dtype=torch.long, device=device)
-        return encoded
 
     def forward(self, x: Dict[str, torch.Tensor]):
         # batch x num_cont_features
@@ -83,10 +73,7 @@ class CombinedEmbedder(nn.Module):
         out = F.dropout(F.relu(self.c2(out)), self.drop_rate, self.training)
         assert not torch.isnan(out.sum())
 
-        for name, enc in self.enc.items():
-            encoded = self.encode(name, x[name])
-            assert not torch.isnan(encoded.sum())
-            out += F.dropout(self.emb[name](encoded))
-            assert not torch.isnan(out.sum())
+        for name in self.discrete_features:
+            out += F.dropout(self.emb[name](x[name]))
 
         return out

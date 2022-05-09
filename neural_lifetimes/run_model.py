@@ -88,7 +88,6 @@ def run_model(
         assert logger_kwargs is None, "If custom logger is supplied, 'logger_kwargs' argument must be 'None'"
 
     # configure callbacks. That is actions taken on certain events, e.g. epoch end.
-    # TODO: change to val_loss or something
     callbacks = [
         ModelCheckpoint(
             dirpath=os.path.join(log_dir, f"version_{loggers[0].version}"),

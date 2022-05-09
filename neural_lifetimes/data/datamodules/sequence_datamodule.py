@@ -1,15 +1,13 @@
 from typing import Any, Dict, List
 
 import pytorch_lightning as pl
-import torch
 from sklearn.model_selection import train_test_split
 
-from ...models.targets import TargetCreator
 from ..dataloaders.sequence_loader import SequenceLoader
 from ..datasets.sequence_dataset import SequenceDataset, SequenceSubset
+from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer, TargetCreator
 
 
-# TODO Rename to be more indicative of what it does.
 class SequenceDataModule(pl.LightningDataModule):
     """
     A Pytorch Lightning (pl) module is a wrapper around different dataloaders and datasets.
@@ -33,14 +31,18 @@ class SequenceDataModule(pl.LightningDataModule):
         dataset: SequenceDataset,
         test_size: float,
         batch_points: int,
+        transform: FeatureDictionaryEncoder,
         target_transform: TargetCreator,
+        tokenizer: Tokenizer,
         min_points: int,
     ):
         super().__init__()
         self.dataset = dataset
         self.test_size = test_size
         self.batch_points = batch_points
+        self.transform = transform
         self.target_transform = target_transform
+        self.tokenizer = tokenizer
         self.min_points = min_points
 
         self.save_hyperparameters(self.build_parameter_dict())
@@ -112,9 +114,11 @@ class SequenceDataModule(pl.LightningDataModule):
         """
         return SequenceLoader(
             SequenceSubset(self.dataset, indices),
+            self.transform,
+            self.target_transform,
+            self.tokenizer,
             self.batch_points,
             self.min_points,
-            self.target_transform,
         )
 
     def train_dataloader(self):
