@@ -54,7 +54,7 @@ class SequenceLoader:
         """
         return 1e10  # TODO there is probably a better solution
 
-    def __next__(self) -> torch.Tensor:
+    def __next__(self) -> Dict[str, torch.Tensor]:
         """Return next batch of sequences.
 
         Returns:
