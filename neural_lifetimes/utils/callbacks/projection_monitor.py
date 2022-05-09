@@ -8,7 +8,7 @@ class MonitorProjection(pl.Callback):
         self.max_batches = max_batches
         self.mod = mod
 
-    def on_train_epoch_end(self, trainer, net):
+    def on_train_epoch_end(self, trainer, pl_module):
         if trainer.current_epoch % self.mod == 0:
             loader = trainer.datamodule.val_dataloader()
             logger = trainer.logger
@@ -16,9 +16,11 @@ class MonitorProjection(pl.Callback):
             encoded_data = []
             labels = []
             for i, mini_batch in enumerate(loader):
-
+                for k, v in mini_batch.items():
+                    if isinstance(v, torch.Tensor):
+                        mini_batch[k] = v.to(pl_module.device)
                 batch_offsets = mini_batch["offsets"][1:] - 1
-                embedded = net.net.fc_mu(net.net.encoder(mini_batch))
+                embedded = pl_module.net.fc_mu(pl_module.net.encoder(mini_batch))
                 emb_lastevent = embedded[batch_offsets]
                 encoded_data.append(emb_lastevent)
                 if "btyd_mode" in mini_batch.keys():
