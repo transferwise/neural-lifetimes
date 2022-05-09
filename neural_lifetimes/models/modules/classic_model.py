@@ -47,9 +47,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         vae_sampling_scaler: float = 1.0,
         vae_KL_weight: float = 1.0,
         optimizer_kwargs: Dict[str, Any] = None,
-        **kwargs: Any,
     ) -> None:
-        super().__init__(**kwargs)
+        super().__init__()
         self.rnn_dim = rnn_dim
         self.drop_rate = drop_rate
         self.bottleneck_dim = bottleneck_dim
@@ -101,8 +100,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
             "vae_KL_weight": self.vae_KL_weight,
             **self.emb.build_parameter_dict(),
         }
-
-        return {f"model/{k}": v for k, v in hparams.items()}
+        return hparams
+        # return {f"model/{k}": v for k, v in hparams.items()}
 
     def configure_optimizers(self):
         return configure_optimizers(

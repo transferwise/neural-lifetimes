@@ -8,6 +8,7 @@ import torch
 
 from neural_lifetimes.data.dataloaders.sequence_loader import SequenceLoader
 from neural_lifetimes.models.modules.classic_model import ClassicModel
+from neural_lifetimes.utils.data.feature_encoder import FeatureDictionaryEncoder
 
 
 class ModelInference:
@@ -29,8 +30,8 @@ class ModelInference:
         model (ClassicModel): Model instance.
     """
 
-    def __init__(self, model_filename: str):
-        self.model = ClassicModel.load_from_checkpoint(model_filename)
+    def __init__(self, model_filename: str, encoder: FeatureDictionaryEncoder):
+        self.model = ClassicModel.load_from_checkpoint(model_filename, feature_encoder_config=encoder.config_dict())
 
     def predict(self, loader: SequenceLoader, n_samples=1, return_input=True):
         """
@@ -116,8 +117,8 @@ class ModelInference:
     def _sequence_simulation(self, batch: dict, end_date: datetime.datetime):
 
         # Set pre_encoded to True temporarily in case it wasn't, restore value at the end
-        pre_encoded = self.model.encoder.emb.pre_encoded
-        self.model.encoder.emb.pre_encoded = True
+        # pre_encoded = self.model.encoder.emb.pre_encoded
+        # self.model.encoder.emb.pre_encoded = True
 
         seqs_ongoing = batch.copy()
         seqs_finished = []
@@ -139,7 +140,8 @@ class ModelInference:
             churn_state = []
             last_date = []
             for i, seq in enumerate(sequences):
-                next_t = seq["t"][-1] + datetime.timedelta(hours=data["dt"][offsets[i + 1] - 1].item())
+                next_t = add_delta_to_numpy(seq["t"][-1], data["dt"][offsets[i + 1] - 1].item())
+
                 if next_t < end_date:
                     seq["t"] = np.append(seq["t"], next_t)
 
@@ -163,7 +165,7 @@ class ModelInference:
 
             seqs_ongoing = build_batch(seqs_ongoing)
 
-        self.model.encoder.emb.pre_encoded = pre_encoded
+        # self.model.encoder.emb.pre_encoded = pre_encoded
 
         out = build_batch(seqs_finished)
 
@@ -175,8 +177,8 @@ class ModelInference:
         sim_start_date: datetime.datetime,
     ):
         # Set pre_encoded to True temporarily in case it wasn't, restore value at the end
-        pre_encoded = self.model.encoder.emb.pre_encoded
-        self.model.encoder.emb.pre_encoded = True
+        # pre_encoded = self.model.encoder.emb.pre_encoded
+        # self.model.encoder.emb.pre_encoded = True
 
         data = self._sample_ouput(batch)
 
@@ -189,7 +191,7 @@ class ModelInference:
         last_date = []
 
         for i, seq in enumerate(sequences):
-            next_t = seq["t"][-1] + datetime.timedelta(hours=data["dt"][offsets[i + 1] - 1].item())
+            next_t = add_delta_to_numpy(seq["t"][-1], data["dt"][offsets[i + 1] - 1].item())
             seq["t"] = np.append(seq["t"], next_t)
 
             for k in seq.keys():
@@ -203,7 +205,7 @@ class ModelInference:
             churn_state.append(seq["churn"][-1])
             last_date.append(seq["t"][-1])
 
-        self.model.encoder.emb.pre_encoded = pre_encoded
+        # self.model.encoder.emb.pre_encoded = pre_encoded
 
         seqs_ongoing = [
             new_sequences[i] for i in range(num_seqs) if churn_state[i] == 0 and last_date[i] > sim_start_date
@@ -282,22 +284,23 @@ class ModelInference:
                 ``"offset"``.
 
         """
-        continuous_features = self.model.encoder.emb.continuous_features
-        discrete_features = self.model.encoder.emb.enc.keys()
+        # continuous_features = self.model.emb.continuous_features
+        # discrete_features = self.model.emb.discrete_features.keys()
 
         extended_sequences = []
         raw_data = []
         for i, batch in enumerate(loader):
-            encode_cont = {f: batch[f] for f in continuous_features}
-            for f in encode_cont.keys():
-                encode_cont[f][encode_cont[f].isnan()] = 0
+            # encode_cont = {f: batch[f] for f in continuous_features}
 
-            encode_discr = {name: self.model.encoder.emb.encode(name, batch[name]) for name in discrete_features}
-            encode_batch = {**encode_cont, **encode_discr}
+            # for f in encode_cont.keys():
+            #     encode_cont[f][encode_cont[f].isnan()] = 0
 
-            encode_batch["USER_PROFILE_ID"] = batch["USER_PROFILE_ID"]
-            encode_batch["offsets"] = batch["offsets"]
-            encode_batch["dt"] = batch["dt"]
+            # encode_discr = {name: self.model.feature_encoder.emb.encode(name, batch[name]) for name in discrete_features}
+            # encode_batch = {**encode_cont, **encode_discr}
+            encode_batch = batch
+            # encode_batch["USER_PROFILE_ID"] = batch["USER_PROFILE_ID"]
+            # encode_batch["offsets"] = batch["offsets"]
+            # encode_batch["dt"] = batch["dt"]
 
             encode_batch["t"] = tensor2datetime(batch["t"])
 
@@ -349,6 +352,9 @@ def datetime2tensor(x: np.ndarray):
     return ts
 
 
-def tensor2datetime(x: torch.tensor):
-    ts = [t.item() for t in (x.astype("float32") * (1e6 * 60 * 60)).astype("datetime64[us]")]
-    return ts
+def tensor2datetime(x: torch.tensor) -> np.ndarray:
+    return (x.numpy().astype("float32") * (1e6 * 60 * 60)).astype("datetime64[us]")
+
+
+def add_delta_to_numpy(t: np.ndarray, delta_hours: float) -> np.ndarray:
+    return t + np.array(datetime.timedelta(hours=delta_hours)).astype(np.timedelta64)

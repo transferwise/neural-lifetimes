@@ -94,4 +94,5 @@ if __name__ == "__main__":
         val_check_interval=10,
         limit_val_batches=20,
         gradient_clipping=0.0000001,
+        checkpoint_path="/Users/Cornelius.Emde/Repositories/NeuralLifetimes/examples/version_1/epoch=1-step=27-val_loss/total=61.34.ckpt",
     )
