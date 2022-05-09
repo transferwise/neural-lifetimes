@@ -9,8 +9,8 @@ from neural_lifetimes.utils.data import FeatureDictionaryEncoder, OrdinalEncoder
 @pytest.fixture
 def data():
     return {
-        "CF1": np.array([1, 2, 3, 4]),
-        "CF2": np.array([4, 3, 2, 1]),
+        "CF1": np.array([1, 2, 3, 4], dtype=np.float32),
+        "CF2": np.array([4, 3, 2, 1], dtype=np.float32),
         "DF1": np.array(["level_1", "level_1", "level_2", "level_3"]),
         "DF2": np.array(["l1", "l1", "l2", "l3"]),
     }
@@ -113,11 +113,37 @@ class Test_FeatureDictionaryEncoder:
         (msg,) = excinfo.value.args
         assert msg == "'HELLO' unknown."
 
-    def test_dump_and_construct_from_dict(self):
-        assert False
+    @pytest.mark.parametrize("pre_encoded", (True, False))
+    @pytest.mark.parametrize("start_token", (None, "ST"))
+    def test_dump_and_construct_from_dict(self, discrete_values, pre_encoded, start_token):
+        encoder = self._construct(discrete_values, pre_encoded, start_token)
+        newencoder = FeatureDictionaryEncoder.from_dict(encoder.config_dict())
+        properties = ["continuous_features", "discrete_features", "pre_encoded", "start_token_discrete"]
+        for property in properties:
+            assert getattr(newencoder, property) == getattr(encoder, property), f'Property "{property}" not equal.'
 
-    def test_encode_decode(self):
-        assert False
+        for name, enc in encoder.enc.items():
+            assert np.all(enc.levels == newencoder.enc[name].levels)
 
-    def test_call_encode_decode(self):
+    @pytest.mark.parametrize("start_token", (None, "ST"))
+    def test_encode_decode(self, data, discrete_values, start_token):
+        encoder = self._construct(discrete_values, False, start_token)
+        reconstructed = {name: encoder.decode(name, encoder.encode(name, arr)) for name, arr in data.items()}
+
+        for name in data:
+            assert np.all(data[name] == reconstructed[name])
+            assert data[name].dtype == reconstructed[name].dtype
+
+    @pytest.mark.parametrize("start_token", (None, "ST"))
+    def test_call_encode_decode(self, data, discrete_values, start_token):
+        encoder = self._construct(discrete_values, False, start_token)
+        reconstructed = encoder(encoder(data), mode="decode")
+
+        for name in data:
+            assert np.all(data[name] == reconstructed[name])
+            assert data[name].dtype == reconstructed[name].dtype
+
+    @pytest.mark.xfail
+    @pytest.mark.parametrize("start_token", (None, "ST"))
+    def test_encode_decode_with_pre_encoded(self, start_token):
         assert False
