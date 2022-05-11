@@ -18,7 +18,7 @@ with open("README.md") as f:
 
 # TODO Mark: Update before release
 setup(
-    name="event-model",
+    name="neural-lifetimes",
     version="0.1.0",
     description="User behavior prediction from event data.",
     long_description=long_description,
