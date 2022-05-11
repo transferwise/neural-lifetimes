@@ -16,6 +16,6 @@ scipy~=1.6
 sdv~=0.13.1
 SQLAlchemy~=1.3.24
 torchmetrics~=0.8
-tqdm~=4.63
+tqdm~=4.64
 vaex~=4.7
 plotly~=5.7
