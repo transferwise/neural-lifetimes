@@ -34,9 +34,8 @@ class ModelInference:
         self.model = ClassicModel.load_from_checkpoint(model_filename, feature_encoder_config=encoder.config_dict())
 
     def predict(self, loader: SequenceLoader, n_samples=1, return_input=True):
-        """
-        Samples the following event for every sequence in a SequenceLoader from the output distributions
-        of the model
+        """Samples the following event for every sequence in a SequenceLoader from the output distributions
+        of the model.
 
         Args:
             loader: Sequence Loader
