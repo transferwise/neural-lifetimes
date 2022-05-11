@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict, Sequence
+from typing import Dict, Optional, Sequence
 
 import numpy as np
 from clickhouse_driver import Client
@@ -20,6 +20,7 @@ class ClickhouseSequenceDataset(SequenceDataset):
         time_col: str,
         asof_time: datetime.datetime,  # return no records after this
         min_items_per_uid: int = 1,
+        limit: Optional[int] = None,
     ):
         self.host = host
         self.port = port
@@ -30,6 +31,7 @@ class ClickhouseSequenceDataset(SequenceDataset):
         self.uid_name = uid_name
         self.time_col = time_col
         self.asof_time = asof_time
+        self.limit = limit
 
         # get all the UIDs with at least min_items_per_uid events
         date_filt = self.asof_filter.replace("and", "where") if self.asof_filter else ""
@@ -46,6 +48,9 @@ class ClickhouseSequenceDataset(SequenceDataset):
         ) as tmp
         where cnt >={min_items_per_uid}
         """
+        if self.limit:
+            uid_query += f" LIMIT {self.limit}"
+
         result = np.array(self.conn.execute(uid_query))
         # ordered list of all the ids we're considering
 
