@@ -172,7 +172,9 @@ class DistributionMonitor(pl.Callback):
 
         # TODO better ways to approximate KL empirically:
         # https://www.semanticscholar.org/paper/Kullback-Leibler-divergence-estimation-of-P%C3%A9rez-Cruz/310974d3c141589a7800d737e5859b76676dcb5d?p2df
-        metrics = self.metrics.compute()
-        pl_module.log_dict({f"time_intervals/{k}": v for k, v in metrics.items()}, batch_size=len(y_pred))
-
+        try:
+            metrics = self.metrics.compute()
+            pl_module.log_dict({f"time_intervals/{k}": v for k, v in metrics.items()}, batch_size=len(y_pred))
+        except:  # noqa
+            print("Distribution Monitor: Metrics could not be computed.")
         self.metrics.reset()
