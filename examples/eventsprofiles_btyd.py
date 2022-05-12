@@ -60,6 +60,7 @@ if __name__ == "__main__":
         start_token_discrete=START_TOKEN_DISCR,
         start_token_other=np.nan,
         max_item_len=100,
+        start_token_timestamp=datetime.datetime(1970, 1, 1, 1, 0),
     )
 
     target_transform = TargetCreator(cols=COLS)
