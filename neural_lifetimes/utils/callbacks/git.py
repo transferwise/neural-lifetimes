@@ -19,8 +19,8 @@ class GitInformationLogger(pl.Callback):
         self.verbose = verbose
 
         # check whether run started in git repo:
-        out = subprocess.run(["git", "status", "-s"], stdout=subprocess.PIPE)
-        if out.stdout.startswith(b"fatal: not a git repository"):
+        out = subprocess.run(["git", "status", "-s"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if out.stderr.startswith(b"fatal: not a git repository"):
             raise SystemError(
                 "The entrypoint for the script is not inside a git repository. Consider running `git init` "
                 + f"in you shell or remove the {self.__class__.__name__} callback."
