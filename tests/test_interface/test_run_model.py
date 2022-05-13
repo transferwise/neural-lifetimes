@@ -51,7 +51,9 @@ def data_and_model() -> Tuple[SequenceDataModule, ClassicModel]:
 
     transform = FeatureDictionaryEncoder(data_model.cont_feat, discr_values)
     target_transform = TargetCreator(cols=data_model.target_cols + data_model.cont_feat + data_model.discr_feat)
-    tokenizer = Tokenizer(data_model.cont_feat, discr_values, 100, np.nan, "<StartToken>", np.nan)
+    tokenizer = Tokenizer(
+        data_model.cont_feat, discr_values, 100, np.nan, "<StartToken>", datetime.datetime(1970, 1, 1), np.nan
+    )
 
     datamodule = SequenceDataModule(
         dataset=dataset,

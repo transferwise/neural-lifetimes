@@ -59,7 +59,7 @@ class Tokenizer:
 
         # add start tokens
         for k, v in x.items():
-            if k in self.features:
+            if k in self.features or k in ["t", "dt"]:
                 if k in self.discrete_features:
                     x[k] = np.append([self.start_token_discrete], v)
                 else:
