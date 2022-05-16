@@ -1,9 +1,10 @@
 import datetime
 import random
-from typing import List
+from typing import List, Dict
 from uuid import uuid4
 
 import numpy as np
+import itertools
 import torch
 
 from neural_lifetimes.data.dataloaders.sequence_loader import SequenceLoader
@@ -74,11 +75,11 @@ class ModelInference:
 
         return token_event
 
-    def _sample_ouput(self, batch):
+    def _sample_ouput(self, batch, n: int = 1):
 
         model_out = self.model(batch)
         sampling = {
-            k: self.model.head_map[k].distribution(v.detach()).sample((1,)).flatten()
+            k: self.model.head_map[k].distribution(v.detach()).sample((n,)).flatten()
             for k, v in model_out.items()
             if k in self.model.head_map.keys()
         }
@@ -140,19 +141,20 @@ class ModelInference:
             last_date = []
             for i, seq in enumerate(sequences):
                 next_t = add_delta_to_numpy(seq["t"][-1], data["dt"][offsets[i + 1] - 1].item())
+                new_seq = {}
 
                 if next_t < end_date:
-                    seq["t"] = np.append(seq["t"], next_t)
+                    new_seq["t"] = np.append(seq["t"], next_t)
 
                     for k in seq.keys():
                         if k in data.keys():
-                            seq[k] = torch.cat((seq[k], data[k][offsets[i + 1] - 1 : offsets[i + 1]]))
+                            new_seq[k] = torch.cat((seq[k], data[k][offsets[i + 1] - 1 : offsets[i + 1]]))
 
-                    seq["USER_PROFILE_ID"] = np.array([seq["USER_PROFILE_ID"][0]] * len(seq["dt"]))
-                    seq["token_event"] = torch.cat((seq["token_event"], torch.tensor([0])))
+                    new_seq["USER_PROFILE_ID"] = np.array([seq["USER_PROFILE_ID"][0]] * len(new_seq["dt"]))
+                    new_seq["token_event"] = torch.cat((seq["token_event"], torch.tensor([0])))
 
-                new_sequences.append(seq.copy())
-                churn_state.append(seq["churn"][-1])
+                new_sequences.append(new_seq)
+                churn_state.append(new_seq["churn"][-1])
                 last_date.append(next_t)
 
             seqs_ongoing = [
@@ -174,49 +176,54 @@ class ModelInference:
         self,
         batch: dict,
         sim_start_date: datetime.datetime,
+        n: int = 1,
     ):
-        # Set pre_encoded to True temporarily in case it wasn't, restore value at the end
-        # pre_encoded = self.model.encoder.emb.pre_encoded
-        # self.model.encoder.emb.pre_encoded = True
 
-        data = self._sample_ouput(batch)
+        data = self._sample_ouput(batch, n)
 
         sequences = split_batch(batch)
-        offsets = batch["offsets"]
-        num_seqs = len(sequences)
+        num_batch_seqs = len(sequences)
+        num_repeated_seqs = num_batch_seqs * n
+        offsets = torch.cat(
+            [torch.tensor([0])] +
+            [batch["offsets"][1:]+i*batch["offsets"][-1] for i in range(n)]
+        )
 
-        new_sequences = []
-        churn_state = []
+        original_sequences = []
+        appended_sequences = []
+
+        churn_last_event = []
+        churn_next_event = []
         last_date = []
 
-        for i, seq in enumerate(sequences):
-            next_t = add_delta_to_numpy(seq["t"][-1], data["dt"][offsets[i + 1] - 1].item())
-            seq["t"] = np.append(seq["t"], next_t)
+        for i in range(num_repeated_seqs):
+            seq = sequences[i%num_batch_seqs]
+            seq_next = append_event_to_seq(seq, data, offsets[i + 1])
+            seq_original = {k:seq[k] for k in seq_next.keys()}
 
-            for k in seq.keys():
-                if k in data.keys():
-                    seq[k] = torch.cat((seq[k], data[k][offsets[i + 1] - 1 : offsets[i + 1]]))
+            original_sequences.append(seq_original)
+            appended_sequences.append(seq_next)
 
-            seq["USER_PROFILE_ID"] = np.array([seq["USER_PROFILE_ID"][-1]] * len(seq["dt"]))
-            seq["token_event"] = torch.cat((seq["token_event"], torch.tensor([0])))
-
-            new_sequences.append(seq.copy())
-            churn_state.append(seq["churn"][-1])
-            last_date.append(seq["t"][-1])
-
-        # self.model.encoder.emb.pre_encoded = pre_encoded
+            churn_last_event.append(seq_next["churn"][-2])
+            churn_next_event.append(seq_next["churn"][-1])
+            last_date.append(seq_next["t"][-1])
 
         seqs_ongoing = [
-            new_sequences[i] for i in range(num_seqs) if churn_state[i] == 0 and last_date[i] > sim_start_date
+            appended_sequences[i] for i in range(num_repeated_seqs)
+            if churn_last_event[i] == 0 and churn_next_event[i] == 0 and last_date[i] > sim_start_date
         ]
         seqs_finished = [
-            new_sequences[i] for i in range(num_seqs) if churn_state[i] == 1 or last_date[i] < sim_start_date
+            original_sequences[i] if churn_last_event[i] == 0 or last_date[i] < sim_start_date
+            else appended_sequences[i]
+            for i in range(num_repeated_seqs)
+            if churn_last_event[i] == 1 or churn_next_event[i] == 1 or last_date[i] < sim_start_date
         ]
 
-        seqs_ongoing = build_batch(seqs_ongoing)
-        seqs_finished = build_batch(seqs_finished)
+        print(f'Seqs ongoing: {len(seqs_finished)}. Seqs finished: {len(seqs_finished)}. Mean churn_last_real_event {round(np.mean(churn_last_event),2)}. Mean churn_next_event {round(np.mean(churn_next_event),2)}. Sampled date before Start simulation {np.mean([t < sim_start_date for t in last_date])}')
+        seqs_ongoing_batch = build_batch(seqs_ongoing)
+        seqs_finished_batch = build_batch(seqs_finished)
 
-        return seqs_ongoing, seqs_finished
+        return seqs_ongoing_batch, seqs_finished_batch
 
     def simulate_sequences(
         self,
@@ -262,6 +269,7 @@ class ModelInference:
         loader: SequenceLoader,
         start_date: datetime.datetime = datetime.datetime(2021, 1, 1, 0, 0, 0),
         end_date: datetime.datetime = datetime.datetime(2021, 4, 1, 0, 0, 0),
+        n: int = 1,
         return_input: bool = True,
     ):
         """
@@ -276,6 +284,7 @@ class ModelInference:
             loader (SequenceLoader): SequenceLoader that contains the sequences to extend.
             start_date (datetime.datetime): Earliest date from the first event appended to the sequences
             end_date (datetime.datetime): The sequences will be extended
+            n (int): number of samples per sequence
             return_input (bool): bool describing if the input sequences should also be returned.
 
         Returns:
@@ -309,12 +318,14 @@ class ModelInference:
 
             encode_batch["churn"] = torch.zeros(len(batch["t"]))
 
-            batch_ongoing, batch_churned = self._infer_churn_status(encode_batch, start_date)
+            batch_ongoing, batch_churned = self._infer_churn_status(encode_batch, start_date, n)
             extend_seq = self._sequence_simulation(batch_ongoing, end_date)
 
-            raw_data.append(batch)
+            if return_input:
+                raw_data.append(batch)
 
-            extended_sequences.append({"extended_sequences": extend_seq, "inferred_churn": batch_churned})
+            all_sequences = merge_batches([extend_seq, batch_churned])
+            extended_sequences.append(all_sequences)
 
         if return_input:
             return raw_data, extended_sequences
@@ -322,16 +333,17 @@ class ModelInference:
             return extended_sequences
 
 
-def split_batch(batch: dict):
-    keys = batch.keys()
-    out = [{k: batch[k][s:e] for k in keys} for s, e in zip(batch["offsets"][:-1], batch["offsets"][1:])]
+def split_batch(batch: Dict):
+    keys = [k for k in batch.keys() if k[:5] != 'next_']
+    out = [{k: batch[k][s:e] for k in keys}
+           for s, e in zip(batch["offsets"][:-1], batch["offsets"][1:])]
     return out
 
 
 def build_batch(seqs: List):
 
     if len(seqs) == 0:
-        return {"offsets": np.array([0])}
+        return {"offsets": torch.tensor([0])}
 
     seq_concat = {}
     for k in seqs[0].keys():
@@ -341,9 +353,33 @@ def build_batch(seqs: List):
             seq_concat[k] = np.concatenate([s[k] for s in seqs])
 
     seq_lengths = np.array([0] + [len(s["dt"]) for s in seqs])
-    seq_concat["offsets"] = np.cumsum(seq_lengths)
+    seq_concat["offsets"] = torch.from_numpy(np.cumsum(seq_lengths))
 
     return seq_concat
+
+
+def merge_batches(batches: List, keys: List = None):
+
+    if len(batches) == 0:
+        return {"offsets": torch.tensor([0])}
+
+    real_batches = [batch for batch in batches if batch['offsets'].shape[0] > 1]
+
+    if keys is None:
+        keys = real_batches[0].keys()
+
+    merged = {k:torch.cat([batch[k] for batch in real_batches])
+                    if isinstance(real_batches[0][k], torch.Tensor)
+                    else np.concatenate([batch[k] for batch in real_batches])
+              for k in keys}
+
+    off_cumsum = np.cumsum([0]+[batch['offsets'][-1] for batch in real_batches])
+    merged['offsets'] = torch.cat(
+        [torch.tensor([0])] +
+        [batch["offsets"][1:] + off_cumsum[i] for i,batch in enumerate(real_batches)]
+    )
+
+    return merged
 
 
 def datetime2tensor(x: np.ndarray):
@@ -357,3 +393,21 @@ def tensor2datetime(x: torch.tensor) -> np.ndarray:
 
 def add_delta_to_numpy(t: np.ndarray, delta_hours: float) -> np.ndarray:
     return t + np.array(datetime.timedelta(hours=delta_hours)).astype(np.timedelta64)
+
+
+def append_event_to_seq(seq: dict, data: dict, i: int):
+    next_t = add_delta_to_numpy(seq["t"][-1], data["dt"][i - 1].item())
+    new_seq = {}
+    new_seq["t"] = np.append(seq["t"], next_t)
+
+    for k in seq.keys():
+        if k in data.keys():
+            if k == 'churn':
+                new_seq[k] = torch.cat((seq[k][:-1], data[k][i - 2:i]))
+            else:
+                new_seq[k] = torch.cat((seq[k], data[k][i - 1].unsqueeze(0)))
+
+    new_seq["USER_PROFILE_ID"] = np.array([seq["USER_PROFILE_ID"][-1]] * len(new_seq["dt"]))
+    new_seq["token_event"] = torch.cat((seq["token_event"], torch.tensor([0])))
+
+    return new_seq
