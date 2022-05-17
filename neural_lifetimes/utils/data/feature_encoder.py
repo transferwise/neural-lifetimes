@@ -19,6 +19,8 @@ class FeatureDictionaryEncoder:
         discrete features and
         the identity function to continuous features in a dictionary.
         It further, converts values to normalised types
+        This Encoder applies an ``utils.data.OrdinalEncoderWithUnknown`` discrete features and
+        the identity function to continuous features in a dictionary. It further, converts values to normalised types
         for Pytorch training, i.e. `int64` for discrete and `float32` for continuous features.
 
         Args:

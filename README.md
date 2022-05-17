@@ -2,10 +2,10 @@
 
 #TODO Insert Logo
 
-![test](https://github.com/transferwise/neural_lifetimes/actions/workflows/test.yml/badge.svg)
-![lint](https://github.com/transferwise/neural_lifetimes/actions/workflows/lint.yml/badge.svg)
-![format](https://github.com/transferwise/neural_lifetimes/actions/workflows/format.yml/badge.svg)
-![docs](https://github.com/transferwise/neural_lifetimes/actions/workflows/docs.yml/badge.svg)
+![test](https://github.com/transferwise/neural-lifetimes/actions/workflows/test.yml/badge.svg)
+![lint](https://github.com/transferwise/neural-lifetimes/actions/workflows/lint.yml/badge.svg)
+![format](https://github.com/transferwise/neural-lifetimes/actions/workflows/format.yml/badge.svg)
+![docs](https://github.com/transferwise/neural-lifetimes/actions/workflows/docs.yml/badge.svg)
 ![pypi](https://img.shields.io/pypi/v/neural-lifetimes)
 
 # Introduction

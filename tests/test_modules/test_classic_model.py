@@ -49,11 +49,18 @@ class TestClassicModel:
 
         discr_values = dataset.get_discrete_feature_values("<StartToken>")
 
-        tokenizer = Tokenizer(data_model.cont_feat, discr_values, 100, np.nan, "<StartToken>", np.nan)
+        tokenizer = Tokenizer(
+            data_model.cont_feat,
+            discr_values,
+            100,
+            np.nan,
+            "<StartToken>",
+            datetime.datetime(1970, 1, 1, 0, 0, 0),
+            np.nan,
+        )
         transform = FeatureDictionaryEncoder(data_model.cont_feat, discr_values)
 
         target_transform = TargetCreator(cols=(data_model.target_cols + data_model.cont_feat + data_model.discr_feat))
-
         datamodule = SequenceDataModule(
             dataset=dataset,
             tokenizer=tokenizer,

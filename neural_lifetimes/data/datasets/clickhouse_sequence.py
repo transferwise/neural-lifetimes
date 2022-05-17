@@ -1,5 +1,5 @@
 import datetime
-from typing import Dict, Sequence
+from typing import Dict, Optional, Sequence
 
 import numpy as np
 from clickhouse_driver import Client
@@ -18,9 +18,38 @@ class ClickhouseSequenceDataset(SequenceDataset):
         table_name: str,
         uid_name: str,
         time_col: str,
-        asof_time: datetime.datetime,  # return no records after this
+        asof_time: datetime.datetime,
+        last_event_time: Optional[datetime.datetime] = None,
         min_items_per_uid: int = 1,
+        limit: Optional[int] = None,
     ):
+        """The ClickhouseSequenceDataset creates a SequenceDataset from a Clickhouse Database.
+
+        TODO: Add more detailed summary
+        Add picture of time sequences and splits.
+
+        Args:
+            host (str): Database host.
+            port (int): Database port.
+            http_port (int): HTTP port.
+            database (str): Database name.
+            table_name (str): Table name.
+            uid_name (str): Name of column containing user IDs.
+            time_col (str): Name of column containing timestamps of events.
+            asof_time (datetime.datetime): The assumed "present time". This will serve as a reference to the present
+                in loss functions. Further, it is used as cut-off to count training samples. This should be thought of
+                as the last date of the training time window.
+            last_event_time (Optional[datetime.datetime], optional): The cut-off date of events to be included in
+                batches. When this value is ``None`` the ``asof_time`` is used. To retreive data points in the training
+                time window, this should be ``None``. To retrieve data from training and forecasting time window, this
+                should be set to the last day of the forecasting window. Defaults to None.
+            min_items_per_uid (int, optional): The number of events before ``asof_time`` a customer should have to be
+                included in the dataset. Defaults to 1.
+            limit (Optional[int], optional): Limits the number of samples to be queried from the database.
+                This is particularly useful for debugging. This translates to a ``LIMIT`` instruction in the SQL query
+                and hence should not be used for generating simple random samples from database. If set to ``None``,
+                no limit is imposed. Defaults to None.
+        """
         self.host = host
         self.port = port
         self.http_port = http_port
@@ -30,22 +59,31 @@ class ClickhouseSequenceDataset(SequenceDataset):
         self.uid_name = uid_name
         self.time_col = time_col
         self.asof_time = asof_time
+        self.last_event_time = asof_time if last_event_time is None else last_event_time
+        assert self.last_event_time >= self.asof_time, "The 'last_event_time' is the last date in the "
+        self.limit = limit
 
         # get all the UIDs with at least min_items_per_uid events
-        date_filt = self.asof_filter.replace("and", "where") if self.asof_filter else ""
+        date_filter = self.last_event_filter.replace("and", "where") if self.last_event_filter else ""
 
-        uid_query = f"""SELECT * from (
-        SELECT {uid_name},
-            count(*) as cnt,
-            min({time_col}) as first_t,
-            min({time_col}) as last_t
-        from {database}.{table_name}
-        {date_filt}
-        group by {uid_name}
-        order by {uid_name}
-        ) as tmp
-        where cnt >={min_items_per_uid}
-        """
+        uid_query = f"""
+                        SELECT {uid_name}, cnt
+                        FROM (
+                            SELECT {uid_name},
+                                count(*) as cnt,
+                                SUM(CASE WHEN {self.asof_filter.replace("and", "")} THEN 1 ELSE 0 END) AS cnt_asof
+                                --min({time_col}) as first_t,
+                                --min({time_col}) as last_t
+                            FROM {database}.{table_name}
+                            {date_filter}
+                            GROUP by {uid_name}
+                            order by {uid_name}
+                            ) AS tmp
+                        WHERE cnt_asof >={min_items_per_uid}
+                        """
+        if self.limit:
+            uid_query += f" LIMIT {self.limit}"
+
         result = np.array(self.conn.execute(uid_query))
         # ordered list of all the ids we're considering
 
@@ -68,9 +106,20 @@ class ClickhouseSequenceDataset(SequenceDataset):
         self.__dict__.update(state)
         self.conn = Client(self.host)
 
+    def _time_filter(self, time_limit):
+        return (
+            ""
+            if getattr(self, time_limit) is None
+            else f" and {self.time_col} < toDateTime64('{getattr(self, time_limit)}',3)"
+        )
+
     @property
     def asof_filter(self):
-        return "" if self.asof_time is None else f" and {self.time_col} < toDateTime64('{self.asof_time}',3)"
+        return self._time_filter("asof_time")
+
+    @property
+    def last_event_filter(self):
+        return self._time_filter("last_event_time")
 
     def uids_filter(self, new_uids):
         if isinstance(new_uids, list):
@@ -96,7 +145,7 @@ class ClickhouseSequenceDataset(SequenceDataset):
         query = f"""
             SELECT * from {self.database}.{self.table_name}
             where {self.uid_name} in ({','.join(uids.astype(str))})
-            {self.asof_filter}
+            {self.last_event_filter}
             order by {self.uid_name}, {self.time_col}
         """
         raw_data = self.conn.execute(query)

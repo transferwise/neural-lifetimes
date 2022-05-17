@@ -1,8 +1,11 @@
+name: Docs
+
 on:
-  release:
-    types: [published]
-  pull_request:
-    branches: [master]
+  workflow_dispatch:
+#  release:
+#    types: [published]
+#  pull_request:
+#    branches: [main]
 
 jobs:
   build-docs:

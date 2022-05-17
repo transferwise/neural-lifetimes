@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Dict
 
 from dataclasses import dataclass
@@ -18,8 +19,9 @@ class Tokenizer:
             The tokenizer performs left-truncation. The length of returned sequences will be ``max_item_len + 1``.
         start_token_continuous (np.float32): The start token for variables specified in ``continuous_features``.
         start_token_discrete (str): The start token for variables specified in ``discrete_features``.
-        start_token_other (np.float32): The start token for variables not specified in ``continuous_features``
-            or `discrete_features``.
+        start_token_timestamp (datetime.datetime): The start token for variables with data type ``np.datetime64``.
+        start_token_other (np.float32): The start token for variables not specified in ``continuous_features``,
+            `discrete_features`` or of type ``np.datetime64``.
 
     Attributes:
         continuous_features (List[str]): A list containing the names of the continuous features.
@@ -29,8 +31,10 @@ class Tokenizer:
             The tokenizer performs left-truncation. The length of returned sequences will be ``max_item_len + 1``.
         start_token_continuous (np.float32): The start token for variables specified in ``continuous_features``.
         start_token_discrete (str): The start token for variables specified in ``discrete_features``.
-        start_token_other (np.float32): The start token for variables not specified in ``continuous_features``
-            or `discrete_features``.
+        start_token_timestamp (datetime.datetime): The start token for variables with numpy dtype of kind ``datetime``,
+            i.e. ``dtype.kind == 'M'``.
+        start_token_other (np.float32): The start token for variables not specified in ``continuous_features``,
+            `discrete_features`` or of type ``np.datetime64``.
     """
 
     continuous_features: List[str]
@@ -38,6 +42,7 @@ class Tokenizer:
     max_item_len: int
     start_token_continuous: np.float32
     start_token_discrete: str
+    start_token_timestamp: datetime
     start_token_other: np.float32
 
     def __call__(self, x: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
@@ -54,13 +59,17 @@ class Tokenizer:
 
         # add start tokens
         for k, v in x.items():
-            if k in self.features:
+            if k in self.features or k in ["t", "dt"]:
                 if k in self.discrete_features:
                     x[k] = np.append([self.start_token_discrete], v)
                 else:
                     x[k] = np.append([self.start_token_continuous], v)
             else:
-                x[k] = np.append([self.start_token_other], v)
+                # numpy dtype kind "M" is any datetime object
+                if v.dtype.kind == "M":
+                    x[k] = np.append(np.array([self.start_token_timestamp], dtype=np.datetime64), v)
+                else:
+                    x[k] = np.append([self.start_token_other], v)
         return x
 
     @property
