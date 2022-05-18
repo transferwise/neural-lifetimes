@@ -78,9 +78,13 @@ class Test_Numpy:
 
 class Test_AcrossTypes:
     @staticmethod
-    def test_numpy_base():
-        assert False
+    def test_numpy_base(datetimes, error_tolerance):
+        res_base = np.array([datetime2float(dt) for dt in datetimes])
+        np_datetimes = np.array(datetimes, dtype="datetime64[us]")
+        res_np = datetime2float(np_datetimes)
+        assert np.all(np.isclose(res_base, res_np, rtol=0, atol=error_tolerance))
 
     @staticmethod
+    @pytest.mark.xfail
     def test_numpy_torch():
         assert False

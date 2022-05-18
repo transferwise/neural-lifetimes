@@ -20,8 +20,20 @@ def date2time(date: datetime.date) -> datetime.datetime:
 DatetimeLike = Union[torch.tensor, np.array, datetime.datetime]
 TimestampLike = Union[torch.tensor, np.array, float, int]
 
+_conversion_factors = {
+    "d": 1e6 * 60 * 60 * 24,
+    "h": 1e6 * 60 * 60,
+    "min": 1e6 * 60,
+    "s": 1e6,
+    "ms": 1000,
+}
+
+# TODO: Implement lists, test different timescales, implement torch
+
 
 def datetime2float(t: DatetimeLike, unit: str = "h") -> TimestampLike:
+    if unit not in _conversion_factors:
+        raise ValueError(f"Unit parameter '{unit}' not supported.")
     if isinstance(t, datetime.datetime):
         t = t.timestamp() * 1e6
     elif isinstance(t, np.ndarray):
@@ -31,13 +43,15 @@ def datetime2float(t: DatetimeLike, unit: str = "h") -> TimestampLike:
     else:
         raise TypeError(f"Datetime must be of type 'DatetimeLike'. Got '{type(t).__name__}'")
     # time is in microseconds
-    t = t / (1e6 * 60 * 60)
+    t = t / _conversion_factors[unit]
     # time is in hours
     return t
 
 
 def float2datetime(t: TimestampLike, unit: str = "h"):
-    t = t * (1e6 * 60 * 60)
+    if unit not in _conversion_factors:
+        raise ValueError(f"Unit parameter '{unit}' not supported.")
+    t = t * _conversion_factors[unit]
     if isinstance(t, (float, int)):
         t = datetime.datetime.fromtimestamp(t / 1e6)
     elif isinstance(t, np.ndarray):
