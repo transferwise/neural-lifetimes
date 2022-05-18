@@ -1,6 +1,8 @@
+import collections
 from typing import Any, Dict, List, Union, Optional
 
 import numpy as np
+import collections
 import pytorch_lightning as pl
 import torch
 from torch import nn
@@ -321,21 +323,25 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
 
         # trim sequences to only include forecasts
         assert len(input_seq) == len(predicted_seq)
-        predicted_seq = [trim_forecasts(i_seq, p_seq) for i_seq, p_seq in zip(input_seq, predicted_seq)]
+
+        asof_date = self.trainer.datamodule.forecast_dataset.asof_time
+        data_seq = {}
+        for batch_idx, batch in enumerate(input_seq):
+            for start, end in zip(batch["offsets"][:-1], batch["offsets"][1:]):
+                usr_id = int(batch["USER_PROFILE_ID"][start + 1].item())
+                last_before_asof = None  # should be before end
+                data_seq[usr_id] = {k: v[start:end] for k, v in batch.items()}
+
+        pred_seq = collections.defaultdict(list)
+        for batch_idx, batch in enumerate(predicted_seq):
+            for start, end in zip(batch["offsets"][:-1], batch["offsets"][1:]):
+                usr_id = int(batch["USER_PROFILE_ID"][start + 1].item())
+                n_obs = len(data_seq[usr_id]["t"])  # number of observations including start token
+                pred_seq[usr_id].append({k: v[(start + n_obs) : end] for k, v in batch.items()})
+
         print("A")
         # calculate number of events
         # calculate last date
         # calulate time interval
         # calculate number of events times margin
         # calculate number of events times volume
-
-
-def trim_forecasts(i_seq, p_seq):
-    for key, value in p_seq.items():
-        pass
-
-
-def trim_seq(tensor, offsets):
-    forcasts = []
-    for start, end in zip(offsets[:1], offsets[1:]):
-        forcasts.append(tensor[start:end])
