@@ -66,6 +66,8 @@ class ClickhouseSequenceDataset(SequenceDataset):
         # get all the UIDs with at least min_items_per_uid events
         date_filter = self.last_event_filter.replace("and", "where") if self.last_event_filter else ""
 
+        limit_query = f"LIMIT {self.limit}" if self.limit else ""
+
         uid_query = f"""
                         SELECT {uid_name}, cnt
                         FROM (
@@ -78,11 +80,10 @@ class ClickhouseSequenceDataset(SequenceDataset):
                             {date_filter}
                             GROUP by {uid_name}
                             order by {uid_name}
+                            {limit_query}
                             ) AS tmp
                         WHERE cnt_asof >={min_items_per_uid}
                         """
-        if self.limit:
-            uid_query += f" LIMIT {self.limit}"
 
         result = np.array(self.conn.execute(uid_query))
         # ordered list of all the ids we're considering
