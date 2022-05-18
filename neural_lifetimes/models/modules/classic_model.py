@@ -1,9 +1,10 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Optional
 
 import numpy as np
 import pytorch_lightning as pl
 import torch
 from torch import nn
+import datetime
 from torchmetrics import Accuracy, MeanAbsoluteError, MetricCollection
 
 from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss, VariationalEncoderDecoderLoss
@@ -17,6 +18,7 @@ from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, E
 from neural_lifetimes.utils.data import FeatureDictionaryEncoder
 
 from neural_lifetimes.utils.callbacks import GitInformationLogger
+import neural_lifetimes as nl
 from .configure_optimizers import configure_optimizers
 
 
@@ -82,6 +84,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         # The awkward inclusion of git information is necessary for Tensorboard
         self.save_hyperparameters({**self.build_parameter_dict(), **GitInformationLogger().data_dict()})
         self.configure_metrics()
+        self.inference_engine = nl.ModelInference(self)
 
     def build_parameter_dict(self) -> Dict[str, Any]:
         """Return a dictionary of parameters.
@@ -214,32 +217,6 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
             Currently only returns an empty dictionary -- is this intended?
         """
         return dict()
-        # parametric estimate of CLV
-        par_clv = self.trainer.datamodule.val_dataset._get_E_num_transactions(
-            output["p_churn"].mean(), 1 / output["next_dt"].mean()
-        )
-        # par_clv = self.trainer.datamodule.val_dataset._get_E_num_transactions(
-        #   output['p_churn'], 1/output['t_to_next']
-        # )
-
-        # non-parametric
-        users, user_idx, user_transactions = np.unique(batch["USER_PROFILE_ID"], return_index=True, return_counts=True)
-        users_true_clv = batch["clv"][
-            user_idx
-        ]  # TODO is this correct? Are we guaranteeing all transactions of the same user in the same batch?
-
-        # calculate metrics
-        metrics = {}
-        metrics["par_clv_mean"] = par_clv.mean()
-        metrics["par_clv_l1_error"] = torch.abs(par_clv.squeeze() - batch["clv"]).mean()
-        metrics["npar_clv_mean"] = user_transactions.mean()
-        metrics["npar_clv_var"] = user_transactions.var()
-        metrics["npar_clv_l1_error"] = np.abs(user_transactions - users_true_clv.detach().cpu().numpy()).mean()
-
-        # add split to metric names
-        metrics = {f"{split}_{k}": v for k, v in metrics.items()}
-
-        return metrics
 
     def get_and_log_metrics(
         self, y_pred: Dict[str, torch.Tensor], y_true: Dict[str, Any], split: str
@@ -311,6 +288,9 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         loss = self.get_and_log_loss(output, batch, split)
         self.get_and_log_metrics(output, batch, split)
 
+        if batch_idx % 1 == 0:
+            self.forecast(split)
+
         if split == "train":
             return loss
         else:
@@ -329,3 +309,33 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         pretrained_dict = {k: v for k, v in checkpoint_dict.items() if k in model_dict}
         model_dict.update(pretrained_dict)
         self.load_state_dict(model_dict)
+
+    def forecast(self, split):
+        input_seq, predicted_seq = self.inference_engine.extend_sequence(
+            loader=getattr(self.trainer.datamodule, f"{split}_forecast_dataloader")(),
+            start_date=self.trainer.datamodule.forecast_dataset.asof_time,
+            end_date=self.trainer.datamodule.forecast_dataset.last_event_time,
+            n=10,
+            return_input=True,
+        )
+
+        # trim sequences to only include forecasts
+        assert len(input_seq) == len(predicted_seq)
+        predicted_seq = [trim_forecasts(i_seq, p_seq) for i_seq, p_seq in zip(input_seq, predicted_seq)]
+        print("A")
+        # calculate number of events
+        # calculate last date
+        # calulate time interval
+        # calculate number of events times margin
+        # calculate number of events times volume
+
+
+def trim_forecasts(i_seq, p_seq):
+    for key, value in p_seq.items():
+        pass
+
+
+def trim_seq(tensor, offsets):
+    forcasts = []
+    for start, end in zip(offsets[:1], offsets[1:]):
+        forcasts.append(tensor[start:end])
