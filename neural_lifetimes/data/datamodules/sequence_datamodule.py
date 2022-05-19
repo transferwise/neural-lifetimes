@@ -1,3 +1,4 @@
+import random
 from typing import Any, Dict, List
 
 import pytorch_lightning as pl
@@ -15,15 +16,27 @@ class SequenceDataModule(pl.LightningDataModule):
     The pl automatically selects the correct split of the dataset given the current step.
 
     Args:
-        dataset (SequenceDataset): A pytorch Dataset instance
+        dataset (SequenceDataset): The dataset for training.
         test_size (float): The proportion of data points that will be part of the validation set. 0 < test_size < 1
-        batch_points (int): Batch size
+        batch_points (int): Batch size (count of events).
+        transform (FeatureDictionaryEncoder): The encoder to be used on the batch. Will be passed on to the
+            ``SequenceLoader``.
+        target_transform (TargetCreator): The transform used to generate targets. Will be passed on to the
+            ``SequenceLoader``.
+        tokenizer (Tokenizer): The tokenizer appending start tokens for packing the sequences. Will be passed
+            on to the ``SequenceLoader``.
+        min_points (int): ??
+        forecast_dataset (SequenceDataset, Optional): The dataset used for forecasting. Defaults to None.
+        forecast_limit (int, Optional): The maximum number of data points on which to perform forecasting.
+            This will generate a simple random sample of size ``forecast_limit`` from the indexes of the
+            respective split of indices. if ``None``, no sample is taken. Defaults to None.
 
     Attributes:
         dataset (SequenceDataset): A pytorch Dataset instance
         test_size (float): The proportion of data points that will be part of the validation set. 0 < test_size < 1
         batch_points (int): Batch size
         target_transform (TargetCreator): A class that transforms the targets.
+        TODO: all
     """
 
     def __init__(
@@ -35,15 +48,19 @@ class SequenceDataModule(pl.LightningDataModule):
         target_transform: TargetCreator,
         tokenizer: Tokenizer,
         min_points: int,
+        forecast_dataset: SequenceDataset = None,
+        forecast_limit: int = None,
     ):
         super().__init__()
         self.dataset = dataset
+        self.forecast_dataset = forecast_dataset
         self.test_size = test_size
         self.batch_points = batch_points
         self.transform = transform
         self.target_transform = target_transform
         self.tokenizer = tokenizer
         self.min_points = min_points
+        self.forecast_limit = forecast_limit
 
         self.save_hyperparameters(self.build_parameter_dict())
 
@@ -103,7 +120,7 @@ class SequenceDataModule(pl.LightningDataModule):
 
         return hparams
 
-    def _build_dataloader(self, indices: List[int]) -> SequenceLoader:
+    def _build_dataloader(self, dataset: SequenceDataset, indices: List[int]) -> SequenceLoader:
         """Build a dataloader over the provided index list.
 
         Args:
@@ -113,7 +130,7 @@ class SequenceDataModule(pl.LightningDataModule):
             SequenceLoader: A SequenceLoader allowing access to data with the provided indices.
         """
         return SequenceLoader(
-            SequenceSubset(self.dataset, indices),
+            SequenceSubset(dataset, indices),
             self.transform,
             self.target_transform,
             self.tokenizer,
@@ -127,7 +144,7 @@ class SequenceDataModule(pl.LightningDataModule):
         Returns:
             SequenceLoader: the dataloader for training.
         """
-        return self._build_dataloader(self.train_inds)
+        return self._build_dataloader(self.dataset, self.train_inds)
 
     def val_dataloader(self):
         """Build a dataloader for validation steps.
@@ -135,7 +152,7 @@ class SequenceDataModule(pl.LightningDataModule):
         Returns:
             SequenceLoader: the dataloader for validation.
         """
-        return self._build_dataloader(self.valid_inds)
+        return self._build_dataloader(self.dataset, self.valid_inds)
 
     def test_dataloader(self):
         """Build a dataloader for testing.
@@ -143,7 +160,7 @@ class SequenceDataModule(pl.LightningDataModule):
         Returns:
             SequenceLoader: the dataloader for testing.
         """
-        return self._build_dataloader(self.test_inds)
+        return self._build_dataloader(self.dataset, self.test_inds)
 
     def predict_dataloader(self):
         """Build a dataloader for prediction.
@@ -151,4 +168,20 @@ class SequenceDataModule(pl.LightningDataModule):
         Returns:
             SequenceLoader: the dataloader for prediction.
         """
-        return self._build_dataloader(self.predict_inds)
+        # TODO: decide on forecast vs train dataset
+        return self._build_dataloader(self.forecast_dataset, self.predict_inds)
+
+    def _forecast_indices(self, indices):
+        if indices is None or len(indices) <= self.forecast_limit:
+            return indices
+        else:
+            return random.sample(indices, self.forecast_limit)
+
+    def train_forecast_dataloader(self):
+        return self._build_dataloader(self.forecast_dataset, self._forecast_indices(self.train_inds))
+
+    def val_forecast_dataloader(self):
+        return self._build_dataloader(self.forecast_dataset, self._forecast_indices(self.valid_inds))
+
+    def test_forecast_dataloader(self):
+        return self._build_dataloader(self.forecast_dataset, self._forecast_indices(self.test_inds))
