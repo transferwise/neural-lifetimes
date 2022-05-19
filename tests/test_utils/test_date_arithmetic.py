@@ -1,10 +1,9 @@
 from datetime import datetime, timedelta
 
 import numpy as np
-import torch
 
 import pytest
-from neural_lifetimes.utils.date_arithmetic import datetime2float, float2datetime
+from neural_lifetimes.utils.date_arithmetic import datetime2float, float2datetime, _conversion_factors
 
 
 @pytest.fixture
@@ -84,7 +83,20 @@ class Test_AcrossTypes:
         res_np = datetime2float(np_datetimes)
         assert np.all(np.isclose(res_base, res_np, rtol=0, atol=error_tolerance))
 
+
+class Test_Units:
     @staticmethod
-    @pytest.mark.xfail
-    def test_numpy_torch():
-        assert False
+    def test_tofloat(datetimes, error_tolerance):
+        cf = _conversion_factors
+        base = np.array([datetime2float(dt) for dt in datetimes])
+        res = {unit: np.array([datetime2float(dt, unit=unit) for dt in datetimes]) for unit in cf.keys()}
+        for unit, arr in res.items():
+            assert np.all(np.isclose(arr * cf[unit] / cf["h"], base, rtol=0, atol=error_tolerance))
+
+    @staticmethod
+    def test_todatetime(datetimes, timestamps, error_tolerance):
+        cf = _conversion_factors
+        timestamps = {unit: [ts / cf[unit] * cf["h"] for ts in timestamps] for unit in cf.keys()}
+        res = {unit: [float2datetime(ts, unit=unit) for ts in tstamp] for unit, tstamp in timestamps.items()}
+        for arr in res.values():
+            assert all([(r - t) < timedelta(hours=error_tolerance) for r, t in zip(arr, datetimes)])

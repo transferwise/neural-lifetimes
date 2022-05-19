@@ -1,7 +1,6 @@
 import datetime
 from typing import Union
 import numpy as np
-import torch
 
 
 def date2time(date: datetime.date) -> datetime.datetime:
@@ -17,8 +16,8 @@ def date2time(date: datetime.date) -> datetime.datetime:
     return datetime.datetime.combine(date, datetime.datetime.min.time())
 
 
-DatetimeLike = Union[torch.tensor, np.array, datetime.datetime]
-TimestampLike = Union[torch.tensor, np.array, float, int]
+DatetimeLike = Union[np.array, datetime.datetime]
+TimestampLike = Union[np.array, float, int]
 
 _conversion_factors = {
     "d": 1e6 * 60 * 60 * 24,
@@ -38,8 +37,6 @@ def datetime2float(t: DatetimeLike, unit: str = "h") -> TimestampLike:
         t = t.timestamp() * 1e6
     elif isinstance(t, np.ndarray):
         t = t.astype("datetime64[us]").astype(np.int64).astype(np.float32)
-    elif isinstance(t, torch.tensor):
-        raise NotImplementedError
     else:
         raise TypeError(f"Datetime must be of type 'DatetimeLike'. Got '{type(t).__name__}'")
     # time is in microseconds
@@ -56,8 +53,6 @@ def float2datetime(t: TimestampLike, unit: str = "h"):
         t = datetime.datetime.fromtimestamp(t / 1e6)
     elif isinstance(t, np.ndarray):
         t = t.astype("datetime64[us]")
-    elif isinstance(t, torch.tensor):
-        raise NotImplementedError
     else:
         raise TypeError(f"Datetime must be of type 'DatetimeLike'. Got '{type(t).__name__}'")
 
