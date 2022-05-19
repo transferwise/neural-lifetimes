@@ -130,7 +130,7 @@ class SequenceDataModule(pl.LightningDataModule):
             SequenceLoader: A SequenceLoader allowing access to data with the provided indices.
         """
         return SequenceLoader(
-            SequenceSubset(self.dataset, indices),
+            SequenceSubset(dataset, indices),
             self.transform,
             self.target_transform,
             self.tokenizer,
