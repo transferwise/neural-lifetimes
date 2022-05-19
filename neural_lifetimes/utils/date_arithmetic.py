@@ -27,10 +27,21 @@ _conversion_factors = {
     "ms": 1000,
 }
 
-# TODO: Implement lists, test different timescales, implement torch
-
 
 def datetime2float(t: DatetimeLike, unit: str = "h") -> TimestampLike:
+    """Converts datetime-like objects to timestamps given a certain unit.
+
+    Args:
+        t (DatetimeLike): The datetime-like object, e.g. datetime.datetime or np.array["datetime64[us]"]
+        unit (str, optional): Units for the time scale. supported are "d", "h", "min", "s", "ms". Defaults to "h".
+
+    Raises:
+        ValueError: When "unit" not supported.
+        TypeError: when type of "t" not supported.
+
+    Returns:
+        TimestampLike: float or np.array[np.float32] with timestamps.
+    """
     if unit not in _conversion_factors:
         raise ValueError(f"Unit parameter '{unit}' not supported.")
     if isinstance(t, datetime.datetime):
@@ -45,7 +56,20 @@ def datetime2float(t: DatetimeLike, unit: str = "h") -> TimestampLike:
     return t
 
 
-def float2datetime(t: TimestampLike, unit: str = "h"):
+def float2datetime(t: TimestampLike, unit: str = "h") -> DatetimeLike:
+    """Converts float values to datetime objects.
+
+    Args:
+        t (TimestampLike): numeric value with timestamp.
+        unit (str, optional): Units for the time scale. supported are "d", "h", "min", "s", "ms". Defaults to "h".
+
+    Raises:
+        ValueError: When "unit" not supported.
+        TypeError: when type of "t" not supported.
+
+    Returns:
+        DatetimeLike: The datetimes.
+    """
     if unit not in _conversion_factors:
         raise ValueError(f"Unit parameter '{unit}' not supported.")
     t = t * _conversion_factors[unit]
@@ -54,6 +78,6 @@ def float2datetime(t: TimestampLike, unit: str = "h"):
     elif isinstance(t, np.ndarray):
         t = t.astype("datetime64[us]")
     else:
-        raise TypeError(f"Datetime must be of type 'DatetimeLike'. Got '{type(t).__name__}'")
+        raise TypeError(f"Datetime must be of type 'TimestampLike'. Got '{type(t).__name__}'")
 
     return t

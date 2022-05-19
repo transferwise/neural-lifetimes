@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 import numpy as np
 
 import pytest
-from neural_lifetimes.utils.date_arithmetic import datetime2float, float2datetime, _conversion_factors
+from neural_lifetimes.utils import datetime2float, float2datetime
+from neural_lifetimes.utils.date_arithmetic import _conversion_factors
 
 
 @pytest.fixture
