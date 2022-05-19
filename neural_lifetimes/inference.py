@@ -13,7 +13,7 @@ import pytorch_lightning as pl
 from neural_lifetimes.data.dataloaders.sequence_loader import SequenceLoader
 from neural_lifetimes.models.modules.classic_model import ClassicModel
 from neural_lifetimes.utils.data.feature_encoder import FeatureDictionaryEncoder
-
+from neural_lifetimes.utils import datetime2float, float2datetime
 
 class ModelInference:
     """
@@ -171,6 +171,9 @@ class ModelInference:
                     new_seq["token_event"] = torch.cat(
                         (seq["token_event"], torch.tensor([0], device=seq["token_event"].device))
                     )
+                    new_seq["offsets"] = torch.tensor([0, len(new_seq["t"])])
+                else:
+                    new_seq = seq.copy()
 
                 new_sequences.append(new_seq)
                 churn_state.append(new_seq["churn"][-1])
@@ -182,7 +185,7 @@ class ModelInference:
                 if churn_state[i] == 0 and last_date[i] < datetime2float(end_date)
             ]
             seqs_finished.extend(
-                [new_sequences[i] for i in range(num_seqs) if churn_state[i] == 1]  # or last_date[i] >= end_date
+                [new_sequences[i] for i in range(num_seqs) if churn_state[i] == 1 or last_date[i] >= datetime2float(end_date)]
             )
 
             seqs_ongoing = build_batch(seqs_ongoing)
@@ -425,24 +428,6 @@ def merge_batches(batches: List, keys: List = None):
     )
 
     return merged
-
-
-def np_datetime2float(x: np.ndarray) -> np.ndarray:
-    ts = x.astype("datetime64[us]").astype(np.int64).astype(np.float32) / (1e6 * 60 * 60)
-    return ts
-
-
-def np_float2datetime(x: np.array) -> np.ndarray:
-    return (x.astype("float32") * (1e6 * 60 * 60)).astype("datetime64[us]")
-
-
-def datetime2float(x: datetime.datetime) -> float:
-    return x.timestamp() / (60 * 60)
-
-
-def float2datetime(x: float) -> datetime.datetime:
-    return datetime.datetime.fromtimestamp(60 * 60 * x)
-
 
 def add_delta_to_numpy(t: np.ndarray, delta_hours: float) -> np.ndarray:
     return t + np.array(datetime.timedelta(hours=delta_hours)).astype(np.timedelta64)

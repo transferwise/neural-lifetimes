@@ -18,6 +18,7 @@ from ..nets.event_model import EventEncoder
 from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, ExponentialHeadNoLoss, NormalHead
 
 from neural_lifetimes.utils.data import FeatureDictionaryEncoder
+from neural_lifetimes.utils import datetime2float, float2datetime
 
 from neural_lifetimes.utils.callbacks import GitInformationLogger
 import neural_lifetimes as nl
@@ -291,7 +292,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         self.get_and_log_metrics(output, batch, split)
 
         if batch_idx % 1 == 0:
-            self.forecast(split)
+            self.forecasting_metrics(split)
 
         if split == "train":
             return loss
@@ -312,9 +313,32 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         model_dict.update(pretrained_dict)
         self.load_state_dict(model_dict)
 
+    def forecasting_metrics(self, split):
+        start = datetime.datetime.now()
+        forecast_seq = self.forecast(split)
+        true_seq = self.get_true_data_forecast(split)
+
+        print("A")
+        pred_seq_lengths = {k: [len(x['t']) for x in v] for k, v in forecast_seq.items()}
+        mean_pred_seq_lengths = {k: np.array(v).mean() for k, v in pred_seq_lengths.items()}
+        true_seq_lengths = {k: len(v['t']) for k, v in true_seq.items()}
+
+        diffs = {k: abs(mean_pred_seq_lengths[k] - true_seq_lengths[k]) for k in true_seq_lengths.keys()}
+        mean_diff_length = np.array([*diffs.values()]).mean()
+        self.log(f"{split}_forecast/pred_mean_num_events", np.array([*mean_pred_seq_lengths.values()]))
+        self.log(f"{split}_forecast/mae_num_events", mean_diff_length)
+        # calculate number of events
+        # calculate last date
+        # calculate time interval
+        # calculate number of events times margin
+        # calculate number of events times volume
+        end = datetime.datetime.now()
+        diff = end-start
+        print(diff)
+
     def forecast(self, split):
         input_seq, predicted_seq = self.inference_engine.extend_sequence(
-            loader=getattr(self.trainer.datamodule, f"{split}_forecast_dataloader")(),
+            loader=getattr(self.trainer.datamodule, f"{split}_dataloader")(),
             start_date=self.trainer.datamodule.forecast_dataset.asof_time,
             end_date=self.trainer.datamodule.forecast_dataset.last_event_time,
             n=10,
@@ -324,24 +348,36 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         # trim sequences to only include forecasts
         assert len(input_seq) == len(predicted_seq)
 
-        asof_date = self.trainer.datamodule.forecast_dataset.asof_time
-        data_seq = {}
-        for batch_idx, batch in enumerate(input_seq):
+        forecast_seq = trim_forecasts(input_seq, predicted_seq)
+        return forecast_seq
+
+    def get_true_data_forecast(self, split):
+        asof_time = datetime2float(self.trainer.datamodule.dataset.asof_time)
+        true_forecast_seq = {}
+        for idx, batch in enumerate(getattr(self.trainer.datamodule, f"{split}_forecast_dataloader")()):
             for start, end in zip(batch["offsets"][:-1], batch["offsets"][1:]):
                 usr_id = int(batch["USER_PROFILE_ID"][start + 1].item())
-                last_before_asof = None  # should be before end
-                data_seq[usr_id] = {k: v[start:end] for k, v in batch.items()}
+                past_asof = (batch["t"][start:end] > asof_time).sum().item()
+                true_forecast_seq[usr_id] = {k: v[end-past_asof:end] for k, v in batch.items()}
+        return true_forecast_seq
 
-        pred_seq = collections.defaultdict(list)
-        for batch_idx, batch in enumerate(predicted_seq):
-            for start, end in zip(batch["offsets"][:-1], batch["offsets"][1:]):
-                usr_id = int(batch["USER_PROFILE_ID"][start + 1].item())
-                n_obs = len(data_seq[usr_id]["t"])  # number of observations including start token
-                pred_seq[usr_id].append({k: v[(start + n_obs) : end] for k, v in batch.items()})
 
-        print("A")
-        # calculate number of events
-        # calculate last date
-        # calulate time interval
-        # calculate number of events times margin
-        # calculate number of events times volume
+def trim_forecasts(input_seq, predicted_seq):
+    # trim sequences to only include forecasts
+    assert len(input_seq) == len(predicted_seq)
+
+    data_seq = {}
+    for batch_idx, batch in enumerate(input_seq):
+        for start, end in zip(batch["offsets"][:-1], batch["offsets"][1:]):
+            usr_id = int(batch["USER_PROFILE_ID"][start + 1].item())
+            data_seq[usr_id] = {k: v[start:end] for k, v in batch.items()}
+
+    pred_seq = collections.defaultdict(list)
+    for batch_idx, batch in enumerate(predicted_seq):
+        for start, end in zip(batch["offsets"][:-1], batch["offsets"][1:]):
+            usr_id = int(batch["USER_PROFILE_ID"][start + 1].item())
+            n_obs = len(data_seq[usr_id]["t"])  # number of observations including start token
+            pred_seq[usr_id].append({k: v[(start + n_obs): end] for k, v in batch.items()})
+
+
+    return pred_seq
