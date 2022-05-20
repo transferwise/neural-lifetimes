@@ -291,7 +291,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         loss = self.get_and_log_loss(output, batch, split)
         self.get_and_log_metrics(output, batch, split)
 
-        if batch_idx % 1 == 0:
+        if batch_idx % 100 == 0:
             self.forecasting_metrics(split)
 
         if split == "train":
@@ -315,24 +315,40 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
 
     def forecasting_metrics(self, split):
         start = datetime.datetime.now()
-        forecast_seq = self.forecast(split)
-        true_seq = self.get_true_data_forecast(split)
+        with torch.no_grad():
+            forecast_seq = self.forecast(split)
+            true_seq = self.get_true_data_forecast(split)
 
-        print("A")
-        pred_seq_lengths = {k: [len(x['t']) for x in v] for k, v in forecast_seq.items()}
-        mean_pred_seq_lengths = {k: np.array(v).mean() for k, v in pred_seq_lengths.items()}
-        true_seq_lengths = {k: len(v['t']) for k, v in true_seq.items()}
+            # get predicted sequence lengths
+            pred_seq_lengths = {k: [len(x['t']) for x in v] for k, v in forecast_seq.items()}
+            mean_pred_seq_lengths = {k: np.array(v).mean() for k, v in pred_seq_lengths.items()}
+            # get the true sequence lengths
+            true_seq_lengths = {k: len(v['t']) for k, v in true_seq.items()}
+            # get difference between sequence lengths
+            diffs = {k: abs(mean_pred_seq_lengths[k] - true_seq_lengths[k]) for k in true_seq_lengths.keys()}
+            mean_diff_length = np.array([*diffs.values()]).mean()
+            # log sequence lengths
+            self.log(f"{split}_forecast/pred_mean_num_events", np.array([*mean_pred_seq_lengths.values()]).mean())
+            self.log(f"{split}_forecast/mae_num_events", mean_diff_length)
 
-        diffs = {k: abs(mean_pred_seq_lengths[k] - true_seq_lengths[k]) for k in true_seq_lengths.keys()}
-        mean_diff_length = np.array([*diffs.values()]).mean()
-        self.log(f"{split}_forecast/pred_mean_num_events", np.array([*mean_pred_seq_lengths.values()]).mean())
-        self.log(f"{split}_forecast/mae_num_events", mean_diff_length)
-        # calculate number of events
-        # calculate last date
-        # calculate time interval
-        # calculate number of events times margin
-        # calculate number of events times volume
-        end = datetime.datetime.now()
+            # get predicted sequence intervals
+            dts_pred = {k: torch.cat([v['dt'] for v in d]) for k, d in forecast_seq.items()}
+            dts_pred_means = {k: (v.mean() if len(v) else torch.tensor(np.nan, device=v.device)) for k, v in dts_pred.items()}
+            dts_pred_mean = torch.tensor([x.item() for x in dts_pred_means.values()]).nanmean().item()
+            # get true sequence intervals
+            # TODO: A lot of NAN values. why?
+            dts_true_means = {k: v['dt'].mean() for k, v in true_seq.items()}
+            dts_diffs = {k: abs(dts_true_means[k]-dts_pred_means[k]) for k in dts_true_means.keys()}
+            dts_true_mean = torch.stack([*dts_diffs.values()]).nanmean().item()
+            self.log(f"{split}_forecast/pred_mean_time_intervals", dts_pred_mean)
+            self.log(f"{split}_forecast/mae_time_intervals", dts_true_mean)
+
+            # calculate number of events
+            # calculate last date
+            # calculate time interval
+            # calculate number of events times margin
+            # calculate number of events times volume
+            end = datetime.datetime.now()
         diff = end-start
         print(diff)
 
@@ -341,7 +357,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
             loader=getattr(self.trainer.datamodule, f"{split}_dataloader")(),
             start_date=self.trainer.datamodule.forecast_dataset.asof_time,
             end_date=self.trainer.datamodule.forecast_dataset.last_event_time,
-            n=10,
+            n=2,
             return_input=True,
         )
 
