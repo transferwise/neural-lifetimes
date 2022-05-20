@@ -325,7 +325,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
 
         diffs = {k: abs(mean_pred_seq_lengths[k] - true_seq_lengths[k]) for k in true_seq_lengths.keys()}
         mean_diff_length = np.array([*diffs.values()]).mean()
-        self.log(f"{split}_forecast/pred_mean_num_events", np.array([*mean_pred_seq_lengths.values()]))
+        self.log(f"{split}_forecast/pred_mean_num_events", np.array([*mean_pred_seq_lengths.values()]).mean())
         self.log(f"{split}_forecast/mae_num_events", mean_diff_length)
         # calculate number of events
         # calculate last date
