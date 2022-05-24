@@ -1,6 +1,8 @@
 import pytorch_lightning as pl
 import torch
 
+from .get_tensorboard_logger import _get_tensorboard_logger
+
 
 class MonitorProjection(pl.Callback):
     def __init__(self, max_batches: int = 100, mod: int = 5):
@@ -11,7 +13,7 @@ class MonitorProjection(pl.Callback):
     def on_train_epoch_end(self, trainer, pl_module):
         if trainer.current_epoch % self.mod == 0:
             loader = trainer.datamodule.val_dataloader()
-            logger = trainer.logger
+            logger = _get_tensorboard_logger(trainer)
 
             encoded_data = []
             labels = []
