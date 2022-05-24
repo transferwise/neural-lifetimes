@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Union
+import collections
+from typing import Any, Dict, List, Union, Optional
 
 import numpy as np
+import collections
 import pytorch_lightning as pl
 import torch
 from torch import nn
+import datetime
 from torchmetrics import Accuracy, MeanAbsoluteError, MetricCollection
 
 from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss, VariationalEncoderDecoderLoss
@@ -15,8 +18,10 @@ from ..nets.event_model import EventEncoder
 from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, ExponentialHeadNoLoss, NormalHead
 
 from neural_lifetimes.utils.data import FeatureDictionaryEncoder
+from neural_lifetimes.utils import datetime2float, float2datetime
 
 from neural_lifetimes.utils.callbacks import GitInformationLogger
+import neural_lifetimes as nl
 from .configure_optimizers import configure_optimizers
 
 
@@ -47,9 +52,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         vae_sampling_scaler: float = 1.0,
         vae_KL_weight: float = 1.0,
         optimizer_kwargs: Dict[str, Any] = None,
-        **kwargs: Any,
     ) -> None:
-        super().__init__(**kwargs)
+        super().__init__()
         self.rnn_dim = rnn_dim
         self.drop_rate = drop_rate
         self.bottleneck_dim = bottleneck_dim
@@ -83,6 +87,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         # The awkward inclusion of git information is necessary for Tensorboard
         self.save_hyperparameters({**self.build_parameter_dict(), **GitInformationLogger().data_dict()})
         self.configure_metrics()
+        self.inference_engine = nl.ModelInference(self)
 
     def build_parameter_dict(self) -> Dict[str, Any]:
         """Return a dictionary of parameters.
@@ -101,8 +106,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
             "vae_KL_weight": self.vae_KL_weight,
             **self.emb.build_parameter_dict(),
         }
-
-        return {f"model/{k}": v for k, v in hparams.items()}
+        return hparams
+        # return {f"model/{k}": v for k, v in hparams.items()}
 
     def configure_optimizers(self):
         return configure_optimizers(
@@ -215,32 +220,6 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
             Currently only returns an empty dictionary -- is this intended?
         """
         return dict()
-        # parametric estimate of CLV
-        par_clv = self.trainer.datamodule.val_dataset._get_E_num_transactions(
-            output["p_churn"].mean(), 1 / output["next_dt"].mean()
-        )
-        # par_clv = self.trainer.datamodule.val_dataset._get_E_num_transactions(
-        #   output['p_churn'], 1/output['t_to_next']
-        # )
-
-        # non-parametric
-        users, user_idx, user_transactions = np.unique(batch["USER_PROFILE_ID"], return_index=True, return_counts=True)
-        users_true_clv = batch["clv"][
-            user_idx
-        ]  # TODO is this correct? Are we guaranteeing all transactions of the same user in the same batch?
-
-        # calculate metrics
-        metrics = {}
-        metrics["par_clv_mean"] = par_clv.mean()
-        metrics["par_clv_l1_error"] = torch.abs(par_clv.squeeze() - batch["clv"]).mean()
-        metrics["npar_clv_mean"] = user_transactions.mean()
-        metrics["npar_clv_var"] = user_transactions.var()
-        metrics["npar_clv_l1_error"] = np.abs(user_transactions - users_true_clv.detach().cpu().numpy()).mean()
-
-        # add split to metric names
-        metrics = {f"{split}_{k}": v for k, v in metrics.items()}
-
-        return metrics
 
     def get_and_log_metrics(
         self, y_pred: Dict[str, torch.Tensor], y_true: Dict[str, Any], split: str
@@ -312,6 +291,9 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         loss = self.get_and_log_loss(output, batch, split)
         self.get_and_log_metrics(output, batch, split)
 
+        if batch_idx % 100 == 0:
+            self.forecasting_metrics(split)
+
         if split == "train":
             return loss
         else:
@@ -330,3 +312,88 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         pretrained_dict = {k: v for k, v in checkpoint_dict.items() if k in model_dict}
         model_dict.update(pretrained_dict)
         self.load_state_dict(model_dict)
+
+    def forecasting_metrics(self, split):
+        start = datetime.datetime.now()
+        with torch.no_grad():
+            forecast_seq = self.forecast(split)
+            true_seq = self.get_true_data_forecast(split)
+
+            # get predicted sequence lengths
+            pred_seq_lengths = {k: [len(x['t']) for x in v] for k, v in forecast_seq.items()}
+            mean_pred_seq_lengths = {k: np.array(v).mean() for k, v in pred_seq_lengths.items()}
+            # get the true sequence lengths
+            true_seq_lengths = {k: len(v['t']) for k, v in true_seq.items()}
+            # get difference between sequence lengths
+            diffs = {k: abs(mean_pred_seq_lengths[k] - true_seq_lengths[k]) for k in true_seq_lengths.keys()}
+            mean_diff_length = np.array([*diffs.values()]).mean()
+            # log sequence lengths
+            self.log(f"{split}_forecast/pred_mean_num_events", np.array([*mean_pred_seq_lengths.values()]).mean())
+            self.log(f"{split}_forecast/mae_num_events", mean_diff_length)
+
+            # get predicted sequence intervals
+            dts_pred = {k: torch.cat([v['dt'] for v in d]) for k, d in forecast_seq.items()}
+            dts_pred_means = {k: (v.mean() if len(v) else torch.tensor(np.nan, device=v.device)) for k, v in dts_pred.items()}
+            dts_pred_mean = torch.tensor([x.item() for x in dts_pred_means.values()]).nanmean().item()
+            # get true sequence intervals
+            # TODO: A lot of NAN values. why?
+            dts_true_means = {k: v['dt'].mean() for k, v in true_seq.items()}
+            dts_diffs = {k: abs(dts_true_means[k]-dts_pred_means[k]) for k in dts_true_means.keys()}
+            dts_true_mean = torch.stack([*dts_diffs.values()]).nanmean().item()
+            self.log(f"{split}_forecast/pred_mean_time_intervals", dts_pred_mean)
+            self.log(f"{split}_forecast/mae_time_intervals", dts_true_mean)
+
+            # calculate number of events
+            # calculate last date
+            # calculate time interval
+            # calculate number of events times margin
+            # calculate number of events times volume
+            end = datetime.datetime.now()
+        diff = end-start
+        print(diff)
+
+    def forecast(self, split):
+        input_seq, predicted_seq = self.inference_engine.extend_sequence(
+            loader=getattr(self.trainer.datamodule, f"{split}_dataloader")(),
+            start_date=self.trainer.datamodule.forecast_dataset.asof_time,
+            end_date=self.trainer.datamodule.forecast_dataset.last_event_time,
+            n=2,
+            return_input=True,
+        )
+
+        # trim sequences to only include forecasts
+        assert len(input_seq) == len(predicted_seq)
+
+        forecast_seq = trim_forecasts(input_seq, predicted_seq)
+        return forecast_seq
+
+    def get_true_data_forecast(self, split):
+        asof_time = datetime2float(self.trainer.datamodule.dataset.asof_time)
+        true_forecast_seq = {}
+        for idx, batch in enumerate(getattr(self.trainer.datamodule, f"{split}_forecast_dataloader")()):
+            for start, end in zip(batch["offsets"][:-1], batch["offsets"][1:]):
+                usr_id = int(batch["USER_PROFILE_ID"][start + 1].item())
+                past_asof = (batch["t"][start:end] > asof_time).sum().item()
+                true_forecast_seq[usr_id] = {k: v[end-past_asof:end] for k, v in batch.items()}
+        return true_forecast_seq
+
+
+def trim_forecasts(input_seq, predicted_seq):
+    # trim sequences to only include forecasts
+    assert len(input_seq) == len(predicted_seq)
+
+    data_seq = {}
+    for batch_idx, batch in enumerate(input_seq):
+        for start, end in zip(batch["offsets"][:-1], batch["offsets"][1:]):
+            usr_id = int(batch["USER_PROFILE_ID"][start + 1].item())
+            data_seq[usr_id] = {k: v[start:end] for k, v in batch.items()}
+
+    pred_seq = collections.defaultdict(list)
+    for batch_idx, batch in enumerate(predicted_seq):
+        for start, end in zip(batch["offsets"][:-1], batch["offsets"][1:]):
+            usr_id = int(batch["USER_PROFILE_ID"][start + 1].item())
+            n_obs = len(data_seq[usr_id]["t"])  # number of observations including start token
+            pred_seq[usr_id].append({k: v[(start + n_obs): end] for k, v in batch.items()})
+
+
+    return pred_seq
