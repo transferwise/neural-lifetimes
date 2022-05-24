@@ -8,6 +8,9 @@ def _get_tensorboard_logger(trainer: pl.Trainer) -> TensorBoardLogger:
             break
     else:
         logger_types = [type(logger).__name__ for logger in trainer.loggers]
-        raise ValueError(f"Loggers needs to contain a Tensorboard logger to work. Got {logger_types}.")
+        raise ValueError(
+            f"No Tensorboard logger found in the lightning Trainers loggers. Got {logger_types} instead."
+            + "his callback requires Tensorboard loggers to be present."
+        )
 
     return logger
