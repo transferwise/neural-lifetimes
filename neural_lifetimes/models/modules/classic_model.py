@@ -38,6 +38,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
     def __init__(
         self,
         feature_encoder_config: Dict[str, Any],
+        emb_dim: int,
         rnn_dim: int,
         drop_rate: float,
         bottleneck_dim: int,
@@ -47,6 +48,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         vae_sampling_scaler: float = 1.0,
         vae_KL_weight: float = 1.0,
         optimizer_kwargs: Dict[str, Any] = None,
+        log_git_information: bool = False,
+        config_dict_to_log: Dict[str, Any] = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -61,8 +64,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         # TODO add arguments for setting NN parameters
         self.emb = CombinedEmbedder(
             feature_encoder=self.feature_encoder,
-            embed_dim=256,
-            drop_rate=0.5,
+            embed_dim=emb_dim,
+            drop_rate=drop_rate,
         )
 
         self.event_encoder = EventEncoder(self.emb, rnn_dim, drop_rate)
@@ -81,8 +84,14 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
 
         self.criterion = self.configure_criterion()
         # The awkward inclusion of git information is necessary for Tensorboard
-        # **GitInformationLogger().data_dict()
-        self.save_hyperparameters({**self.build_parameter_dict()})
+        # If cfg_dict is passed in log that otherwise collect parameter dict.
+        if config_dict_to_log is None:
+            cfg_dict = {**self.build_parameter_dict()}
+        else:
+            cfg_dict = config_dict_to_log
+        if log_git_information:
+            cfg_dict.update({**GitInformationLogger().data_dict()})
+        self.save_hyperparameters(cfg_dict)
         self.configure_metrics()
 
     def build_parameter_dict(self) -> Dict[str, Any]:
@@ -106,8 +115,16 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         return {f"model/{k}": v for k, v in hparams.items()}
 
     def configure_optimizers(self):
+        kwargs = {
+            "optimizer": "Adam",
+            "scheduler": "ReduceLROnPlateau",
+        }
+        kwargs.update(self.optimizer_kwargs)
+
         return configure_optimizers(
-            self.parameters(), self.lr, optimizer="Adam", scheduler="ReduceLROnPlateau", **self.optimizer_kwargs
+            parameters=self.parameters(),
+            lr=self.lr,
+            **kwargs,
         )
 
     def forward(self, x: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
