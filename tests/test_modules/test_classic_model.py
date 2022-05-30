@@ -75,6 +75,7 @@ class TestClassicModel:
         model = ClassicModel(
             feature_encoder_config=transform.config_dict(),
             rnn_dim=256,
+            emb_dim=256,
             drop_rate=0.5,
             bottleneck_dim=32,
             lr=0.001,

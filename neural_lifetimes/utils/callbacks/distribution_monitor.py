@@ -8,6 +8,8 @@ from torchmetrics import MetricCollection
 
 from neural_lifetimes.metrics import KullbackLeiblerDivergence, ParametricKullbackLeiblerDivergence, WassersteinMetric
 
+from .get_tensorboard_logger import _get_tensorboard_logger
+
 
 class DistributionMonitor(pl.Callback):
     """
@@ -54,7 +56,7 @@ class DistributionMonitor(pl.Callback):
         - the time to next event
         """
         loader = trainer.datamodule.val_dataloader()
-        logger = trainer.loggers[0]
+        logger = _get_tensorboard_logger(trainer)
 
         # max_batches = 10
         lambdas = []
@@ -143,7 +145,7 @@ class DistributionMonitor(pl.Callback):
         y_pred = y_pred.cpu().detach().numpy()
         sampled_t_from_lambda_pred = sampled_t_from_lambda_pred.cpu().detach().numpy()
 
-        logger = trainer.loggers[0]
+        logger = _get_tensorboard_logger(trainer)
         logger.experiment.add_histogram(
             "time_intervals/lambda_Pred",
             np.clip(lambda_pred, 0, self.clip_lambda_val),
