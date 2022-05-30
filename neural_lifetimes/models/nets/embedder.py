@@ -66,13 +66,21 @@ class CombinedEmbedder(nn.Module):
     def forward(self, x: Dict[str, torch.Tensor]):
         # batch x num_cont_features
         cf = torch.stack([x[f] for f in self.continuous_features], dim=1)
-        cf[cf.isnan()] = 0
+        cf_old = cf.clone()
+        cf[cf.isnan()] = 0  # TODO do not do if nan is start token
+
+        cf_with_0 = cf.clone()
 
         out = F.dropout(F.relu(self.c1(cf)), self.drop_rate, self.training)
+        out1 = out.clone()
+
+        out = torch.clip(out, -65000, 65000)
+
         # batch x embed_dim
         out = F.dropout(F.relu(self.c2(out)), self.drop_rate, self.training)
         assert not torch.isnan(out.sum())
 
+        # out = torch.clip(out, -65000, 65000)
         for name in self.discrete_features:
             out += F.dropout(self.emb[name](x[name]))
 
