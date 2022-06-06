@@ -27,7 +27,7 @@ class EventEncoder(nn.Module):
         self.linear = nn.Linear(rnn_dim, rnn_dim)
         self.output_shape = [None, rnn_dim]
 
-    def forward(self, x: Dict[str, torch.Tensor]):
+    def forward(self, x: Dict[str, torch.Tensor], n_predict: int = 1):
         # TODO: Eventually, to include initial state features,
         #  to be fed into the initial RNN state
 
@@ -41,7 +41,15 @@ class EventEncoder(nn.Module):
         )
 
         # stacked_seq x rnn_dim
-        x_proc, _ = self.rnn(x_stacked)
+        if n_predict == 1:
+            x_proc, _ = self.rnn(x_stacked)
+        else:
+            x_proc = []
+            for i_pred in range(n_predict):
+                hidden = torch.tensor(...)
+                rnn_out, hidden = self.rnn(x_stacked, hidden)
+                x_proc.append(rnn_out)
+                x_proc = torch.stack(x_proc)
         padded, lens = nn.utils.rnn.pad_packed_sequence(x_proc)
         seq = torch.cat([padded[:seqlen, i] for i, seqlen in enumerate(lens)])
         assert not torch.isnan(seq.data.mean()), "NaN value in rnn output"
