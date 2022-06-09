@@ -41,15 +41,14 @@ class EventEncoder(nn.Module):
         )
 
         # stacked_seq x rnn_dim
-        if n_predict == 1:
-            x_proc, _ = self.rnn(x_stacked)
-        else:
-            x_proc = []
-            for i_pred in range(n_predict):
-                hidden = torch.tensor(...)
-                rnn_out, hidden = self.rnn(x_stacked, hidden)
-                x_proc.append(rnn_out)
-                x_proc = torch.stack(x_proc)
+        x_proc, hidden = self.rnn(x_stacked)
+        new_preds = []
+        for i_pred in range(n_predict):
+            hidden = torch.tensor(...)
+            rnn_out, hidden = self.rnn(x_stacked, hidden)
+            rnn_out = encode(decode(rnn_out))
+            x_proc.append(rnn_out)
+            x_proc = torch.stack(x_proc)
         padded, lens = nn.utils.rnn.pad_packed_sequence(x_proc)
         seq = torch.cat([padded[:seqlen, i] for i, seqlen in enumerate(lens)])
         assert not torch.isnan(seq.data.mean()), "NaN value in rnn output"
