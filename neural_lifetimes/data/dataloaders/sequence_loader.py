@@ -134,14 +134,14 @@ class SequenceLoader:
             # encoder features
             s = self.transform(s)
 
-            # assert that all dts are postitive
+            # assert that all dts are positive
             assert len(s["dt"]) == len(s["t"])
             if len(s["dt"]) > 2:
                 assert (
                     sum(s["dt"][2:] < 0) == 0
                 ), "We're getting negative time intervals, are you slicing by profile correctly? "
 
-            # add to to now
+            # add t to now
             s["t_to_now"] = asof_time - s["t"][-1]
 
             # create next_ shifted variables
