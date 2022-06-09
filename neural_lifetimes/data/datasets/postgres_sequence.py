@@ -72,16 +72,17 @@ class PostgresSequenceDataset(SequenceDataset):
         limit_query = f"LIMIT {self.limit}" if self.limit else ""
 
         uid_query = f"""
-                    SELECT {uid_name}, cnt
+                    SELECT "{uid_name}", cnt
                     FROM (
-                        SELECT {uid_name},
+                        SELECT "{uid_name}",
                             count(*) as cnt,
                             SUM(CASE WHEN {self.asof_filter.replace("and", "")} THEN 1 ELSE 0 END) AS cnt_asof,
-                            min({time_col}) as first_t
+                            min("{time_col}") as first_t
                             --min({time_col}) as last_t
-                        FROM {database}.{table_name}
+                        -- FROM {database}.{table_name}
+                        FROM {table_name} -- currently table it's in the default schema. Database not needed
                         {date_filter}
-                        GROUP by {uid_name}
+                        GROUP by "{uid_name}"
                         order by first_t
                         {limit_query}
                         ) AS tmp
@@ -116,7 +117,7 @@ class PostgresSequenceDataset(SequenceDataset):
         return (
             ""
             if getattr(self, time_limit) is None
-            else f" and {self.time_col} < toDateTime64('{getattr(self, time_limit)}',3)"
+            else f""" and "{self.time_col}" < '{str(getattr(self, time_limit))}'::date"""
         )
 
     @property
@@ -150,9 +151,9 @@ class PostgresSequenceDataset(SequenceDataset):
         # get the data for all the ids
         query = f"""
             SELECT * from {self.database}.{self.table_name}
-            where {self.uid_name} in ({','.join(uids.astype(str))})
+            where "{self.uid_name}" in ({','.join(uids.astype(str))})
             {self.last_event_filter}
-            order by {self.uid_name}, {self.time_col}
+            order by "{self.uid_name}", "{self.time_col}"
         """
         raw_data = self.conn.execute(query).fetchall()
         data = np.array(raw_data).T
