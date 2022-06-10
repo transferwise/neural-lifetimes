@@ -73,12 +73,12 @@ class CombinedEmbedder(nn.Module):
         cf[cf.isnan()] = 0  # TODO do not do if nan is start token
 
         cf_emb = F.dropout(F.relu(self.c1(cf)), self.drop_rate, self.training)
-        cf_emb = torch.clip(cf_emb, -65000, 65000)
-        assert not cf_emb.isnan().any(), "First Linear for continuous features contains `NaN` values."
+        # cf_emb = torch.clip(cf_emb, -65000, 65000)
+        assert not cf_emb.isnan().any(), "First Linear Layer for continuous features contains `NaN` values."
 
         # batch x embed_dim
         cf_emb = F.dropout(F.relu(self.c2(cf_emb)), self.drop_rate, self.training)
-        assert not cf_emb.isnan().any(), "Second Linear for continuous features contains `NaN` values."
+        assert not cf_emb.isnan().any(), "Second Linear Layer for continuous features contains `NaN` values."
         combined_emb.append(cf_emb)
 
         # out = torch.clip(out, -65000, 65000)
@@ -89,8 +89,8 @@ class CombinedEmbedder(nn.Module):
 
         combined_emb = torch.stack(combined_emb, dim=-1)
         out = self.combine(combined_emb).squeeze()
-        assert not out.isnan().any(), "Combined Feature Embeddings contain `NaN` values."
+        assert not out.isnan().any(), "Combined Embeddings for all features contain `NaN` values."
 
-        out = self.layer_norm(out)  # TODO try removing this again once all features are properly normalized
-        assert not out.isnan().any(), "Normalized Embeddings contain `NaN` values."
+        # out = self.layer_norm(out)  # TODO try removing this again once all features are properly normalized
+        # assert not out.isnan().any(), "Normalized Embeddings contain `NaN` values."
         return out
