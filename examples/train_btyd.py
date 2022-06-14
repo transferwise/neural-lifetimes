@@ -13,7 +13,7 @@ from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer, Tar
 from examples import eventsprofiles_datamodel
 
 
-LOG_DIR = str(Path(__file__).parent)
+LOG_DIR = str(Path(__file__).parent / 'logs')
 data_dir = str(Path(__file__).parent.absolute())
 
 START_TOKEN_DISCR = "<StartToken>"
