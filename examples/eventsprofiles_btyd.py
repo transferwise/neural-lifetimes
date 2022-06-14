@@ -8,7 +8,7 @@ import pytorch_lightning as pl
 from neural_lifetimes import run_model
 from neural_lifetimes.data.datamodules import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
-from neural_lifetimes.models.modules import ClassicModel
+from neural_lifetimes.models.modules import VariationalEventModel
 from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer, TargetCreator
 from examples import eventsprofiles_datamodel
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         min_points=1,
     )
 
-    net = ClassicModel(
+    net = VariationalEventModel(
         feature_encoder_config=encoder.config_dict(),
         rnn_dim=256,
         emb_dim=256,

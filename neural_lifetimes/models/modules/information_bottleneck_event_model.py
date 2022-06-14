@@ -6,7 +6,7 @@ import torch
 from torch import nn
 from torchmetrics import Accuracy, MeanAbsoluteError, MetricCollection
 
-from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss, VariationalEncoderDecoderLoss
+from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss
 
 from ...data.dataloaders.sequence_loader import trim_last
 from ..nets.embedder import CombinedEmbedder
@@ -19,8 +19,10 @@ from neural_lifetimes.utils.data import FeatureDictionaryEncoder
 from neural_lifetimes.utils.callbacks import GitInformationLogger
 from .configure_optimizers import configure_optimizers
 
+from .event_model import _EventModel
 
-class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder, Add better docstring
+
+class InformationBottleneckEventModel(_EventModel):  # TODO Add better docstring
     """Initialises a ClassicModel instance.
 
     This is the model class. Each different model / method gets their own class.
@@ -154,7 +156,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
                 "churn": ChurnLoss(self.head.heads["next_dt"], scale_by_seq=False),
             }
         )
-        loss_fn = VariationalEncoderDecoderLoss(pre_loss, reg_weight=self.vae_KL_weight if self.vae_sample_z else None)
+        loss_fn = Information(pre_loss, reg_weight=self.vae_KL_weight if self.vae_sample_z else None)
         return loss_fn
 
     def configure_heads(self, feature_encoder: FeatureDictionaryEncoder) -> nn.Module:
@@ -217,48 +219,6 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         loss_components = {f"{split}_{name}": loss for name, loss in loss_components.items()}
         self.log_dict(loss_components, batch_size=y_true["next_dt"].shape[0])
         return loss
-
-    def get_and_log_clv(self, output, batch, split):
-        """Estimate CLV and compare to dataset.
-
-        Args:
-            output (Dict[str, torch.Tensor]): model output
-            batch (Dict[str, Any]): batch
-            split (str): the split of the step: (i.e. train, val, test)
-
-        Returns:
-            metrics (Dict[str, torch.Tensor]): dictionary with metrics
-
-        Notes:
-            Currently only returns an empty dictionary -- is this intended?
-        """
-        return dict()
-        # parametric estimate of CLV
-        par_clv = self.trainer.datamodule.val_dataset._get_E_num_transactions(
-            output["p_churn"].mean(), 1 / output["next_dt"].mean()
-        )
-        # par_clv = self.trainer.datamodule.val_dataset._get_E_num_transactions(
-        #   output['p_churn'], 1/output['t_to_next']
-        # )
-
-        # non-parametric
-        users, user_idx, user_transactions = np.unique(batch["USER_PROFILE_ID"], return_index=True, return_counts=True)
-        users_true_clv = batch["clv"][
-            user_idx
-        ]  # TODO is this correct? Are we guaranteeing all transactions of the same user in the same batch?
-
-        # calculate metrics
-        metrics = {}
-        metrics["par_clv_mean"] = par_clv.mean()
-        metrics["par_clv_l1_error"] = torch.abs(par_clv.squeeze() - batch["clv"]).mean()
-        metrics["npar_clv_mean"] = user_transactions.mean()
-        metrics["npar_clv_var"] = user_transactions.var()
-        metrics["npar_clv_l1_error"] = np.abs(user_transactions - users_true_clv.detach().cpu().numpy()).mean()
-
-        # add split to metric names
-        metrics = {f"{split}_{k}": v for k, v in metrics.items()}
-
-        return metrics
 
     def get_and_log_metrics(
         self, y_pred: Dict[str, torch.Tensor], y_true: Dict[str, Any], split: str
