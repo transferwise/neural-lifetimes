@@ -2,10 +2,12 @@ name: Docs
 
 on:
   workflow_dispatch:
-#  release:
-#    types: [published]
-#  pull_request:
-#    branches: [main]
+  release:
+    types: [published]
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   build-docs:
@@ -22,14 +24,20 @@ jobs:
         python-version: 3.9
 
     - name: Install dependencies
-      run: make venv
+      run: |
+       sudo apt update -y
+       sudo apt install -y pandoc
+       make venv
+
+    # - uses: docker://pandoc/core:2.9
 
     - name: Build documentation
-      uses: docker://pandoc/core:2.9
       run: |
         make docs
 
     - name: Publish documentation
       if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
-      run: |
-        make publishdocs
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/build
