@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 import torch
 import torch.nn as nn
 
-from utils.score_estimators import SpectralScoreEstimator
-from utils.scheduler import WeightScheduler
+from neural_lifetimes.utils.score_estimators import SpectralScoreEstimator
+from neural_lifetimes.utils.scheduler import WeightScheduler
 
 # code heavily relies on https://github.com/zhouyiji/MIGE
 

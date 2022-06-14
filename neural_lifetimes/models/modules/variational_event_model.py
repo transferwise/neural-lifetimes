@@ -1,6 +1,5 @@
 from typing import Any, Dict, List, Union
 
-import numpy as np
 import pytorch_lightning as pl
 import torch
 from torch import nn
@@ -19,11 +18,9 @@ from neural_lifetimes.utils.data import FeatureDictionaryEncoder
 from neural_lifetimes.utils.callbacks import GitInformationLogger
 from .configure_optimizers import configure_optimizers
 
-from .event_model import _EventModel
 
-
-class VariationalEventModel(_EventModel):  # TODO Add better docstring
-    """Initialises a ClassicModel instance.
+class VariationalEventModel(pl.LightningModule):  # TODO Update docstring
+    """Initialises a VariationalEventModel instance.
 
     This is the model class. Each different model / method gets their own class.
     Docs: https://pytorch-lightning.readthedocs.io/en/latest/common/lightning_module.html
