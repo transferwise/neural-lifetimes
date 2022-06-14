@@ -29,14 +29,12 @@ jobs:
        sudo apt install -y pandoc
        make venv
 
-    # - uses: docker://pandoc/core:2.9
-
     - name: Build documentation
       run: |
         make docs
 
     - name: Publish documentation
-      if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+      if: ${{ github.ref == 'refs/heads/main' || contains('refs/tags/', github.ref) }}
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
