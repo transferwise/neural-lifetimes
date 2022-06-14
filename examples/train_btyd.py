@@ -24,8 +24,8 @@ if __name__ == "__main__":
 
     btyd_dataset = BTYD.from_modes(
         modes=[
-            GenMode(a=1.5, b=20, r=1, alpha=14),
-            GenMode(a=2, b=50, r=2, alpha=6),
+            GenMode(a=2, b=10, r=5, alpha=10),
+            GenMode(a=2, b=10, r=10, alpha=600),
         ],
         num_customers=1000,
         mode_ratios=[2.5, 1],  # generate equal number of transactions from each mode
