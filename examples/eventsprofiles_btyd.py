@@ -78,6 +78,7 @@ if __name__ == "__main__":
     net = ClassicModel(
         feature_encoder_config=encoder.config_dict(),
         rnn_dim=256,
+        emb_dim=256,
         drop_rate=0.5,
         bottleneck_dim=32,
         lr=0.001,
