@@ -61,6 +61,3 @@ docs:
 	cd docs/ ;\
 	sphinx-apidoc -o . ../neural_lifetimes ;\
 	sphinx-build -b html . build
-
-publishdocs:
-	cp -r docs/build/* pages/
