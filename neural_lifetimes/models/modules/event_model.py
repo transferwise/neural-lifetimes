@@ -306,3 +306,6 @@ class _EventModel(pl.LightningModule):  # TODO Add better docstring
         pretrained_dict = {k: v for k, v in checkpoint_dict.items() if k in model_dict}
         model_dict.update(pretrained_dict)
         self.load_state_dict(model_dict)
+
+
+__all__ = [_EventModel]

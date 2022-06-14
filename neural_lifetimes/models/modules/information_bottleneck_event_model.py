@@ -10,10 +10,10 @@ from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss
 
 from ...data.dataloaders.sequence_loader import trim_last
 from ..nets.embedder import CombinedEmbedder
-from ..nets.encoder_decoder import VariationalEncoderDecoder
 from ..nets.event_model import EventEncoder
 from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, ExponentialHeadNoLoss, NormalHead
-
+from neural_lifetimes.losses import InformationBottleneckLoss
+from neural_lifetimes.utils.scheduler import LinearWarmupScheduler
 from neural_lifetimes.utils.data import FeatureDictionaryEncoder
 
 from neural_lifetimes.utils.callbacks import GitInformationLogger
@@ -46,9 +46,7 @@ class InformationBottleneckEventModel(_EventModel):  # TODO Add better docstring
         bottleneck_dim: int,
         lr: float,
         target_cols: List[str],
-        vae_sample_z: bool = True,
-        vae_sampling_scaler: float = 1.0,
-        vae_KL_weight: float = 1.0,
+        loss_cfg: Dict[str, Any],
         optimizer_kwargs: Dict[str, Any] = None,
         log_git_information: bool = False,
         config_dict_to_log: Dict[str, Any] = None,
@@ -70,19 +68,13 @@ class InformationBottleneckEventModel(_EventModel):  # TODO Add better docstring
             drop_rate=drop_rate,
         )
 
+        self.loss_cfg = loss_cfg
+
         self.event_encoder = EventEncoder(self.emb, rnn_dim, drop_rate)
-        self.vae_sample_z = vae_sample_z
-        self.vae_KL_weight = vae_KL_weight
-        self.vae_sampling_scaler = vae_sampling_scaler
+        self.project_encoding = nn.Linear(in_features=rnn_dim, out_features=bottleneck_dim)
         self.optimizer_kwargs = optimizer_kwargs if optimizer_kwargs is not None else {}
 
         self.head = self.configure_heads(self.feature_encoder)
-        self.net = VariationalEncoderDecoder(
-            self.event_encoder,
-            self.head,
-            sample_z=vae_sample_z,
-            epsilon_std=vae_sampling_scaler,
-        )
 
         self.criterion = self.configure_criterion()
         # The awkward inclusion of git information is necessary for Tensorboard
@@ -138,8 +130,11 @@ class InformationBottleneckEventModel(_EventModel):  # TODO Add better docstring
         Returns:
             Dict[str, torch.Tensor]: model output
         """
-        pred = self.net.forward(x)
-        return pred
+        out = self.event_encoder(x)
+        latent = self.project_encoding(out)
+        out = self.head(latent)
+        out["latent"] = latent
+        return out
 
     def configure_criterion(self) -> nn.Module:
         """Configures a loss function. This might be a composite function.
@@ -156,7 +151,12 @@ class InformationBottleneckEventModel(_EventModel):  # TODO Add better docstring
                 "churn": ChurnLoss(self.head.heads["next_dt"], scale_by_seq=False),
             }
         )
-        loss_fn = Information(pre_loss, reg_weight=self.vae_KL_weight if self.vae_sample_z else None)
+        weight_scheduler = LinearWarmupScheduler(
+            n_cold_steps=self.loss_cfg["n_cold_steps"],
+            n_warmup_steps=self.loss_cfg["n_warmup_steps"],
+            target_weight=self.loss_cfg["n_target_weight"],
+        )
+        loss_fn = InformationBottleneckLoss(fit_loss=pre_loss, weight_scheduler=weight_scheduler)
         return loss_fn
 
     def configure_heads(self, feature_encoder: FeatureDictionaryEncoder) -> nn.Module:
