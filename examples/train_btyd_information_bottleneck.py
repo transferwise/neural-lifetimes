@@ -13,7 +13,7 @@ from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer, Tar
 from examples import eventsprofiles_datamodel
 
 
-LOG_DIR = str(Path(__file__).parent)
+LOG_DIR = str(Path(__file__).parent / "logs")
 data_dir = str(Path(__file__).parent.absolute())
 
 START_TOKEN_DISCR = "<StartToken>"
@@ -75,6 +75,12 @@ if __name__ == "__main__":
         min_points=1,
     )
 
+    loss_cfg = {
+        "n_cold_steps": 100,
+        "n_warmup_steps": 100,
+        "n_target_weight": 0.001,
+    }
+
     net = InformationBottleneckEventModel(
         feature_encoder_config=encoder.config_dict(),
         rnn_dim=256,
@@ -84,6 +90,7 @@ if __name__ == "__main__":
         lr=0.001,
         target_cols=COLS,
         encoder_noise=1e-6,
+        loss_cfg=loss_cfg,
     )
 
     run_model(

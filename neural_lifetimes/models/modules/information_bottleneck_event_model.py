@@ -94,15 +94,12 @@ class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better do
         Returns:
             Dict[str, Any]: Parameters of the ClassicModel instance
         """
-        hparams = {
+        hparams = {  # TODO add IB parameters
             "rnn_dim": self.rnn_dim,
             "drop_rate": self.drop_rate,
             "bottleneck_dim": self.bottleneck_dim,
             "lr": self.lr,
             "target_cols": self.target_cols,
-            "vae_sample_z": self.vae_sample_z,
-            "vae_sampling_scaler": self.vae_sampling_scaler,
-            "vae_KL_weight": self.vae_KL_weight,
             **self.emb.build_parameter_dict(),
         }
 
@@ -219,6 +216,7 @@ class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better do
         loss, loss_components = self.criterion(y_pred, y_true)
         loss_components = {f"{split}_{name}": loss for name, loss in loss_components.items()}
         self.log_dict(loss_components, batch_size=y_true["next_dt"].shape[0])
+        self.criterion.weight_scheduler.step()
         return loss
 
     def get_and_log_metrics(
