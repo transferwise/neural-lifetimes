@@ -7,14 +7,17 @@ from .distributional_losses import (
     NormalLoss,
     SumLoss,
     TauLoss,
-    VariationalEncoderDecoderLoss,
 )
+
+from .mutual_information import InformationBottleneckLoss
+from .elbo import VariationalEncoderDecoderLoss
 
 __all__ = [
     CategoricalLoss,
     ChurnLoss,
     CompositeLoss,
     ExponentialLoss,
+    InformationBottleneckLoss,
     LogNormalLoss,
     NormalLoss,
     SumLoss,
