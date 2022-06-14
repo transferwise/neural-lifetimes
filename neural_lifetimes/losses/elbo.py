@@ -1,3 +1,5 @@
+import numpy as np
+
 import torch
 import torch.nn as nn
 
@@ -43,13 +45,13 @@ class VariationalEncoderDecoderLoss(nn.Module):
         return my_loss, losses_dict
 
 
-class ELBOLoss(nn.Module):
-    def __init__(self, fit_loss: nn.Module, reg_weight) -> None:
-        super().__init__()
-        self.fit_loss = fit_loss
-        self.reg_weight = reg_weight
+# class ELBOLoss(nn.Module):
+#     def __init__(self, fit_loss: nn.Module, reg_weight) -> None:
+#         super().__init__()
+#         self.fit_loss = fit_loss
+#         self.reg_weight = reg_weight
 
-    def forward(self, pred: torch.Tensor, target: torch.Tensor, latent: torch.Tensor) -> torch.Tensor:
-        fit_loss, losses_dict = self.final_loss(model_out, target_x)
-        mu = model_out["mu"]
-        std = model_out["std"]
+#     def forward(self, pred: torch.Tensor, target: torch.Tensor, latent: torch.Tensor) -> torch.Tensor:
+#         fit_loss, losses_dict = self.final_loss(model_out, target_x)
+#         mu = model_out["mu"]
+#         std = model_out["std"]

@@ -32,6 +32,7 @@ class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better do
         bottleneck_dim (int): dimensions of information bottleneck.
         lr (float): learning rate.
         **kwargs: Additional arguments for the pl.LighteningModule constructor
+        encoder_noise: the noise for the encoder, scalar of N(0,1)
     """
 
     def __init__(
@@ -47,6 +48,7 @@ class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better do
         optimizer_kwargs: Dict[str, Any] = None,
         log_git_information: bool = False,
         config_dict_to_log: Dict[str, Any] = None,
+        encoder_noise: float = 1e-6,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -68,6 +70,7 @@ class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better do
         self.loss_cfg = loss_cfg
 
         self.event_encoder = EventEncoder(self.emb, rnn_dim, drop_rate)
+        self.encoder_noise = encoder_noise
         self.project_encoding = nn.Linear(in_features=rnn_dim, out_features=bottleneck_dim)
         self.optimizer_kwargs = optimizer_kwargs if optimizer_kwargs is not None else {}
 
@@ -128,6 +131,7 @@ class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better do
             Dict[str, torch.Tensor]: model output
         """
         out = self.event_encoder(x)
+        out += torch.randn_like(out) * self.encoder_noise
         latent = self.project_encoding(out)
         out = self.head(latent)
         out["latent"] = latent
