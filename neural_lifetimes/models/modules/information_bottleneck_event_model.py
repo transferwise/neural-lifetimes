@@ -139,7 +139,7 @@ class InformationBottleneckEventModel(EventModel):  # TODO Add better docstring
     def encode(self, x: Dict[str, torch.Tensor], stochastic: bool = False) -> Tuple[torch.Tensor]:
         out = self.event_encoder(x)
         event_encoding = out + torch.randn_like(out) * self.encoder_noise * int(stochastic)
-        return self.project_encoding(event_encoding)
+        return (self.project_encoding(event_encoding), None)
 
     def configure_criterion(self) -> nn.Module:
         """Configures a loss function. This might be a composite function.

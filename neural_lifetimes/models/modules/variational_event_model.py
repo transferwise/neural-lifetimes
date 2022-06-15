@@ -141,7 +141,7 @@ class VariationalEventModel(EventModel):  # TODO Update docstring
     def encode(self, x: Dict[str, torch.Tensor], stochastic: bool = False) -> Tuple[torch.Tensor]:
         if stochastic:
             raise ValueError(f"The '{self.__class__.__name__}' does not support stochastic encoding.")
-        enc_out = self.net.forward(x)
+        enc_out = self.event_encoder(x)
         mu = self.net.fc_mu(enc_out)
         log_var = self.net.fc_log_var(enc_out)
 
