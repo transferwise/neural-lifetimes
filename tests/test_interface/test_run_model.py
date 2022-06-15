@@ -11,7 +11,7 @@ from pytorch_lightning.loggers import CSVLogger
 from neural_lifetimes import run_model
 from neural_lifetimes.data.datamodules.sequence_datamodule import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
-from neural_lifetimes.models.modules import ClassicModel
+from neural_lifetimes.models.modules import VariationalEventModel, EventModel
 from neural_lifetimes.utils.data import Tokenizer, FeatureDictionaryEncoder, TargetCreator
 
 from ..test_datasets.datamodels import EventprofilesDataModel
@@ -31,7 +31,7 @@ def log_dir() -> str:
 
 
 @pytest.fixture
-def data_and_model() -> Tuple[SequenceDataModule, ClassicModel]:
+def data_and_model() -> Tuple[SequenceDataModule, EventModel]:
     # create btyd data and dependent modules
     data_model = EventprofilesDataModel()
 
@@ -66,7 +66,7 @@ def data_and_model() -> Tuple[SequenceDataModule, ClassicModel]:
     )
 
     # create model
-    model = ClassicModel(
+    model = VariationalEventModel(
         feature_encoder_config=transform.config_dict(),
         rnn_dim=256,
         emb_dim=256,
