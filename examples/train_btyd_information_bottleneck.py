@@ -79,6 +79,8 @@ if __name__ == "__main__":
         "n_cold_steps": 100,
         "n_warmup_steps": 100,
         "n_target_weight": 0.001,
+        "n_eigen": None,
+        "n_eigen_threshold": None,
     }
 
     net = InformationBottleneckEventModel(

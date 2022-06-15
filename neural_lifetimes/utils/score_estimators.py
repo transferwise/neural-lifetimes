@@ -76,8 +76,8 @@ class SpectralScoreEstimator(ScoreEstimator):
         if self._eta is not None:
             Kq += self._eta * torch.eye(M)
 
-        eigen_values, eigen_vectors = torch.symeig(Kq, eigenvectors=True, upper=True)
-
+        # eigen_values, eigen_vectors = torch.symeig(Kq, eigenvectors=True, upper=True) torch==1.3
+        eigen_values, eigen_vectors = torch.linalg.eigh(Kq, UPLO="U")
         if (self._n_eigen is None) and (self._n_eigen_threshold is not None):
             eigen_arr = torch.mean(torch.reshape(eigen_values, [-1, M]), dim=0)
 

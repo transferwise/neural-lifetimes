@@ -128,10 +128,12 @@ class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better do
             Dict[str, torch.Tensor]: model output
         """
         out = self.event_encoder(x)
-        out += torch.randn_like(out) * self.encoder_noise
-        latent = self.project_encoding(out)
-        out = self.head(latent)
-        out["latent"] = latent
+        event_encoding = out + torch.randn_like(out) * self.encoder_noise
+        bottleneck = self.project_encoding(event_encoding)
+
+        out = self.head(bottleneck)
+        out["bottleneck"] = bottleneck
+        out["event_encoding"] = event_encoding
         return out
 
     def configure_criterion(self) -> nn.Module:
@@ -154,7 +156,12 @@ class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better do
             n_warmup_steps=self.loss_cfg["n_warmup_steps"],
             target_weight=self.loss_cfg["n_target_weight"],
         )
-        loss_fn = InformationBottleneckLoss(fit_loss=pre_loss, weight_scheduler=weight_scheduler)
+        loss_fn = InformationBottleneckLoss(
+            fit_loss=pre_loss,
+            weight_scheduler=weight_scheduler,
+            n_eigen=self.loss_cfg["n_eigen"],
+            n_eigen_threshold=self.loss_cfg["n_eigen_threshold"],
+        )
         return loss_fn
 
     def configure_heads(self, feature_encoder: FeatureDictionaryEncoder) -> nn.Module:
