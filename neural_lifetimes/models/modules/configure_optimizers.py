@@ -36,7 +36,6 @@ def configure_optimizers(
         Dict[str, Any]: The PyTorch-Lightning dictionary specifying the optimizer configuration. It has two elements
         ``optimizer`` sets the optimizer and ``lr_scheduler`` contains a lightning scheduler configuration dictionary.
     """
-
     # check inputs
     optimizer_kwargs = {} if optimizer_kwargs is None else optimizer_kwargs
     scheduler_kwargs = {} if scheduler_kwargs is None else scheduler_kwargs

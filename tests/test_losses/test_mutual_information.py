@@ -7,6 +7,10 @@ import pytest
 from neural_lifetimes.utils.scheduler import WeightScheduler
 
 
+def identity(x):
+    return x
+
+
 class TestMutualInformation:
     @staticmethod
     def get_mi_obj(n_eigen=None, n_eigen_threshold=None):
@@ -25,7 +29,7 @@ class TestMutualInformation:
 class TestInformationBottleneckLoss:
     @staticmethod
     def get_loss_fn(n_eigen: int = None, n_eigen_threshold: float = None):
-        fit_loss = lambda x: x
+        fit_loss = identity
         weight_scheduler = WeightScheduler()
         return InformationBottleneckLoss(fit_loss, weight_scheduler, n_eigen, n_eigen_threshold)
 
