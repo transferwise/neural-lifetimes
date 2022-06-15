@@ -20,7 +20,7 @@ from .configure_optimizers import configure_optimizers
 
 
 class InformationBottleneckEventModel(EventModel):  # TODO Add better docstring
-    """Initialises a ClassicModel instance.
+    """Initialises an EventModel instance.
 
     This is the model class. Each different model / method gets their own class.
     Docs: https://pytorch-lightning.readthedocs.io/en/latest/common/lightning_module.html
@@ -92,7 +92,7 @@ class InformationBottleneckEventModel(EventModel):  # TODO Add better docstring
         """Return a dictionary of parameters.
 
         Returns:
-            Dict[str, Any]: Parameters of the ClassicModel instance
+            Dict[str, Any]: Parameters of the EventModel instance
         """
         hparams = {  # TODO add IB parameters
             "rnn_dim": self.rnn_dim,

@@ -26,7 +26,7 @@ class ModelInference:
             It should be a ``.ckpt`` file.
 
     Attributes:
-        model (ClassicModel): Model instance.
+        model (EventModel): Model instance.
     """
 
     def __init__(self, model_filename: str):

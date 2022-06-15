@@ -97,7 +97,7 @@ class VariationalEventModel(EventModel):  # TODO Update docstring
         """Return a dictionary of parameters.
 
         Returns:
-            Dict[str, Any]: Parameters of the ClassicModel instance
+            Dict[str, Any]: Parameters of the VariationalEventModel instance
         """
         hparams = {
             "rnn_dim": self.rnn_dim,
