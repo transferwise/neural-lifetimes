@@ -1,11 +1,11 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Union
 
-import pytorch_lightning as pl
 import torch
 from torch import nn
 from torchmetrics import Accuracy, MeanAbsoluteError, MetricCollection
 
 from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss
+from neural_lifetimes.models.modules import EventModel
 
 from ...data.dataloaders.sequence_loader import trim_last
 from ..nets.embedder import CombinedEmbedder
@@ -19,7 +19,7 @@ from neural_lifetimes.utils.callbacks import GitInformationLogger
 from .configure_optimizers import configure_optimizers
 
 
-class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better docstring
+class InformationBottleneckEventModel(EventModel):  # TODO Add better docstring
     """Initialises a ClassicModel instance.
 
     This is the model class. Each different model / method gets their own class.
@@ -135,6 +135,11 @@ class InformationBottleneckEventModel(pl.LightningModule):  # TODO Add better do
         out["bottleneck"] = bottleneck
         out["event_encoding"] = event_encoding
         return out
+
+    def encode(self, x: Dict[str, torch.Tensor], stochastic: bool = False) -> Tuple[torch.Tensor]:
+        out = self.event_encoder(x)
+        event_encoding = out + torch.randn_like(out) * self.encoder_noise * int(stochastic)
+        return self.project_encoding(event_encoding)
 
     def configure_criterion(self) -> nn.Module:
         """Configures a loss function. This might be a composite function.

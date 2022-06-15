@@ -1,11 +1,11 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Union
 
-import pytorch_lightning as pl
 import torch
 from torch import nn
 from torchmetrics import Accuracy, MeanAbsoluteError, MetricCollection
 
 from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss, VariationalEncoderDecoderLoss
+from neural_lifetimes.models.modules import EventModel
 
 from ...data.dataloaders.sequence_loader import trim_last
 from ..nets.embedder import CombinedEmbedder
@@ -19,7 +19,7 @@ from neural_lifetimes.utils.callbacks import GitInformationLogger
 from .configure_optimizers import configure_optimizers
 
 
-class VariationalEventModel(pl.LightningModule):  # TODO Update docstring
+class VariationalEventModel(EventModel):  # TODO Update docstring
     """Initialises a VariationalEventModel instance.
 
     This is the model class. Each different model / method gets their own class.
@@ -137,6 +137,17 @@ class VariationalEventModel(pl.LightningModule):  # TODO Update docstring
         """
         pred = self.net.forward(x)
         return pred
+
+    def encode(self, x: Dict[str, torch.Tensor], stochastic: bool = False) -> Tuple[torch.Tensor]:
+        if stochastic:
+            raise ValueError(f"The '{self.__class__.__name__}' does not support stochastic encoding.")
+        enc_out = self.net.forward(x)
+        mu = self.net.fc_mu(enc_out)
+        log_var = self.net.fc_log_var(enc_out)
+
+        eps = 0.0001
+        std = torch.square(log_var) + eps  # no longer log, why?
+        return mu, std
 
     def configure_criterion(self) -> nn.Module:
         """Configures a loss function. This might be a composite function.
