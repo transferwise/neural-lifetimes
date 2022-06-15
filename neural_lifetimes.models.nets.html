@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>neural_lifetimes.models.nets package &mdash; Neural Lifetimes  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="neural_lifetimes.utils package" href="neural_lifetimes.utils.html" />
+    <link rel="prev" title="neural_lifetimes.models.modules package" href="neural_lifetimes.models.modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Neural Lifetimes
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="high_level_overview.html">High Level Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_BTYD_visualisation.html">Synthetic data generation: data exploration with BTYD data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_use_own_dataset.html">Use your own dataset with <code class="docutils literal notranslate"><span class="pre">neural-lifetimes</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">neural_lifetimes package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="neural_lifetimes.html">neural_lifetimes package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="neural_lifetimes.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.data.html">neural_lifetimes.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.losses.html">neural_lifetimes.losses package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="neural_lifetimes.models.html">neural_lifetimes.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.utils.html">neural_lifetimes.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#neural-lifetimes-inference-module">neural_lifetimes.inference module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#neural-lifetimes-run-model-module">neural_lifetimes.run_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Neural Lifetimes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">neural_lifetimes package</a> &raquo;</li>
+          <li><a href="neural_lifetimes.html">neural_lifetimes package</a> &raquo;</li>
+          <li><a href="neural_lifetimes.models.html">neural_lifetimes.models package</a> &raquo;</li>
+      <li>neural_lifetimes.models.nets package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/neural_lifetimes.models.nets.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="neural-lifetimes-models-nets-package">
+<h1>neural_lifetimes.models.nets package<a class="headerlink" href="#neural-lifetimes-models-nets-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-neural_lifetimes.models.nets.custom_par">
+<span id="neural-lifetimes-models-nets-custom-par-module"></span><h2>neural_lifetimes.models.nets.custom_par module<a class="headerlink" href="#module-neural_lifetimes.models.nets.custom_par" title="Permalink to this headline"></a></h2>
+<p>Probabilistic autoregressive model.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_par.</span></span><span class="sig-name descname"><span class="pre">BaseTimeseriesModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for timeseries models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>field_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of names of the fields that need to be modeled
+and included in the generated output data. Any additional
+fields found in the data will be ignored and will not be
+included in the generated output.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, all the fields found in the data are used.</p></li>
+<li><p><strong>field_types</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>dict</em><em>]</em>) – Dictinary specifying the data types and subtypes
+of the fields that will be modeled. Field types and subtypes
+combinations must be compatible with the SDV Metadata Schema.</p></li>
+<li><p><strong>anonymize_fields</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Dict specifying which fields to anonymize and what faker
+category they belong to.</p></li>
+<li><p><strong>primary_key</strong> (<em>str</em>) – Name of the field which is the primary key of the table.</p></li>
+<li><p><strong>entity_columns</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – Names of the columns which identify different time series
+sequences. These will be used to group the data in separated
+training examples.</p></li>
+<li><p><strong>context_columns</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – The columns in the dataframe which are constant within each
+group/entity. These columns will be provided at sampling time
+(i.e. the samples will be conditioned on the context variables).</p></li>
+<li><p><strong>segment_size</strong> (<em>int</em><em>, </em><em>pd.Timedelta</em><em> or </em><em>str</em>) – If specified, cut each training sequence in several segments of
+the indicated size. The size can either can passed as an integer
+value, which will interpreted as the number of data points to
+put on each segment, or as a pd.Timedelta (or equivalent str
+representation), which will be interpreted as the segment length
+in time. Timedelta segment sizes can only be used with sequence
+indexes of type datetime.</p></li>
+<li><p><strong>sequence_index</strong> (<em>str</em>) – Name of the column that acts as the order index of each
+sequence. The sequence index column can be of any type that can
+be sorted, such as integer values or datetimes.</p></li>
+<li><p><strong>context_model</strong> (<em>str</em><em> or </em><em>sdv.tabular.BaseTabularModel</em>) – <p>Model to use to sample the context rows. It can be passed as a
+a string, which must be one of the following:</p>
+<ul>
+<li><p><cite>gaussian_copula</cite> (default): Use a GaussianCopula model.</p></li>
+</ul>
+<p>Alternatively, a preconfigured Tabular model instance can be
+passed.</p>
+</p></li>
+<li><p><strong>table_metadata</strong> (<em>dict</em><em> or </em><em>metadata.Table</em>) – Table metadata instance or dict representation.
+If given alongside any other metadata-related arguments, an
+exception will be raised.
+If not given at all, it will be built using the other
+arguments or learned from the data.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence_loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">examples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.fit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.get_metadata">
+<span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.get_metadata" title="Permalink to this definition"></a></dt>
+<dd><p>Get metadata about the table.</p>
+<p>This will return an <code class="docutils literal notranslate"><span class="pre">sdv.metadata.Table</span></code> object containing
+the information about the data that this model has learned.</p>
+<p>This Table metadata will contain some common information,
+such as field names and data types, as well as additional
+information that each Sub-class might add, such as the
+observed data field distributions and their parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>sdv.metadata.Table</em> –     Table metadata.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.load" title="Permalink to this definition"></a></dt>
+<dd><p>Load a TabularModel instance from a given path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path from which to load the instance.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>TabularModel</em> –     The loaded tabular model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample new sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_sequences</strong> (<em>int</em>) – Number of sequences to sample. If context is
+passed, this is ignored. If not given, the
+same number of sequences as in the original
+timeseries_data is sampled.</p></li>
+<li><p><strong>context</strong> (<em>pandas.DataFrame</em>) – Context values to use when generating the sequences.
+If not passed, the context values will be sampled
+using the specified tabular model.</p></li>
+<li><p><strong>sequence_length</strong> (<em>int</em>) – If passed, sample sequences of this length. If not
+given, the sequence length will be sampled from
+the model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>pandas.DataFrame</em> –     Table containing the sampled sequences in the same
+format as that he training data had.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel.save" title="Permalink to this definition"></a></dt>
+<dd><p>Save this model instance to the given path using pickle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path where the SDV instance will be serialized.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.DeepEchoModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_par.</span></span><span class="sig-name descname"><span class="pre">DeepEchoModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.DeepEchoModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel" title="neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.models.nets.custom_par.BaseTimeseriesModel</span></code></a></p>
+<p>Base class for all the SDV Time series models based on DeepEcho.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.PAREdit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_par.</span></span><span class="sig-name descname"><span class="pre">PAREdit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anonymize_fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">segment_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cuda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.PAREdit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.models.nets.custom_par.DeepEchoModel" title="neural_lifetimes.models.nets.custom_par.DeepEchoModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.models.nets.custom_par.DeepEchoModel</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.PARModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_par.</span></span><span class="sig-name descname"><span class="pre">PARModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cuda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.PARModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">deepecho.models.base.DeepEcho</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.PARModel.fit_sequences">
+<span class="sig-name descname"><span class="pre">fit_sequences</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence_loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">examples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.PARModel.fit_sequences" title="Permalink to this definition"></a></dt>
+<dd><p>Fit a model to the specified sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sequences</strong> (<em>list</em>) – <p>List of sequences. Each sequence is a single training example
+(i.e. an example of a multivariate time series with some context).
+For example, a sequence might look something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span>  <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+        <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The “context” attribute maps to a list of variables which
+should be used for conditioning. These are variables which
+do not change over time.</p>
+<p>The “data” attribute contains a list of lists corrsponding
+to the actual time series data such that <cite>data[i][j]</cite> contains
+the value at the jth time step of the ith channel of the
+multivariate time series.</p>
+</p></li>
+<li><p><strong>context_types</strong> (<em>list</em>) – List of strings indicating the type of each value in context.
+he value at <cite>context[i]</cite> must match the type specified by
+<cite>context_types[i]</cite>. Valid types include the following: <cite>categorical</cite>,
+<cite>continuous</cite>, <cite>ordinal</cite>, <cite>count</cite>, and <cite>datetime</cite>.</p></li>
+<li><p><strong>data_types</strong> (<em>list</em>) – List of strings indicating the type of each channel in data.
+Each value in the list at data[i] must match the type specified by
+<cite>data_types[i]</cite>. The valid types are the same as for <cite>context_types</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.PARModel.sample_sequence">
+<span class="sig-name descname"><span class="pre">sample_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.PARModel.sample_sequence" title="Permalink to this definition"></a></dt>
+<dd><p>Sample a single sequence conditioned on context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> (<em>list</em>) – The list of values to condition on. It must match
+the types specified in context_types when fit was called.</p></li>
+<li><p><strong>sequence_length</strong> (<em>int</em><em> or </em><em>None</em>) – If given, force sequences to be of the indicated length.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), sample sequences of the same length
+as the original dataset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list[list]</em> –     A list of lists (data) corresponding to the types specified
+in data_types when fit was called.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.PARNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_par.</span></span><span class="sig-name descname"><span class="pre">PARNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.PARNet" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>PARModel ANN model.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.PARNet.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.PARNet.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Forward passing computation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.PARNet.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.PARNet.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_par.batch_to_df">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_par.</span></span><span class="sig-name descname"><span class="pre">batch_to_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_par.batch_to_df" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.models.nets.custom_tvae">
+<span id="neural-lifetimes-models-nets-custom-tvae-module"></span><h2>neural_lifetimes.models.nets.custom_tvae module<a class="headerlink" href="#module-neural_lifetimes.models.nets.custom_tvae" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_tvae.</span></span><span class="sig-name descname"><span class="pre">ColumnTransformInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_aux</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dimensions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.column_name">
+<span class="sig-name descname"><span class="pre">column_name</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.column_name" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.column_type">
+<span class="sig-name descname"><span class="pre">column_type</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.column_type" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.output_dimensions">
+<span class="sig-name descname"><span class="pre">output_dimensions</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.output_dimensions" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.output_info">
+<span class="sig-name descname"><span class="pre">output_info</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.output_info" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.transform" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.transform_aux">
+<span class="sig-name descname"><span class="pre">transform_aux</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.ColumnTransformInfo.transform_aux" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.DataTransformer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_tvae.</span></span><span class="sig-name descname"><span class="pre">DataTransformer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.DataTransformer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Data Transformer.</p>
+<p>Model continuous columns with a BayesianGMM and normalized to a scalar [0, 1] and a vector.
+Discrete columns are encoded using a scikit-learn OneHotEncoder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_clusters</strong> (<em>int</em>) – Maximum number of Gaussian distributions in Bayesian GMM.</p></li>
+<li><p><strong>weight_threshold</strong> (<em>float</em>) – Weight threshold for a Gaussian distribution to be kept.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.DataTransformer.convert_column_name_value_to_id">
+<span class="sig-name descname"><span class="pre">convert_column_name_value_to_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">column_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.DataTransformer.convert_column_name_value_to_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.DataTransformer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.DataTransformer.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fit self.</p>
+<p>GMM for continuous columns and One hot encoder for discrete columns.
+This step also counts the #columns in matrix data, and span information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.DataTransformer.inverse_transform">
+<span class="sig-name descname"><span class="pre">inverse_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.DataTransformer.inverse_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Take matrix data and output raw data.</p>
+<p>Output uses the same type as input to the transform function.
+Either np array or pd dataframe.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.DataTransformer.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.DataTransformer.transform" title="Permalink to this definition"></a></dt>
+<dd><p>Take raw data and output a matrix data.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.Decoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_tvae.</span></span><span class="sig-name descname"><span class="pre">Decoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decompress_dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.Decoder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.Decoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.Decoder.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.Decoder.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.Decoder.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.Encoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_tvae.</span></span><span class="sig-name descname"><span class="pre">Encoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compress_dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embedding_dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.Encoder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.Encoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.Encoder.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.Encoder.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.Encoder.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.SpanInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_tvae.</span></span><span class="sig-name descname"><span class="pre">SpanInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation_fn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.SpanInfo" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.SpanInfo.activation_fn">
+<span class="sig-name descname"><span class="pre">activation_fn</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.SpanInfo.activation_fn" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.SpanInfo.dim">
+<span class="sig-name descname"><span class="pre">dim</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.SpanInfo.dim" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.TVAESynthesizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_tvae.</span></span><span class="sig-name descname"><span class="pre">TVAESynthesizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedding_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compress_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decompress_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(128,</span> <span class="pre">128)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cuda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.TVAESynthesizer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ctgan.synthesizers.base.BaseSynthesizer</span></code></p>
+<p>TVAESynthesizer.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.TVAESynthesizer.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_example</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.TVAESynthesizer.fit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.TVAESynthesizer.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.TVAESynthesizer.sample" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.TVAESynthesizer.set_device">
+<span class="sig-name descname"><span class="pre">set_device</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.TVAESynthesizer.set_device" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.custom_tvae.loss_function">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.custom_tvae.</span></span><span class="sig-name descname"><span class="pre">loss_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recon_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigmas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logvar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete_dimension</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.custom_tvae.loss_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.models.nets.embedder">
+<span id="neural-lifetimes-models-nets-embedder-module"></span><h2>neural_lifetimes.models.nets.embedder module<a class="headerlink" href="#module-neural_lifetimes.models.nets.embedder" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.embedder.CombinedEmbedder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.embedder.</span></span><span class="sig-name descname"><span class="pre">CombinedEmbedder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="neural_lifetimes.utils.data.html#neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder" title="neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder"><span class="pre">neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">embed_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.embedder.CombinedEmbedder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>An embedder for continous and discrete features. Is a nn.Module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>continuous_features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – list of continuous features</p></li>
+<li><p><strong>category_dict</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>]</em>) – dictionary of discrete features</p></li>
+<li><p><strong>embed_dim</strong> (<em>int</em>) – embedding dimension</p></li>
+<li><p><strong>drop_rate</strong> (<em>float</em>) – dropout rate. Defaults to <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p></li>
+<li><p><strong>pre_encoded</strong> (<em>bool</em>) – whether to use the input data as is. Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.embedder.CombinedEmbedder.build_parameter_dict">
+<span class="sig-name descname"><span class="pre">build_parameter_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.embedder.CombinedEmbedder.build_parameter_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Return a dict of parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>Dict[str, Any]</em> – Parameters of the embedder</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.embedder.CombinedEmbedder.continuous_features">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">continuous_features</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.embedder.CombinedEmbedder.continuous_features" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.embedder.CombinedEmbedder.discrete_features">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">discrete_features</span></span><a class="headerlink" href="#neural_lifetimes.models.nets.embedder.CombinedEmbedder.discrete_features" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.embedder.CombinedEmbedder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.embedder.CombinedEmbedder.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.embedder.CombinedEmbedder.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.embedder.CombinedEmbedder.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.models.nets.encoder_decoder">
+<span id="neural-lifetimes-models-nets-encoder-decoder-module"></span><h2>neural_lifetimes.models.nets.encoder_decoder module<a class="headerlink" href="#module-neural_lifetimes.models.nets.encoder_decoder" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.encoder_decoder.VariationalEncoderDecoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.encoder_decoder.</span></span><span class="sig-name descname"><span class="pre">VariationalEncoderDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">encoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.nn.modules.module.Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.nn.modules.module.Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.encoder_decoder.VariationalEncoderDecoder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>An implementation of variational encoder and decoder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>encoder</strong> (<em>nn.Module</em>) – A model mapping batches of source domain to batches of vectors (batch x input_size)</p></li>
+<li><p><strong>decoder</strong> (<em>nn.Module</em>) – Model mapping latent z (batch x z_size) to  target domain</p></li>
+<li><p><strong>sample_z</strong> (<em>bool</em>) – Whether to sample z = N(mu, std) or just take z=mu. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>epsilon_std</strong> (<em>float</em>) – Scaling factor for sampling, low values help convergence. Defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See <a class="reference external" href="https://github.com/mkusner/grammarVAE/issues/7">https://github.com/mkusner/grammarVAE/issues/7</a></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.encoder_decoder.VariationalEncoderDecoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.encoder_decoder.VariationalEncoderDecoder.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Encoder-decoder forward pass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – A batch of source domain data (batch x input_size)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The data after being passed through the encoder and decoder.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.encoder_decoder.VariationalEncoderDecoder.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.encoder_decoder.VariationalEncoderDecoder.load" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.encoder_decoder.VariationalEncoderDecoder.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.encoder_decoder.VariationalEncoderDecoder.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.models.nets.event_model">
+<span id="neural-lifetimes-models-nets-event-model-module"></span><h2>neural_lifetimes.models.nets.event_model module<a class="headerlink" href="#module-neural_lifetimes.models.nets.event_model" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.event_model.EventEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.event_model.</span></span><span class="sig-name descname"><span class="pre">EventEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">emb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#neural_lifetimes.models.nets.embedder.CombinedEmbedder" title="neural_lifetimes.models.nets.embedder.CombinedEmbedder"><span class="pre">neural_lifetimes.models.nets.embedder.CombinedEmbedder</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnn_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.event_model.EventEncoder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.event_model.EventEncoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.event_model.EventEncoder.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.event_model.EventEncoder.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.event_model.EventEncoder.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.models.nets.heads">
+<span id="neural-lifetimes-models-nets-heads-module"></span><h2>neural_lifetimes.models.nets.heads module<a class="headerlink" href="#module-neural_lifetimes.models.nets.heads" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.BasicHead">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.heads.</span></span><span class="sig-name descname"><span class="pre">BasicHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.BasicHead" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.BasicHead.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.BasicHead.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.BasicHead.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.heads.BasicHead.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CategoricalHead">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.heads.</span></span><span class="sig-name descname"><span class="pre">CategoricalHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CategoricalHead" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.models.nets.heads.BasicHead" title="neural_lifetimes.models.nets.heads.BasicHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.models.nets.heads.BasicHead</span></code></a></p>
+<p>Output is the scale for a normalized distribution, typically a time delta.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CategoricalHead.distribution">
+<span class="sig-name descname"><span class="pre">distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.distributions.distribution.Distribution</span></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CategoricalHead.distribution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CategoricalHead.loss_function">
+<span class="sig-name descname"><span class="pre">loss_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CategoricalHead.loss_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CategoricalHead.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CategoricalHead.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ChurnProbabilityHead">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.heads.</span></span><span class="sig-name descname"><span class="pre">ChurnProbabilityHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ChurnProbabilityHead" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.models.nets.heads.ProbabilityHead" title="neural_lifetimes.models.nets.heads.ProbabilityHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.models.nets.heads.ProbabilityHead</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ChurnProbabilityHead.distribution">
+<span class="sig-name descname"><span class="pre">distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.distributions.distribution.Distribution</span></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ChurnProbabilityHead.distribution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ChurnProbabilityHead.loss_function">
+<span class="sig-name descname"><span class="pre">loss_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ChurnProbabilityHead.loss_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ChurnProbabilityHead.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ChurnProbabilityHead.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CompositeDistribution">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.heads.</span></span><span class="sig-name descname"><span class="pre">CompositeDistribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">distrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.distributions.distribution.Distribution</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CompositeDistribution" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CompositeDistribution.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CompositeDistribution.sample" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CompositeHead">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.heads.</span></span><span class="sig-name descname"><span class="pre">CompositeHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.nn.modules.module.Module</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CompositeHead" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CompositeHead.distribution">
+<span class="sig-name descname"><span class="pre">distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#neural_lifetimes.models.nets.heads.CompositeDistribution" title="neural_lifetimes.models.nets.heads.CompositeDistribution"><span class="pre">neural_lifetimes.models.nets.heads.CompositeDistribution</span></a></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CompositeHead.distribution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CompositeHead.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CompositeHead.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CompositeHead.loss_function">
+<span class="sig-name descname"><span class="pre">loss_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preprocess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="neural_lifetimes.losses.html#neural_lifetimes.losses.distributional_losses.CompositeLoss" title="neural_lifetimes.losses.distributional_losses.CompositeLoss"><span class="pre">neural_lifetimes.losses.distributional_losses.CompositeLoss</span></a></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CompositeHead.loss_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.CompositeHead.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.heads.CompositeHead.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ExponentialHead">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.heads.</span></span><span class="sig-name descname"><span class="pre">ExponentialHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ExponentialHead" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.models.nets.heads.BasicHead" title="neural_lifetimes.models.nets.heads.BasicHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.models.nets.heads.BasicHead</span></code></a></p>
+<p>Output is the scale for a normalized distribution, typically a time delta.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ExponentialHead.distribution">
+<span class="sig-name descname"><span class="pre">distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.distributions.distribution.Distribution</span></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ExponentialHead.distribution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ExponentialHead.loss_function">
+<span class="sig-name descname"><span class="pre">loss_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ExponentialHead.loss_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ExponentialHead.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ExponentialHead.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ExponentialHeadNoLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.heads.</span></span><span class="sig-name descname"><span class="pre">ExponentialHeadNoLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ExponentialHeadNoLoss" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.models.nets.heads.ExponentialHead" title="neural_lifetimes.models.nets.heads.ExponentialHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.models.nets.heads.ExponentialHead</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ExponentialHeadNoLoss.loss_function">
+<span class="sig-name descname"><span class="pre">loss_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ExponentialHeadNoLoss.loss_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ExponentialHeadNoLoss.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ExponentialHeadNoLoss.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.NormalHead">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.heads.</span></span><span class="sig-name descname"><span class="pre">NormalHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.NormalHead" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.models.nets.heads.BasicHead" title="neural_lifetimes.models.nets.heads.BasicHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.models.nets.heads.BasicHead</span></code></a></p>
+<p>Output is the mean and std for a normal distribution.</p>
+<p>Could also be used for a LogNormal distribution.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.NormalHead.distribution">
+<span class="sig-name descname"><span class="pre">distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.distributions.distribution.Distribution</span></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.NormalHead.distribution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.NormalHead.loss_function">
+<span class="sig-name descname"><span class="pre">loss_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.NormalHead.loss_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.NormalHead.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.heads.NormalHead.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ProbabilityHead">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.models.nets.heads.</span></span><span class="sig-name descname"><span class="pre">ProbabilityHead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ProbabilityHead" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.models.nets.heads.BasicHead" title="neural_lifetimes.models.nets.heads.BasicHead"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.models.nets.heads.BasicHead</span></code></a></p>
+<p>Output is the scale for a normalized distribution, typically a time delta.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ProbabilityHead.distribution">
+<span class="sig-name descname"><span class="pre">distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.distributions.distribution.Distribution</span></span></span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ProbabilityHead.distribution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ProbabilityHead.loss_function">
+<span class="sig-name descname"><span class="pre">loss_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ProbabilityHead.loss_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.models.nets.heads.ProbabilityHead.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#neural_lifetimes.models.nets.heads.ProbabilityHead.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.models.nets.mlp">
+<span id="neural-lifetimes-models-nets-mlp-module"></span><h2>neural_lifetimes.models.nets.mlp module<a class="headerlink" href="#module-neural_lifetimes.models.nets.mlp" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-neural_lifetimes.models.nets">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-neural_lifetimes.models.nets" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="neural_lifetimes.models.modules.html" class="btn btn-neutral float-left" title="neural_lifetimes.models.modules package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="neural_lifetimes.utils.html" class="btn btn-neutral float-right" title="neural_lifetimes.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Wise.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

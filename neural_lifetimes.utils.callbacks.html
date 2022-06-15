@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>neural_lifetimes.utils.callbacks package &mdash; Neural Lifetimes  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="neural_lifetimes.utils.clickhouse package" href="neural_lifetimes.utils.clickhouse.html" />
+    <link rel="prev" title="neural_lifetimes.utils.aws package" href="neural_lifetimes.utils.aws.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Neural Lifetimes
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="high_level_overview.html">High Level Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_BTYD_visualisation.html">Synthetic data generation: data exploration with BTYD data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_use_own_dataset.html">Use your own dataset with <code class="docutils literal notranslate"><span class="pre">neural-lifetimes</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">neural_lifetimes package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="neural_lifetimes.html">neural_lifetimes package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="neural_lifetimes.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.data.html">neural_lifetimes.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.losses.html">neural_lifetimes.losses package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.models.html">neural_lifetimes.models package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="neural_lifetimes.utils.html">neural_lifetimes.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#neural-lifetimes-inference-module">neural_lifetimes.inference module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#neural-lifetimes-run-model-module">neural_lifetimes.run_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Neural Lifetimes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">neural_lifetimes package</a> &raquo;</li>
+          <li><a href="neural_lifetimes.html">neural_lifetimes package</a> &raquo;</li>
+          <li><a href="neural_lifetimes.utils.html">neural_lifetimes.utils package</a> &raquo;</li>
+      <li>neural_lifetimes.utils.callbacks package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/neural_lifetimes.utils.callbacks.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="neural-lifetimes-utils-callbacks-package">
+<h1>neural_lifetimes.utils.callbacks package<a class="headerlink" href="#neural-lifetimes-utils-callbacks-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-neural_lifetimes.utils.callbacks.churn_monitor">
+<span id="neural-lifetimes-utils-callbacks-churn-monitor-module"></span><h2>neural_lifetimes.utils.callbacks.churn_monitor module<a class="headerlink" href="#module-neural_lifetimes.utils.callbacks.churn_monitor" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.churn_monitor.MonitorChurn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.callbacks.churn_monitor.</span></span><span class="sig-name descname"><span class="pre">MonitorChurn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_batches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hist_mod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.churn_monitor.MonitorChurn" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pytorch_lightning.callbacks.base.Callback</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.churn_monitor.MonitorChurn.on_train_batch_end">
+<span class="sig-name descname"><span class="pre">on_train_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.churn_monitor.MonitorChurn.on_train_batch_end" title="Permalink to this definition"></a></dt>
+<dd><p>Called when the train batch ends.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.churn_monitor.MonitorChurn.on_validation_batch_end">
+<span class="sig-name descname"><span class="pre">on_validation_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pytorch_lightning.trainer.trainer.Trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pytorch_lightning.core.lightning.LightningModule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unused</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.churn_monitor.MonitorChurn.on_validation_batch_end" title="Permalink to this definition"></a></dt>
+<dd><p>Called when the validation batch ends.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.churn_monitor.get_last">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.callbacks.churn_monitor.</span></span><span class="sig-name descname"><span class="pre">get_last</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.churn_monitor.get_last" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.churn_monitor.remove_initial_event">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.callbacks.churn_monitor.</span></span><span class="sig-name descname"><span class="pre">remove_initial_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.churn_monitor.remove_initial_event" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.utils.callbacks.distribution_monitor">
+<span id="neural-lifetimes-utils-callbacks-distribution-monitor-module"></span><h2>neural_lifetimes.utils.callbacks.distribution_monitor module<a class="headerlink" href="#module-neural_lifetimes.utils.callbacks.distribution_monitor" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.distribution_monitor.DistributionMonitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.callbacks.distribution_monitor.</span></span><span class="sig-name descname"><span class="pre">DistributionMonitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_batches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_lambda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_t_quantile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.98</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clip_lambda_quantile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.98</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.distribution_monitor.DistributionMonitor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pytorch_lightning.callbacks.base.Callback</span></code></p>
+<p>Class to monitor the distribution of the model. Records the various parameters and/or metrics of the model.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.distribution_monitor.DistributionMonitor.on_train_start">
+<span class="sig-name descname"><span class="pre">on_train_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.distribution_monitor.DistributionMonitor.on_train_start" title="Permalink to this definition"></a></dt>
+<dd><p>Training start callback.</p>
+<p>The following parameters are recorded whenever it exists:</p>
+<ul class="simple">
+<li><p>the actual lambda</p></li>
+<li><p>the actual p_churn</p></li>
+<li><p>the time to next event</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.distribution_monitor.DistributionMonitor.on_validation_batch_end">
+<span class="sig-name descname"><span class="pre">on_validation_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pytorch_lightning.trainer.trainer.Trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pytorch_lightning.core.lightning.LightningModule</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unused</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.distribution_monitor.DistributionMonitor.on_validation_batch_end" title="Permalink to this definition"></a></dt>
+<dd><p>Called when the validation batch ends.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.distribution_monitor.DistributionMonitor.on_validation_epoch_end">
+<span class="sig-name descname"><span class="pre">on_validation_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pytorch_lightning.trainer.trainer.Trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pytorch_lightning.core.lightning.LightningModule</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.distribution_monitor.DistributionMonitor.on_validation_epoch_end" title="Permalink to this definition"></a></dt>
+<dd><p>Called when the val epoch ends.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.utils.callbacks.projection_monitor">
+<span id="neural-lifetimes-utils-callbacks-projection-monitor-module"></span><h2>neural_lifetimes.utils.callbacks.projection_monitor module<a class="headerlink" href="#module-neural_lifetimes.utils.callbacks.projection_monitor" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.projection_monitor.MonitorProjection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.callbacks.projection_monitor.</span></span><span class="sig-name descname"><span class="pre">MonitorProjection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_batches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.projection_monitor.MonitorProjection" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pytorch_lightning.callbacks.base.Callback</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.callbacks.projection_monitor.MonitorProjection.on_train_epoch_end">
+<span class="sig-name descname"><span class="pre">on_train_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pl_module</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.callbacks.projection_monitor.MonitorProjection.on_train_epoch_end" title="Permalink to this definition"></a></dt>
+<dd><p>Called when the train epoch ends.</p>
+<p>To access all batch outputs at the end of the epoch, either:</p>
+<ol class="arabic simple">
+<li><p>Implement <cite>training_epoch_end</cite> in the <cite>LightningModule</cite> and access outputs via the module OR</p></li>
+<li><p>Cache data across train batch hooks inside the callback implementation to post-process in this hook.</p></li>
+</ol>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.utils.callbacks">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-neural_lifetimes.utils.callbacks" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="neural_lifetimes.utils.aws.html" class="btn btn-neutral float-left" title="neural_lifetimes.utils.aws package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="neural_lifetimes.utils.clickhouse.html" class="btn btn-neutral float-right" title="neural_lifetimes.utils.clickhouse package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Wise.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

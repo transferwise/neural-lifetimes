@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>neural_lifetimes.data.datasets package &mdash; Neural Lifetimes  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="neural_lifetimes.losses package" href="neural_lifetimes.losses.html" />
+    <link rel="prev" title="neural_lifetimes.data.datamodules package" href="neural_lifetimes.data.datamodules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Neural Lifetimes
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="high_level_overview.html">High Level Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_BTYD_visualisation.html">Synthetic data generation: data exploration with BTYD data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_use_own_dataset.html">Use your own dataset with <code class="docutils literal notranslate"><span class="pre">neural-lifetimes</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">neural_lifetimes package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="neural_lifetimes.html">neural_lifetimes package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="neural_lifetimes.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="neural_lifetimes.data.html">neural_lifetimes.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.losses.html">neural_lifetimes.losses package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.models.html">neural_lifetimes.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.utils.html">neural_lifetimes.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#neural-lifetimes-inference-module">neural_lifetimes.inference module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#neural-lifetimes-run-model-module">neural_lifetimes.run_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Neural Lifetimes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">neural_lifetimes package</a> &raquo;</li>
+          <li><a href="neural_lifetimes.html">neural_lifetimes package</a> &raquo;</li>
+          <li><a href="neural_lifetimes.data.html">neural_lifetimes.data package</a> &raquo;</li>
+      <li>neural_lifetimes.data.datasets package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/neural_lifetimes.data.datasets.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="neural-lifetimes-data-datasets-package">
+<h1>neural_lifetimes.data.datasets package<a class="headerlink" href="#neural-lifetimes-data-datasets-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-neural_lifetimes.data.datasets.btyd">
+<span id="neural-lifetimes-data-datasets-btyd-module"></span><h2>neural_lifetimes.data.datasets.btyd module<a class="headerlink" href="#module-neural_lifetimes.data.datasets.btyd" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">BTYD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset" title="neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset</span></code></a></p>
+<p>BTYD synthetic dataset.</p>
+<p>Creates a synthetic dataset of customers using the Buy-Till You Die (BTYD) model.
+Note that the number of customers has to be specified. If you want to create a
+multimodal dataset, it is recommended you use the
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">from_modes</span></code> method
+and use <code class="xref py py-mod docutils literal notranslate"><span class="pre">GenMode</span></code> class to create the
+modes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>continuous_features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of continuous features. They will be
+sampled from normal distributions.</p></li>
+<li><p><strong>discrete_features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of discrete features. They will be sampled
+from the list of possible values uniformly.</p></li>
+<li><p><strong>data_dir</strong> (<em>str</em>) – Path to data directory.</p></li>
+<li><p><strong>start_date</strong> (<em>datetime.datetime</em>) – earliest start date in days timestamp.</p></li>
+<li><p><strong>start_limit_date</strong> (<em>datetime.datetime</em>) – latest start date in days timestamp.</p></li>
+<li><p><strong>end_date</strong> (<em>datetime.datetime</em>) – end date in days timestamp.</p></li>
+<li><p><strong>num_customers</strong> (<em>int</em>) – number of customers to be simulated. Min ca 100. Otherwise,
+Pytorch lightning won’t train.</p></li>
+<li><p><strong>a</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter(s) for Prior of p: Beta(a,b). If a list is passed,
+then it is assumed to be a multimodal model.</p></li>
+<li><p><strong>b</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter(s) for Prior of p: Beta(a,b). If <code class="docutils literal notranslate"><span class="pre">a</span></code> is a list,
+then this must also be a list of the same length.</p></li>
+<li><p><strong>r</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter(s) for prior of lambda: Gamma(r,alpha). If <code class="docutils literal notranslate"><span class="pre">a</span></code> is a
+list, then this must also be a list of the same length.</p></li>
+<li><p><strong>alpha</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter(s) for prior of lambda: Gamma(r,alpha). If <code class="docutils literal notranslate"><span class="pre">a</span></code>
+is a list, then this must also be a list of the same length.</p></li>
+<li><p><strong>multimodal</strong> (<em>bool</em>) – Inferred by checking type of <code class="docutils literal notranslate"><span class="pre">a</span></code>. If true, use multi-modal
+distributions.</p></li>
+<li><p><strong>discrete_dists</strong> (<em>dict</em>) – If we have multimodal input then assigned distributions
+gives the distributions for some features for each mode</p></li>
+<li><p><strong>cont_dists</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em><em>]</em>) – A list of dictionaries setting
+the distributions of certain continuous features. Each feature is normally
+distributed.</p></li>
+<li><p><strong>num_modes</strong> (<em>int</em>) – Number of modes. Is just len(self.a).</p></li>
+<li><p><strong>feature_funcs</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Callable</em><em>]</em>) – Dictionary of feature functions.</p></li>
+<li><p><strong>mode_ratios</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Gives the distribution over the modes</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.all_dates_from_start_date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_dates_from_start_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.all_dates_from_start_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.asof_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">asof_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime.datetime</span></em><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.asof_time" title="Permalink to this definition"></a></dt>
+<dd><p>Get the time of the last possible transaction.</p>
+<p>Needed for compatibility with SequenceLoader.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.build_parameter_dict">
+<span class="sig-name descname"><span class="pre">build_parameter_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.build_parameter_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.end_dates_from_end_date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end_dates_from_end_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.end_dates_from_end_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.expected_num_transactions_from_parameters">
+<span class="sig-name descname"><span class="pre">expected_num_transactions_from_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.expected_num_transactions_from_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected number of transactions for a customer with parameters <cite>p</cite> and <cite>lambda</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>float</em>) – The churn probability</p></li>
+<li><p><strong>lambda</strong> (<em>float</em>) – The rate parameter</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – Expected number of transactions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.expected_num_transactions_from_priors">
+<span class="sig-name descname"><span class="pre">expected_num_transactions_from_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.expected_num_transactions_from_priors" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected number of transactions per customer from priors per mode.</p>
+<p>If parameters are provided, these will be used to to calculated the expected value.</p>
+<p>Otherwise, the internal priors are used.</p>
+<p>See Fader et al. (<a class="reference external" href="http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf">http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf</a>) for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Beta distribution.
+If None, use self.a.</p></li>
+<li><p><strong>b</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Beta distribution.
+If None, use self.b.</p></li>
+<li><p><strong>r</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Gamma
+distribution. If None, use self.r.</p></li>
+<li><p><strong>alpha</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Gamma
+distribution. If None, use self.alpha.</p></li>
+<li><p><strong>time_interval</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The time interval for the expected number of transactions.
+These determine the integration bounds. Must be finite.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>List[float]</em> – Expected customer lifetime values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.expected_num_transactions_from_priors_and_history">
+<span class="sig-name descname"><span class="pre">expected_num_transactions_from_priors_and_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asof_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_transactions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_transaction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.expected_num_transactions_from_priors_and_history" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected number of transactions per customer from priors and past transactions per customer.</p>
+<p>If parameters are provided, these will be used to to calculated the expected value. Otherwise, the internal
+data are used.</p>
+<p>See Fader et al. (<a class="reference external" href="http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf">http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf</a>) Eq 10 for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Beta distribution.
+If None, use self.a.</p></li>
+<li><p><strong>b</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Beta distribution.
+If None, use self.b.</p></li>
+<li><p><strong>r</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Gamma
+distribution. If None, use self.r.</p></li>
+<li><p><strong>alpha</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Gamma
+distribution. If None, use self.alpha.</p></li>
+<li><p><strong>time_interval</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – The time interval for the expected number of transactions.
+These determine the integration bounds. Must be finite.</p></li>
+<li><p><strong>asof_time</strong> (<em>Optional</em><em>[</em><em>float</em><em>] </em><em>= None</em>) – The time from which the predictions should be done. Default is None.</p></li>
+<li><p><strong>num_transactions</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – The number of transactions observed per customer.</p></li>
+<li><p><strong>last_transaction</strong> (<em>Optional</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – The date (as float) of the last transaction per customer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>List[float]</em> – Expected number of transactions per customer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.expected_p_churn_from_priors">
+<span class="sig-name descname"><span class="pre">expected_p_churn_from_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.expected_p_churn_from_priors" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected churn probablity from priors per mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Parameter of the Beta distribution. Defaults to None.
+If None, use self.a.</p></li>
+<li><p><strong>b</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Parameter of the Beta distribution. Defaults to None.
+If None, use self.b.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>List[float]</em> – List containing expected churn probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.expected_time_interval_from_priors">
+<span class="sig-name descname"><span class="pre">expected_time_interval_from_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.expected_time_interval_from_priors" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected time between transactions from priors per mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Parameter of the Gamma distribution. Defaults to None.
+If None, use self.r.</p></li>
+<li><p><strong>b</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Parameter of the Gamma distribution. Defaults to None.
+If None, use self.alpha.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>List[float]</em> – List containing expected time intervals.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.float2timedelta">
+<span class="sig-name descname"><span class="pre">float2timedelta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime.timedelta</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.float2timedelta" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.float2timestamp">
+<span class="sig-name descname"><span class="pre">float2timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime.datetime</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.float2timestamp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.from_modes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_modes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_customers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#neural_lifetimes.data.datasets.btyd.GenMode" title="neural_lifetimes.data.datasets.btyd.GenMode"><span class="pre">neural_lifetimes.data.datasets.btyd.GenMode</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_limit_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq_gen_dynamic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode_ratios</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_statistics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.from_modes" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize BTYD dataset from modes.</p>
+<p>See <code class="xref py py-mod docutils literal notranslate"><span class="pre">GenMode</span></code> for creating the
+modes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_customers</strong> (<em>int</em>) – number of customers to be simulated. Min ca 100.
+Otherwise, Pytorch lightning won’t train.</p></li>
+<li><p><strong>modes</strong> (<em>List</em><em>[</em><a class="reference internal" href="#neural_lifetimes.data.datasets.btyd.GenMode" title="neural_lifetimes.data.datasets.btyd.GenMode"><em>GenMode</em></a><em>]</em>) – List of modes.</p></li>
+<li><p><strong>start_date</strong> (<em>datetime.date</em>) – earliest start date in days timestamp.</p></li>
+<li><p><strong>start_limit_date</strong> (<em>datetime.date</em>) – latest start date in days timestamp.</p></li>
+<li><p><strong>end_date</strong> (<em>datetime.date</em>) – end date in days timestamp.</p></li>
+<li><p><strong>continuous_features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of continuous features.</p></li>
+<li><p><strong>discrete_features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – List of discrete features.</p></li>
+<li><p><strong>seq_gen_dynamic</strong> (<em>bool</em>) – If true, generate sequences dynamically.</p></li>
+<li><p><strong>mode_ratios</strong> (<em>Optional</em>) – List of mode_ratios of modes. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then all modes
+are assumed to have equal probability.</p></li>
+<li><p><strong>bool</strong> (<em>track_statistics</em>) – Track a range of statistics should about generated data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>BTYD</em> – BTYD dataset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.get_discrete_feature_values">
+<span class="sig-name descname"><span class="pre">get_discrete_feature_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.get_discrete_feature_values" title="Permalink to this definition"></a></dt>
+<dd><p>Load the discrete feature values from the data pickle.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>start_token</strong> (<em>Any</em><em>, </em><em>optional</em>) – If not None, include a start_token in each of the feature lists.
+Defaults to None.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Dict[str, np.ndarray]</em> – A mapping between feature names and allowed feature values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.get_seq_len">
+<span class="sig-name descname"><span class="pre">get_seq_len</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">customer_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.get_seq_len" title="Permalink to this definition"></a></dt>
+<dd><p>Return the length of a sequence given the index of the data point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx</strong> (<em>int</em>) – The index / identifier of the datapoint.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – The length of the sequence of events for this data point.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.num_events_per_customer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_events_per_customer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.num_events_per_customer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.num_generated_sequences">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">num_generated_sequences</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.num_generated_sequences" title="Permalink to this definition"></a></dt>
+<dd><p>The number of sequences generated so far.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>int</em> – number of sequences generated so far.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.plot_tracked_statistics">
+<span class="sig-name descname"><span class="pre">plot_tracked_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">plotly.graph_objs._figure.Figure</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.plot_tracked_statistics" title="Permalink to this definition"></a></dt>
+<dd><p>Plot all tracked statistics about the BTYD dataset.</p>
+<p>For example, use:
+<code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">dataset</span> <span class="pre">=</span> <span class="pre">BTYD(...,</span> <span class="pre">track_statistics=True)</span> <span class="pre">#</span> <span class="pre">create</span> <span class="pre">dataset</span>
+<span class="pre">dataset[0:1000]</span> <span class="pre">#</span> <span class="pre">generate</span> <span class="pre">1000</span> <span class="pre">examples</span> <span class="pre">by</span> <span class="pre">requesting</span> <span class="pre">them</span>
+<span class="pre">dataset.plot_tracked_statistics().show()</span> <span class="pre">#</span> <span class="pre">call</span> <span class="pre">show</span> <span class="pre">method</span> <span class="pre">on</span> <span class="pre">plotly.go.Figure</span>
+<span class="pre">`</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nbins</strong> (<em>int</em>) – The number of bins for the histograms</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Figure</em> – Plotly figure.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.range_transaction_days">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">range_transaction_days</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.range_transaction_days" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.start_dates_from_start_date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_dates_from_start_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.start_dates_from_start_date" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.time_interval">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_interval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.time_interval" title="Permalink to this definition"></a></dt>
+<dd><p>Hours.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>float</em> – time interval</p>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p>The time interval between start and end dates given in the unit of the underlying stochastic process</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.timedelta2float">
+<span class="sig-name descname"><span class="pre">timedelta2float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timedelta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.timedelta</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.timedelta2float" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.timestamp2float">
+<span class="sig-name descname"><span class="pre">timestamp2float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.timestamp2float" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.BTYD.truncated_sequences">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">truncated_sequences</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.BTYD.truncated_sequences" title="Permalink to this definition"></a></dt>
+<dd><p>returns the ratio of simulated sequences that were truncated due to the end date.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.GenMode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">GenMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_lambda</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_p_churn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cont_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.GenMode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for generating modes for the BTYD model.</p>
+<p>To specify a mode, you must specify the following:
+- (a,b) or mean_p_churn for distribution of p_churn
+- (r,alpha) or mean_lambda for distribution of lambda
+- discreteDist for distribution of discrete events
+- contDist for distribution of continuous events</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>float</em>) – a parameter for the p_churn distribution. Use this with <code class="docutils literal notranslate"><span class="pre">b</span></code>, or just <code class="docutils literal notranslate"><span class="pre">mean_p_churn</span></code>.</p></li>
+<li><p><strong>b</strong> (<em>float</em>) – b parameter for the p_churn distribution. Use this with <code class="docutils literal notranslate"><span class="pre">a</span></code>, or just <code class="docutils literal notranslate"><span class="pre">mean_p_churn</span></code>.</p></li>
+<li><p><strong>r</strong> (<em>float</em>) – r parameter for the lambda distribution. Use this with <code class="docutils literal notranslate"><span class="pre">alpha</span></code>, or just <code class="docutils literal notranslate"><span class="pre">mean_lambda</span></code>.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – alpha parameter for the lambda distribution. Use this with <code class="docutils literal notranslate"><span class="pre">r</span></code>, or just <code class="docutils literal notranslate"><span class="pre">mean_lambda</span></code>.</p></li>
+<li><p><strong>mean_p_churn</strong> (<em>float</em>) – mean of the p_churn distribution. Use either this or <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>.</p></li>
+<li><p><strong>mean_lambda</strong> (<em>float</em>) – mean of the lambda distribution. Use either this or <code class="docutils literal notranslate"><span class="pre">r</span></code> and <code class="docutils literal notranslate"><span class="pre">alpha</span></code>.</p></li>
+<li><p><strong>discrete_dist</strong> (<em>dict</em>) – dictionary of discrete events</p></li>
+<li><p><strong>cont_dist</strong> (<em>dict</em>) – dictionary of continuous events</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>a</strong> (<em>float</em>) – The a parameter of the BTYD model.</p></li>
+<li><p><strong>b</strong> (<em>float</em>) – The b parameter of the BTYD model.</p></li>
+<li><p><strong>r</strong> (<em>float</em>) – The r parameter of the BTYD model.</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>) – The alpha parameter of the BTYD model.</p></li>
+<li><p><strong>discrete_dist</strong> (<em>dict</em>) – The discrete distribution of the BTYD model.</p></li>
+<li><p><strong>cont_dist</strong> (<em>dict</em>) – The continuous distribution of the BTYD model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.NotTrackedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">NotTrackedError</span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.NotTrackedError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.expected_num_transactions_from_parameters">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">expected_num_transactions_from_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.expected_num_transactions_from_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected number of transactions for a customer with parameters <cite>p</cite> and <cite>lambda</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>float</em>) – The churn probability</p></li>
+<li><p><strong>lambda</strong> (<em>float</em>) – The rate parameter</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – Expected number of transactions</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.expected_num_transactions_from_parameters_and_history">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">expected_num_transactions_from_parameters_and_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asof_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_transactions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_transaction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.expected_num_transactions_from_parameters_and_history" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the expected number of future transactions given parameters and observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – The churn parameter <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></li>
+<li><p><strong>lambda</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – The time interval parameter <code class="docutils literal notranslate"><span class="pre">lambda_</span></code>.</p></li>
+<li><p><strong>time_interval</strong> (<em>float</em>) – The time interval of the observations.</p></li>
+<li><p><strong>asof_time</strong> (<em>float</em>) – The current time.</p></li>
+<li><p><strong>num_transactions</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – The observed number of transactions.</p></li>
+<li><p><strong>last_transaction</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – The time of the last observed transaction.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>List[float]</em> – The expected number of future transactions, i.e. the conditional expected CLV.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.expected_num_transactions_from_priors">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">expected_num_transactions_from_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.expected_num_transactions_from_priors" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected number of transactions per customer from priors per mode.</p>
+<p>If parameters are provided, these will be used to to calculated the expected value.</p>
+<p>Otherwise, the internal priors are used.</p>
+<p>See Fader et al. (<a class="reference external" href="http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf">http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf</a>) for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter of the Beta distribution.</p></li>
+<li><p><strong>b</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter of the Beta distribution.</p></li>
+<li><p><strong>r</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter of the Gamma distribution.</p></li>
+<li><p><strong>alpha</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter of the Gamma distribution.</p></li>
+<li><p><strong>time_interval</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – The time interval for the expected number of transactions.
+These determine the integration bounds. Must be finite.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>List[float]</em> – Expected customer lifetime values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.expected_num_transactions_from_priors_and_history">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">expected_num_transactions_from_priors_and_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asof_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_transactions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_transaction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.expected_num_transactions_from_priors_and_history" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected number of transactions per customer from priors and past transactions per customer.</p>
+<p>If parameters are provided, these will be used to to calculated the expected value. Otherwise, the internal
+data are used.</p>
+<p>See Fader et al. (<a class="reference external" href="http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf">http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf</a>) Eq 10 for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter of the Beta distribution.</p></li>
+<li><p><strong>b</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter of the Beta distribution.</p></li>
+<li><p><strong>r</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter of the Gamma</p></li>
+<li><p><strong>alpha</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Parameter of the Gamma</p></li>
+<li><p><strong>time_interval</strong> (<em>float</em>) – The time interval for the expected number of transactions.
+These determine the integration bounds. Must be finite.</p></li>
+<li><p><strong>asof_time</strong> (<em>float</em>) – The time from which the predictions should be done.</p></li>
+<li><p><strong>num_transactions</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – The number of transactions observed per customer.</p></li>
+<li><p><strong>last_transaction</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – The date (as float) of the last transaction per customer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>List[float]</em> – Expected number of transactions per customer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.expected_p_churn_from_priors">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">expected_p_churn_from_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.expected_p_churn_from_priors" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected churn probablity from priors per mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Beta distribution.</p></li>
+<li><p><strong>b</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – Parameter of the Beta distribution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>List[float]</em> – List containing expected churn probabilities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.expected_time_interval_from_priors">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">expected_time_interval_from_priors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.expected_time_interval_from_priors" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the expected time between transactions from priors per mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Parameter of the Gamma distribution.</p></li>
+<li><p><strong>b</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Parameter of the Gamma distribution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>List[float]</em> – List containing expected time intervals.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.btyd.marginal_parameter_likelihood">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.btyd.</span></span><span class="sig-name descname"><span class="pre">marginal_parameter_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.btyd.marginal_parameter_likelihood" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the marginal likelihood of the parameters lambda and p, given the transaction history.
+See <a class="reference external" href="http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf">http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf</a> equation (3).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> (<em>float</em>) – The churn parameter <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></li>
+<li><p><strong>lambda</strong> (<em>float</em>) – The time interval parameter <code class="docutils literal notranslate"><span class="pre">lambda</span></code>.</p></li>
+<li><p><strong>x</strong> (<em>int</em>) – The number of events observed.</p></li>
+<li><p><strong>tx</strong> (<em>float</em>) – The time of the last transaction observed.</p></li>
+<li><p><strong>T</strong> (<em>float</em>) – The current time (<code class="docutils literal notranslate"><span class="pre">asof_time</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – The likelihood</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.data.datasets.clickhouse_sequence">
+<span id="neural-lifetimes-data-datasets-clickhouse-sequence-module"></span><h2>neural_lifetimes.data.datasets.clickhouse_sequence module<a class="headerlink" href="#module-neural_lifetimes.data.datasets.clickhouse_sequence" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.clickhouse_sequence.</span></span><span class="sig-name descname"><span class="pre">ClickhouseSequenceDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset" title="neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset.asof_filter">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">asof_filter</span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset.asof_filter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset.get_seq_len">
+<span class="sig-name descname"><span class="pre">get_seq_len</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset.get_seq_len" title="Permalink to this definition"></a></dt>
+<dd><p>Return the length of a sequence given the index of the data point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx</strong> (<em>int</em>) – The index / identifier of the datapoint.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – The length of the sequence of events for this data point.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset.last_event_filter">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_event_filter</span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset.last_event_filter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset.uids_filter">
+<span class="sig-name descname"><span class="pre">uids_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_uids</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.clickhouse_sequence.ClickhouseSequenceDataset.uids_filter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.data.datasets.pandas_dataset">
+<span id="neural-lifetimes-data-datasets-pandas-dataset-module"></span><h2>neural_lifetimes.data.datasets.pandas_dataset module<a class="headerlink" href="#module-neural_lifetimes.data.datasets.pandas_dataset" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.pandas_dataset.PandasSequenceDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.pandas_dataset.</span></span><span class="sig-name descname"><span class="pre">PandasSequenceDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.pandas_dataset.PandasSequenceDataset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset" title="neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset</span></code></a></p>
+<p>SequenceDataset interface for Pandas/Vaex DataFrames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrameT</em>) – Pandas/Vaex DataFrame to use as a sequence dataset.</p></li>
+<li><p><strong>uid_col</strong> (<em>str</em>) – Name of the column to use as the UID.</p></li>
+<li><p><strong>time_col</strong> (<em>str</em>) – Name of the column to use as the time.</p></li>
+<li><p><strong>asof_time</strong> (<em>datetime.datetime</em>) – Time to use as the asof time. If None, the
+entire dataset is used. Otherwise, only data before or at this time is
+used.</p></li>
+<li><p><strong>min_items_per_uid</strong> (<em>int</em>) – Minimum number of items per UID to include in the
+dataset. Defaults to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrameT</em>) – Pandas/Vaex DataFrame to use as a sequence dataset. Only
+UIDs with at least min_items_per_uid items are included.</p></li>
+<li><p><strong>id_column</strong> (<em>str</em>) – Name of the column to use as the UID.</p></li>
+<li><p><strong>time_col</strong> (<em>str</em>) – Name of the column to use as the time.</p></li>
+<li><p><strong>asof_time</strong> (<em>datetime.datetime</em>) – Time to of the last transaction.</p></li>
+<li><p><strong>uid_sizes</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – Dictionary of UIDs and their frequencies. UIDs
+are included if the frequency is greater than or equal to
+min_items_per_uid.</p></li>
+<li><p><strong>ids</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Sorted list of UIDs to use in the dataset.</p></li>
+<li><p><strong>dtypes</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>type</em><em>]</em>) – Dictionary of column names and their types.</p></li>
+<li><p><strong>id_index</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>tuple</em><em>]</em>) – Dictionary of uids and the index of their first
+and last occurrence in df (sorted)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We assume the dataframe is already sorted by timestamp.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.pandas_dataset.PandasSequenceDataset.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.pandas_dataset.PandasSequenceDataset.__len__" title="Permalink to this definition"></a></dt>
+<dd><p>Get number of unique uids in the dataset post filtering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>int</em> – number of unique uids.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.pandas_dataset.PandasSequenceDataset.get_seq_len">
+<span class="sig-name descname"><span class="pre">get_seq_len</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.pandas_dataset.PandasSequenceDataset.get_seq_len" title="Permalink to this definition"></a></dt>
+<dd><p>Return the length of sequence for the provided uid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>uid</strong> (<em>int</em>) – A valid user id.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – length of the sequence of transactions for this uid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.data.datasets.sequence_dataset">
+<span id="neural-lifetimes-data-datasets-sequence-dataset-module"></span><h2>neural_lifetimes.data.datasets.sequence_dataset module<a class="headerlink" href="#module-neural_lifetimes.data.datasets.sequence_dataset" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.</span></span><span class="sig-name descname"><span class="pre">SequenceDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.data.datasets.sequence_dataset.SliceableDataset" title="neural_lifetimes.data.datasets.sequence_dataset.SliceableDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.SliceableDataset</span></code></a></p>
+<p>For variable-length sequences with a homogenous batch size and where data points should not be queried individually.</p>
+<dl class="simple">
+<dt>The workflow is:</dt><dd><ul class="simple">
+<li><p>Load all data once to retrieve sequence per data point and retrieve these with the <cite>get_seq_len</cite> method.</p></li>
+<li><p>The sampling of batches is based done on the data point identifiers and their sequence length.</p></li>
+<li><p>Once all identifiers are sampled by the dataloader, the <cite>_load_batch</cite> method will query the batch in one go.</p></li>
+</ul>
+</dd>
+<dt>Bases:</dt><dd><p><cite>SliceableDataset</cite></p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset.get_seq_len">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_seq_len</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SequenceDataset.get_seq_len" title="Permalink to this definition"></a></dt>
+<dd><p>Return the length of a sequence given the index of the data point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx</strong> (<em>int</em>) – The index / identifier of the datapoint.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – The length of the sequence of events for this data point.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SequenceSubset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.</span></span><span class="sig-name descname"><span class="pre">SequenceSubset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SequenceSubset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#neural_lifetimes.data.datasets.sequence_dataset.SliceableSubset" title="neural_lifetimes.data.datasets.sequence_dataset.SliceableSubset"><code class="xref py py-class docutils literal notranslate"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.SliceableSubset</span></code></a></p>
+<p>Subsets a <cite>SequenceDataset</cite>.</p>
+<dl class="simple">
+<dt>Base:</dt><dd><p><cite>SliceableSubset</cite></p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SequenceSubset.build_parameter_dict">
+<span class="sig-name descname"><span class="pre">build_parameter_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SequenceSubset.build_parameter_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SequenceSubset.get_seq_len">
+<span class="sig-name descname"><span class="pre">get_seq_len</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SequenceSubset.get_seq_len" title="Permalink to this definition"></a></dt>
+<dd><p>Forward the sequence length of <cite>self.dataset</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>idx</strong> (<em>int</em>) – _description_</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>int</em> – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SliceableDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.</span></span><span class="sig-name descname"><span class="pre">SliceableDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SliceableDataset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Dataset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>The SliceableDataset is an extension around the <cite>pytorch.utils.data.Dataset</cite> enabling bulk loading of batches.</p>
+<p>When loading datasets from databases, single requests per item are often too slow. Thus, the sliceable
+dataset allows loading of multiple data points with one query.</p>
+<dl class="simple">
+<dt>The SliceableDataset implements two key changes over the base Dataset class:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>The <cite>__getitem__</cite> method allows for subsetting using: integers (<cite>dataset[0]</cite>), slicing (<cite>dataset[0:5]</cite>) and</dt><dd><p>iterables (<cite>dataset[[0,3,6]]</cite>).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>The <cite>__getitem__</cite> forwards forwards the request, by default to <cite>_load_batch</cite>. Use this function, to implement the</dt><dd><p>querying of the entire batch.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>The SliceableDataset supports the same subsetting as a <cite>List</cite> object with the addition of processing <cite>Sequence</cite>
+datatypes.</p>
+<dl class="simple">
+<dt>Bases:</dt><dd><p><cite>pytorch.utils.data.Dataset</cite></p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><p><strong>_item_getter</strong> (<em>str</em>) – Sets the method that is called by <cite>__getitem__</cite>.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Negative slicing <cite>dataset[-1:2:-3]</cite> not yet supported.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SliceableDataset.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numbers.Integral</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">numbers.Integral</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SliceableDataset.__getitem__" title="Permalink to this definition"></a></dt>
+<dd><p>TODO docstring.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item</strong> (<em>Union</em><em>[</em><em>numbers.Integral</em><em>, </em><em>slice</em><em>, </em><em>Sequence</em><em>[</em><em>numbers.Integral</em><em>]</em><em>]</em>) – _description_</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – When negative slicing is used, e.g. dataset[-1:2:-3]</p></li>
+<li><p><strong>TypeError</strong> – When argument is not a supported data type.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>Dict[str, np.ndarray]</em> – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SliceableSubset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.</span></span><span class="sig-name descname"><span class="pre">SliceableSubset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SliceableSubset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.utils.data.Subset</span></code></p>
+<p>A Pytorch Subset for the <cite>SliceableDataset</cite>.</p>
+<dl class="simple">
+<dt>Bases:</dt><dd><p><cite>pytorch.utils.data.Subset</cite></p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SliceableSubset.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numbers.Integral</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">slice</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">numbers.Integral</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SliceableSubset.__getitem__" title="Permalink to this definition"></a></dt>
+<dd><p>Forward the item getter to the underlying dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>item</strong> (<em>Union</em><em>[</em><em>numbers.Integral</em><em>, </em><em>slice</em><em>, </em><em>Sequence</em><em>[</em><em>numbers.Integral</em><em>]</em><em>]</em>) – identifier of  item</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Dict[str, np.ndarray]</em> – batch</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.data.datasets.sequence_dataset.SliceableSubset.asof_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">asof_time</span></span><a class="headerlink" href="#neural_lifetimes.data.datasets.sequence_dataset.SliceableSubset.asof_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="neural-lifetimes-data-datasets-sequence-sampling-dataset-module">
+<h2>neural_lifetimes.data.datasets.sequence_sampling_dataset module<a class="headerlink" href="#neural-lifetimes-data-datasets-sequence-sampling-dataset-module" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-neural_lifetimes.data.datasets">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-neural_lifetimes.data.datasets" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="neural_lifetimes.data.datamodules.html" class="btn btn-neutral float-left" title="neural_lifetimes.data.datamodules package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="neural_lifetimes.losses.html" class="btn btn-neutral float-right" title="neural_lifetimes.losses package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Wise.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

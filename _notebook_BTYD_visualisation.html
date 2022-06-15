@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Synthetic data generation: data exploration with BTYD data &mdash; Neural Lifetimes  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Use your own dataset with neural-lifetimes" href="_notebook_use_own_dataset.html" />
+    <link rel="prev" title="High Level Overview" href="high_level_overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Neural Lifetimes
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="high_level_overview.html">High Level Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Synthetic data generation: data exploration with BTYD data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Visualising-a-customer">Visualising a customer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Multi-customer-analysis">Multi-customer analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Multi-modal-data">Multi-modal data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Single-customer-events">Single customer events</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Frequency-of-transactions">Frequency of transactions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Bimodal-distribution-of-continuous-features">Bimodal distribution of continuous features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Built-in-BTYD-plots">Built-in BTYD plots</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_use_own_dataset.html">Use your own dataset with <code class="docutils literal notranslate"><span class="pre">neural-lifetimes</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">neural_lifetimes package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Neural Lifetimes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Synthetic data generation: data exploration with BTYD data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/_notebook_BTYD_visualisation.nblink.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="Synthetic-data-generation:-data-exploration-with-BTYD-data">
+<h1>Synthetic data generation: data exploration with BTYD data<a class="headerlink" href="#Synthetic-data-generation:-data-exploration-with-BTYD-data" title="Permalink to this headline"></a></h1>
+<section id="Introduction">
+<h2>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this headline"></a></h2>
+<p>Let’s have a look at some typical data we may want to analyse with the “WISE MODEL” package.</p>
+<p>“WISE MODEL” can generate some synthetic data for us, using the Buy-Till-You-Die (BTYD) class of models. The BTYD models assumes that a customer will continue to transact while they are alive, but at every transaction they have a fixed probability <span class="math notranslate nohighlight">\(p\)</span> of “dying” (refered to as “churn” in the “WISE MODEL” model), after which they cease to interact with us. In this tutorial, we will be using the <code class="docutils literal notranslate"><span class="pre">BTYD</span></code> module from <code class="docutils literal notranslate"><span class="pre">neural_lifetimes.datasets</span></code>.</p>
+<p>Each customer has a different value of <span class="math notranslate nohighlight">\(p\)</span>, sampled from a Beta distribution with parameters <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>. Below is an image of a beta distribution with different values of <span class="math notranslate nohighlight">\(a=\alpha\)</span> and <span class="math notranslate nohighlight">\(b=\beta\)</span>:</p>
+<p><img alt="Beta distribution image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Beta_distribution_pdf.svg/325px-Beta_distribution_pdf.svg.png" /></p>
+<p>Each customer also has an individual value of <span class="math notranslate nohighlight">\(\lambda\)</span> that controls the time between events, sampled from a Gamma distribution with parameters <span class="math notranslate nohighlight">\(r\)</span> and <span class="math notranslate nohighlight">\(\alpha\)</span>. Below is an image of a gamma distribution with different <span class="math notranslate nohighlight">\(k=\alpha\)</span> and <span class="math notranslate nohighlight">\(\theta = \frac1r\)</span>:</p>
+<p><img alt="Gamma distribution" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Gamma_distribution_pdf.svg/325px-Gamma_distribution_pdf.svg.png" /></p>
+<p>We can set <span class="math notranslate nohighlight">\(a\)</span>, <span class="math notranslate nohighlight">\(b\)</span>, <span class="math notranslate nohighlight">\(r\)</span> and <span class="math notranslate nohighlight">\(\alpha\)</span> for a dataset to control the distributions of churn and the time between events.</p>
+<p>We can also specify multiple modes for our dataset, for example if we’d like to model a situation where we have two different clusters of customers with different attributes.</p>
+</section>
+<section id="Setup">
+<h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this headline"></a></h2>
+<p>Firstly, we need to generate some customer transactions to work with. To see the effect of changing our generation parameters, let’s make four datasets, each with different parameter sets to control <span class="math notranslate nohighlight">\(p\)</span> and <span class="math notranslate nohighlight">\(\lambda\)</span>. Let’s also restrict to just 1000 customers for this toy example.</p>
+<p>First, we create a dictionary with parameters that describe these four datasets:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">num_customers</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">param_sets</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;balanced&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">},</span> <span class="c1"># mean p_churn = 0.2, mean lambda = 400 hrs = 16.7 days</span>
+    <span class="s1">&#39;low_p&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">},</span> <span class="c1"># mean p_churn = 0.05, mean lambda = 400 hrs = 16.7 days</span>
+    <span class="s1">&#39;high_p&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">},</span> <span class="c1"># mean p_churn = 0.8, mean lambda = 400 hrs = 16.7 days</span>
+    <span class="s1">&#39;long_intervals&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">:</span> <span class="mf">0.0001</span><span class="p">}</span> <span class="c1"># mean p_churn = 0.32, mean lambda = 25 hrs</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>For the rest of of BTYD data parameters we’ll use the defaults provided. These extra parameters include the start and end date we’ll consider for our dataset, as well as the continuous and discrete features that each event might possess. In our default “customer &amp; transactions” paradigm, we’ll have features such as “TARGET_CURRENCY” &amp; “FEE_VALUE_GDP” to describe each event.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+
+<span class="c1"># Import BTYD synthetic model generation class</span>
+<span class="kn">from</span> <span class="nn">neural_lifetimes.data.datasets</span> <span class="kn">import</span> <span class="n">BTYD</span>
+
+<span class="c1"># Import some additional default settings</span>
+<span class="kn">import</span> <span class="nn">eventsprofiles_datamodel</span>
+
+<span class="n">cont_feat</span> <span class="o">=</span> <span class="n">eventsprofiles_datamodel</span><span class="o">.</span><span class="n">cont_feat</span>
+<span class="n">discr_feat</span> <span class="o">=</span> <span class="n">eventsprofiles_datamodel</span><span class="o">.</span><span class="n">discr_feat</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">cont_feat</span><span class="p">)</span> <span class="c1">#These are the continuous features we consider</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">discr_feat</span><span class="p">)</span> <span class="c1">#These are the discrete features we consider</span>
+
+<span class="n">DATA_DIR</span> <span class="o">=</span> <span class="s1">&#39;../examples&#39;</span>
+
+<span class="n">start_date</span><span class="p">,</span> <span class="n">start_limit_date</span><span class="p">,</span> <span class="n">end_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2019</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">#Now we generate datasets for each one of the settings in param_sets above. Note this is still unimodal.</span>
+<span class="n">datasets</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">param_sets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">BTYD</span><span class="p">(</span>
+        <span class="n">num_customers</span><span class="o">=</span><span class="n">num_customers</span><span class="p">,</span>
+        <span class="n">a</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="p">],</span>
+        <span class="n">b</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">],</span>
+        <span class="n">r</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">],</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+        <span class="n">data_dir</span><span class="o">=</span><span class="n">DATA_DIR</span><span class="p">,</span>
+        <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+        <span class="n">start_limit_date</span><span class="o">=</span><span class="n">start_limit_date</span><span class="p">,</span>
+        <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span>
+        <span class="n">continuous_features</span><span class="o">=</span><span class="n">cont_feat</span><span class="p">,</span>
+        <span class="n">discrete_features</span><span class="o">=</span><span class="n">discr_feat</span><span class="p">,</span>
+        <span class="n">seq_gen_dynamic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># when training, we set this to true to generate data dynamically to avoid overfitting</span>
+    <span class="p">)</span>
+    <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start_date:&quot;</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="s2">&quot;end_date:&quot;</span><span class="p">,</span> <span class="n">end_date</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&#39;INVOICE_VALUE_GBP_log&#39;, &#39;FEE_INVOICE_ratio&#39;, &#39;MARGIN_GBP&#39;, &#39;AGE_YEARS&#39;]
+[&#39;ACTION_STATE&#39;, &#39;ACTION_TYPE&#39;, &#39;BALANCE_STEP_TYPE&#39;, &#39;BALANCE_TRANSACTION_TYPE&#39;, &#39;DESCRIPTION&#39;, &#39;PRODUCT_TYPE&#39;, &#39;SENDER_TYPE&#39;, &#39;SOURCE_CURRENCY&#39;, &#39;SUCCESSFUL_ACTION&#39;, &#39;TARGET_CURRENCY&#39;, &#39;ADDRESS_MARKET&#39;, &#39;ADDR_COUNTRY&#39;, &#39;BEST_GUESS_COUNTRY&#39;, &#39;CHANNEL&#39;, &#39;CNTRY_TARGET_RECIPIENT_FIRST&#39;, &#39;CREATION_PLATFORM&#39;, &#39;CUSTOMER_TYPE&#39;, &#39;FIRST_CCY_SEND&#39;, &#39;FIRST_CCY_TARGET&#39;, &#39;FIRST_VISIT_IP_COUNTRY&#39;, &#39;ISO3_COUNTRY_CODE&#39;, &#39;LANGUAGE&#39;, &#39;ORIGIN&#39;, &#39;SEG_QUESTION_PURPOSE&#39;]
+Start_date: 2019-01-01 end_date: 2021-01-01
+</pre></div></div>
+</div>
+</section>
+<section id="Visualising-a-customer">
+<h2>Visualising a customer<a class="headerlink" href="#Visualising-a-customer" title="Permalink to this headline"></a></h2>
+<p>Now that we have four different synthetic unimodal datasets to explore, we can take a look at one of our customer’s transactions. We can directly access the transactions of the first customer in dataset “A” and view them on a timeline:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Plotting functions</span>
+<span class="kn">from</span> <span class="nn">neural_lifetimes.utils.plots</span> <span class="kn">import</span> <span class="n">plot_timeline</span>
+
+<span class="c1"># Let&#39;s look at one specific customer in our dataset.</span>
+<span class="n">index</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1">#select customer</span>
+<span class="c1"># We need to get the attributes for customer &quot;index&quot;</span>
+<span class="n">sample_from_balanced</span> <span class="o">=</span> <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;balanced&quot;</span><span class="p">][</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Customer &quot;index&quot;&#39;s attributes are stored in a dictionary where each value is a numpy array of values per transaction</span>
+<span class="c1"># This includes all the continuous and discrete features</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sample_from_balanced</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<span class="c1"># We should also get the transaction dates associated with these features</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="n">sample_from_balanced</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span>
+<span class="n">names</span> <span class="o">=</span> <span class="n">sample_from_balanced</span><span class="p">[</span><span class="s2">&quot;ACTION_STATE&quot;</span><span class="p">]</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_timeline</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Customer </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&#39;s events&quot;</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([&#39;t&#39;, &#39;INVOICE_VALUE_GBP_log&#39;, &#39;FEE_INVOICE_ratio&#39;, &#39;MARGIN_GBP&#39;, &#39;AGE_YEARS&#39;, &#39;ACTION_STATE&#39;, &#39;ACTION_TYPE&#39;, &#39;BALANCE_STEP_TYPE&#39;, &#39;BALANCE_TRANSACTION_TYPE&#39;, &#39;DESCRIPTION&#39;, &#39;PRODUCT_TYPE&#39;, &#39;SENDER_TYPE&#39;, &#39;SOURCE_CURRENCY&#39;, &#39;SUCCESSFUL_ACTION&#39;, &#39;TARGET_CURRENCY&#39;, &#39;ADDRESS_MARKET&#39;, &#39;ADDR_COUNTRY&#39;, &#39;BEST_GUESS_COUNTRY&#39;, &#39;CHANNEL&#39;, &#39;CNTRY_TARGET_RECIPIENT_FIRST&#39;, &#39;CREATION_PLATFORM&#39;, &#39;CUSTOMER_TYPE&#39;, &#39;FIRST_CCY_SEND&#39;, &#39;FIRST_CCY_TARGET&#39;, &#39;FIRST_VISIT_IP_COUNTRY&#39;, &#39;ISO3_COUNTRY_CODE&#39;, &#39;LANGUAGE&#39;, &#39;ORIGIN&#39;, &#39;SEG_QUESTION_PURPOSE&#39;, &#39;USER_PROFILE_ID&#39;, &#39;lambda&#39;, &#39;p&#39;, &#39;btyd_mode&#39;])
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/_notebook_BTYD_visualisation_7_1.png" src="_images/_notebook_BTYD_visualisation_7_1.png" />
+</div>
+</div>
+<p>As we’d expect, we can see that our customer has been transacting on fairly regular basis until some time before the end_date, at which point we can suspect that they “churned” - i.e. will not carry out any further transactions with us.</p>
+<p>In this synthetic BTYD data, each of the “types” of each event is uniformly randomly generated. In real data, we’d hope to learn relationships between different event types and the times at which they occur.</p>
+</section>
+<section id="Multi-customer-analysis">
+<h2>Multi-customer analysis<a class="headerlink" href="#Multi-customer-analysis" title="Permalink to this headline"></a></h2>
+<p>Now we have a better idea of what each customer is doing individually, let’s explore some trends in our datasets. To start with, let’s look at the behaviour of the number of daily transactions over time.</p>
+<p>First, let’s investigate the effect of <code class="docutils literal notranslate"><span class="pre">p_churn</span></code>. We get data from the <code class="docutils literal notranslate"><span class="pre">low_p</span></code> dataset:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">neural_lifetimes.utils.plots</span> <span class="kn">import</span> <span class="n">plot_transactions</span>
+
+<span class="c1">#Get data for all customers</span>
+<span class="n">sample_from_lowp</span> <span class="o">=</span> <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;low_p&quot;</span><span class="p">][:]</span>
+
+
+<span class="n">title</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">key</span> <span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Number of transactions. Params : </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> (n=</span><span class="si">{</span><span class="n">num_customers</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<span class="n">plot_transactions</span><span class="p">(</span><span class="n">sample_from_lowp</span><span class="p">,</span> <span class="n">year_limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;low_p&quot;</span><span class="p">),</span> <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">)</span>
+<br/><br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;AxesSubplot:title={&#39;center&#39;:&#39;Number of transactions. Params : low_p (n=1000)&#39;}, ylabel=&#39;# Transactions&#39;&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/_notebook_BTYD_visualisation_10_1.png" src="_images/_notebook_BTYD_visualisation_10_1.png" />
+</div>
+</div>
+<p>With a low average probability of churn, we see: * The right tail tapers of very slowly <span class="math notranslate nohighlight">\(-\)</span> many of our customers are still with us and they are ‘dying’ at a slow rate * The absolute number of transactions (y-axis) is high compared to the other graphs (customers don’t churn between bins)</p>
+<p>Now let’s perform the same exercise for a high <code class="docutils literal notranslate"><span class="pre">p_churn</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sample_from_highp</span> <span class="o">=</span> <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;high_p&quot;</span><span class="p">][:]</span>
+
+<span class="n">plot_transactions</span><span class="p">(</span><span class="n">sample_from_highp</span><span class="p">,</span> <span class="n">year_limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;high_p&quot;</span><span class="p">),</span> <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;AxesSubplot:title={&#39;center&#39;:&#39;Number of transactions. Params : high_p (n=1000)&#39;}, ylabel=&#39;# Transactions&#39;&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/_notebook_BTYD_visualisation_12_1.png" src="_images/_notebook_BTYD_visualisation_12_1.png" />
+</div>
+</div>
+<p>With a high average probability probability of churn, most of our customers have been assigned high probability of churn values and so have very few transactions before churning. As a consequence: * Most of our customers have their last transaction near the start of the time frame <span class="math notranslate nohighlight">\(-\)</span> there are very few transactions after <code class="docutils literal notranslate"><span class="pre">start_limit_date</span></code>. * Most of our customers have 1 event before churning <span class="math notranslate nohighlight">\(-\)</span> the absolute number of transactions is much lower compared to the above</p>
+<p>Now, let’s investigate the effect of <code class="docutils literal notranslate"><span class="pre">lambda</span></code> <span class="math notranslate nohighlight">\(-\)</span> the parameter that sets the time interval between events. Let’s get data from the dataset <code class="docutils literal notranslate"><span class="pre">long_intervals</span></code> and plot:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sample_from_longint</span> <span class="o">=</span> <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;long_intervals&quot;</span><span class="p">][:]</span>
+
+<span class="n">plot_transactions</span><span class="p">(</span><span class="n">sample_from_longint</span><span class="p">,</span> <span class="n">year_limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;long_intervals&quot;</span><span class="p">),</span> <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;AxesSubplot:title={&#39;center&#39;:&#39;Number of transactions. Params : long_intervals (n=1000)&#39;}, ylabel=&#39;# Transactions&#39;&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/_notebook_BTYD_visualisation_14_1.png" src="_images/_notebook_BTYD_visualisation_14_1.png" />
+</div>
+</div>
+<p>With high average lambda, most customers will spend a long time between transactions. As a consequence: * Most customers will only have a few events in our dataset, and so we don’t see any strong trends in number of transactions <span class="math notranslate nohighlight">\(-\)</span> after <code class="docutils literal notranslate"><span class="pre">start_limit_date</span></code>, the number of transactions is stable * The absolute number of transactions is quite low</p>
+<p>Now let’s look at our balanced dataset:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sample_from_balanced1</span> <span class="o">=</span> <span class="n">datasets</span><span class="p">[</span><span class="s2">&quot;balanced&quot;</span><span class="p">][:]</span>
+
+<span class="n">plot_transactions</span><span class="p">(</span><span class="n">sample_from_balanced1</span><span class="p">,</span> <span class="n">year_limit</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;balanced&quot;</span><span class="p">),</span> <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;AxesSubplot:title={&#39;center&#39;:&#39;Number of transactions. Params : balanced (n=1000)&#39;}, ylabel=&#39;# Transactions&#39;&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/_notebook_BTYD_visualisation_16_1.png" src="_images/_notebook_BTYD_visualisation_16_1.png" />
+</div>
+</div>
+<p>With events on average every half a month and an average probability of churn of 0.32, we see some of our customers churning fairly on. However, a significant number of loyal customers keep interacting throughout our whole period. This is what we are likely to see for a real dataset.</p>
+</section>
+<section id="Multi-modal-data">
+<h2>Multi-modal data<a class="headerlink" href="#Multi-modal-data" title="Permalink to this headline"></a></h2>
+<p>So far our synthetic data has consisted of customers all drawn from the same distribution. However, in live data we’d expect to encounter many different types of customer with different transactional patterns. We can simulate this with a multi-modal BTYD dataset.</p>
+<section id="id1">
+<h3>Setup<a class="headerlink" href="#id1" title="Permalink to this headline"></a></h3>
+<p>To construct this object, we could in theory pass in lists of parameters corresponding to each mode to our <code class="docutils literal notranslate"><span class="pre">BTYD</span></code> object from earlier. However, it is more natural to define the modes first before then using them to construct a multi-modal <code class="docutils literal notranslate"><span class="pre">BTYD</span></code> object.</p>
+<p>To do this, we use the <code class="docutils literal notranslate"><span class="pre">GenMode</span></code> module. For each mode we can either specify the parameters <span class="math notranslate nohighlight">\(a\)</span>, <span class="math notranslate nohighlight">\(b\)</span>, <span class="math notranslate nohighlight">\(r\)</span>, <span class="math notranslate nohighlight">\(\alpha\)</span> that we’ve seen in the uni-modal case, or pass the desired mean probability of churn and mean interval (which will then be converted into <span class="math notranslate nohighlight">\(a, b, r\)</span> and <span class="math notranslate nohighlight">\(\alpha\)</span> automatically). We can also give a distribution for any of the continuous or discrete features in our dataset. In the modes below, we give the <code class="docutils literal notranslate"><span class="pre">&quot;PRODUCT_TYPE&quot;</span></code> feature a constant
+distribution, and we give the <code class="docutils literal notranslate"><span class="pre">&quot;INVOICE_VALUE_GBP_log&quot;</span></code> feature a <span class="math notranslate nohighlight">\(Normal(\mu, \sigma^2\)</span>) distribution.</p>
+<p>Let’s construct a ‘fast mode’ for customers who use their cards, and a ‘slow mode’ for customers who use balance.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">neural_lifetimes.data.datasets.btyd</span> <span class="kn">import</span> <span class="n">GenMode</span>
+
+<span class="n">fast_card_mode</span> <span class="o">=</span> <span class="n">GenMode</span><span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="n">discrete_dist</span> <span class="o">=</span> <span class="p">{</span> <span class="c1"># mean lambda is 200</span>
+        <span class="s2">&quot;PRODUCT_TYPE&quot;</span><span class="p">:{</span>
+            <span class="s2">&quot;CARD&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;BALANCE&quot;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+    <span class="p">},</span> <span class="n">cont_dist</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;INVOICE_VALUE_GBP_log&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">})</span>
+
+<span class="n">slow_balance_mode</span> <span class="o">=</span> <span class="n">GenMode</span><span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">400000</span><span class="p">,</span> <span class="n">discrete_dist</span> <span class="o">=</span> <span class="p">{</span> <span class="c1"># mean lambda is 4000</span>
+    <span class="s2">&quot;PRODUCT_TYPE&quot;</span><span class="p">:{</span>
+        <span class="s2">&quot;CARD&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;BALANCE&quot;</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}},</span> <span class="n">cont_dist</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;INVOICE_VALUE_GBP_log&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<p>We then pass these modes through the constructor <code class="docutils literal notranslate"><span class="pre">BTYD.from_modes</span></code> with the additional parameter <code class="docutils literal notranslate"><span class="pre">ratios</span></code> <span class="math notranslate nohighlight">\(-\)</span> which determines how often we sample from each mode. This creates a multimodal dataset <code class="docutils literal notranslate"><span class="pre">mm_dataset</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">neural_lifetimes.data.datasets</span> <span class="kn">import</span> <span class="n">BTYD</span>
+<span class="kn">from</span> <span class="nn">eventsprofiles_datamodel</span> <span class="kn">import</span> <span class="n">cont_feat</span><span class="p">,</span> <span class="n">discr_feat</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">data_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;examples&#39;</span><span class="p">)</span>
+<span class="n">num_customers</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">mm_dataset</span> <span class="o">=</span> <span class="n">BTYD</span><span class="o">.</span><span class="n">from_modes</span><span class="p">(</span>
+        <span class="n">num_customers</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+        <span class="n">modes</span><span class="o">=</span><span class="p">[</span><span class="n">fast_card_mode</span><span class="p">,</span><span class="n">slow_balance_mode</span><span class="p">],</span>
+        <span class="n">data_dir</span><span class="o">=</span><span class="n">data_dir</span><span class="p">,</span>
+        <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+        <span class="n">start_limit_date</span><span class="o">=</span><span class="n">start_limit_date</span><span class="p">,</span>
+        <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span>
+        <span class="n">continuous_features</span><span class="o">=</span><span class="n">cont_feat</span><span class="p">,</span>
+        <span class="n">discrete_features</span><span class="o">=</span><span class="n">discr_feat</span><span class="p">,</span>
+        <span class="n">mode_ratios</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">],</span>
+        <span class="n">seq_gen_dynamic</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">track_statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Single-customer-events">
+<h3>Single customer events<a class="headerlink" href="#Single-customer-events" title="Permalink to this headline"></a></h3>
+<p>If we plot a single customer we’d expect to see that either all of their “PRODUCT_TYPE” events are either “CARD” or “BALANCE”.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">neural_lifetimes.utils.plots</span> <span class="kn">import</span> <span class="n">plot_timeline</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_customers</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">single_sample</span> <span class="o">=</span> <span class="n">mm_dataset</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="n">single_sample</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span>
+<span class="n">names</span> <span class="o">=</span> <span class="n">single_sample</span><span class="p">[</span><span class="s1">&#39;PRODUCT_TYPE&#39;</span><span class="p">]</span>
+
+<span class="n">plot_timeline</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Customer </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&#39;s events&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;AxesSubplot:title={&#39;center&#39;:&#34;Customer 8075&#39;s events&#34;}&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/_notebook_BTYD_visualisation_23_1.png" src="_images/_notebook_BTYD_visualisation_23_1.png" />
+</div>
+</div>
+<p>Our prediction was validated. If we change the index, we’ll see timelines for other users with “CARD” transactions too.</p>
+</section>
+<section id="Frequency-of-transactions">
+<h3>Frequency of transactions<a class="headerlink" href="#Frequency-of-transactions" title="Permalink to this headline"></a></h3>
+<p>Let’s look at the frequency of transactions next!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">neural_lifetimes.utils.plots</span> <span class="kn">import</span> <span class="n">plot_freq_transactions</span>
+
+<span class="n">sample_mm</span> <span class="o">=</span> <span class="n">mm_dataset</span><span class="p">[:]</span>
+
+<span class="n">plot_freq_transactions</span><span class="p">(</span><span class="n">sample_mm</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;AxesSubplot:title={&#39;center&#39;:&#39;Average # days between transaction by # customers (n=10000)&#39;}, ylabel=&#39;# Customers&#39;&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/_notebook_BTYD_visualisation_25_1.png" src="_images/_notebook_BTYD_visualisation_25_1.png" />
+</div>
+</div>
+<p>We can see that our graph of number of transactions has two modes : one at 0 for our fast-transaction <code class="docutils literal notranslate"><span class="pre">&quot;CARD&quot;</span></code> customers and another around 100 for our slower-transaction <code class="docutils literal notranslate"><span class="pre">&quot;BALANCE&quot;</span></code> customers.</p>
+</section>
+<section id="Bimodal-distribution-of-continuous-features">
+<h3>Bimodal distribution of continuous features<a class="headerlink" href="#Bimodal-distribution-of-continuous-features" title="Permalink to this headline"></a></h3>
+<p>Lastly, let’s look at the distribution of one of our continuous features:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">neural_lifetimes.utils.plots</span> <span class="kn">import</span> <span class="n">plot_cont_feature</span>
+
+<span class="n">feature</span> <span class="o">=</span> <span class="s2">&quot;INVOICE_VALUE_GBP_log&quot;</span>
+<span class="n">plot_cont_feature</span><span class="p">(</span><span class="n">sample_mm</span><span class="p">,</span> <span class="n">feature</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;AxesSubplot:title={&#39;center&#39;:&#39;Feature INVOICE_VALUE_GBP_log by # events (n=10000)&#39;}, ylabel=&#39;# Events&#39;&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/_notebook_BTYD_visualisation_27_1.png" src="_images/_notebook_BTYD_visualisation_27_1.png" />
+</div>
+</div>
+<p>As we specified, we have a bimodal Normal distribution on the <code class="docutils literal notranslate"><span class="pre">&quot;INVOICE_VALUE_GBP_log&quot;</span></code> feature. We see different height peaks because the <span class="math notranslate nohighlight">\(Normal(-5,1)\)</span> distribution is associated with the <code class="docutils literal notranslate"><span class="pre">fast_card_mode</span></code> - with lower chance of churn and smaller time intervals between events we’d expect to see more events in our dataset.</p>
+<p>Nothing we’ve shown here is restricted to a bimodal dataset - specifying and passing more modes to the <code class="docutils literal notranslate"><span class="pre">BTYD</span></code> constructor will result in more complex multi-modal datasets that can more closely mirror real data.</p>
+</section>
+<section id="Built-in-BTYD-plots">
+<h3>Built-in BTYD plots<a class="headerlink" href="#Built-in-BTYD-plots" title="Permalink to this headline"></a></h3>
+<p>The BTYD dataset has a built-in plotting functionality based on <code class="docutils literal notranslate"><span class="pre">plotly</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">plotly.io</span> <span class="k">as</span> <span class="nn">pio</span>
+<span class="c1"># open the plot panel in browser window instead of plotting it inline</span>
+<span class="n">pio</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="s1">&#39;browser&#39;</span>
+
+<span class="c1"># launch plots</span>
+<span class="n">mm_dataset</span><span class="o">.</span><span class="n">plot_tracked_statistics</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="high_level_overview.html" class="btn btn-neutral float-left" title="High Level Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_notebook_use_own_dataset.html" class="btn btn-neutral float-right" title="Use your own dataset with neural-lifetimes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Wise.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

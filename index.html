@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Neural Lifetimes’ documentation! &mdash; Neural Lifetimes  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="High Level Overview" href="high_level_overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> Neural Lifetimes
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="high_level_overview.html">High Level Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_BTYD_visualisation.html">Synthetic data generation: data exploration with BTYD data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_use_own_dataset.html">Use your own dataset with <code class="docutils literal notranslate"><span class="pre">neural-lifetimes</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">neural_lifetimes package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Neural Lifetimes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Welcome to Neural Lifetimes’ documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="welcome-to-neural-lifetimes-documentation">
+<h1>Welcome to Neural Lifetimes’ documentation!<a class="headerlink" href="#welcome-to-neural-lifetimes-documentation" title="Permalink to this headline"></a></h1>
+<section id="neural-lifetimes">
+<h2>Neural Lifetimes<a class="headerlink" href="#neural-lifetimes" title="Permalink to this headline"></a></h2>
+<section id="introduction">
+<h3>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline"></a></h3>
+<p>One of the most important problems a firm faces is the question of consumer
+value. Over the years, there have been many attempts to address this issue, with
+one of the most successful being the “Buy-Till-You-Die” class of RFM models
+that the <a class="reference external" href="https://lifetimes.readthedocs.io/en/latest/#">lifetimes</a> package is based on. A major pitfall of these models is the
+rigid assumptions about distributions of hyperparameters, as well as the lack of
+granularity of analysis. Wise_model aims to address these issues with a novel
+implementation of recursive neural networks.</p>
+<p>The Neural Lifetimes is a way to easily train a neural network on your data (for more
+information on the neural net architecture, see <a class="reference internal" href="high_level_overview.html#model"><span class="std std-ref">an overview of the model</span></a>). Once you
+have trained a model, you can use the <a class="reference external" href="neural_lifetimes/inference">Inference package</a> to predict customer
+actions, extend existing customer sequences, or simulate entirely new sequences.</p>
+<p>The Neural Lifetimes is based on a few assumptions:</p>
+<ol class="arabic simple">
+<li><p>Customers interact with the firm when they are “alive” between each timestep.</p></li>
+<li><p>At each timestep, there is a probability of the customer “dying”. This probability is sampled from the latent space.</p></li>
+</ol>
+<section id="applications">
+<h4>Applications<a class="headerlink" href="#applications" title="Permalink to this headline"></a></h4>
+<p>Common applications include:</p>
+<ul class="simple">
+<li><p>Predicting customers transactions (alive = actively purchasing,
+dead = not buying anymore).</p></li>
+<li><p>Clustering your customers based on their demographic information and
+their behaviour.</p></li>
+<li><p>Predicting the churn probability your customers given their purchasing behaviour</p></li>
+</ul>
+</section>
+<section id="specific-examples">
+<h4>Specific Examples<a class="headerlink" href="#specific-examples" title="Permalink to this headline"></a></h4>
+<p>For some examples of what this library can do, see <a class="reference internal" href="_notebook_BTYD_visualisation.html"><span class="doc">Quickstart</span></a>.</p>
+</section>
+</section>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">neural</span><span class="o">-</span><span class="n">lifetimes</span>
+</pre></div>
+</div>
+</section>
+<section id="documentation-and-tutorials">
+<h3>Documentation and tutorials<a class="headerlink" href="#documentation-and-tutorials" title="Permalink to this headline"></a></h3>
+<p><a class="reference internal" href="#"><span class="doc">Official documentation</span></a></p>
+</section>
+<section id="questions-comments-requests">
+<h3>Questions? Comments? Requests?<a class="headerlink" href="#questions-comments-requests" title="Permalink to this headline"></a></h3>
+<p>Please create an issue in the <a class="reference external" href="https://github.com/transferwise/neural-lifetimes">this
+repository</a>.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="high_level_overview.html">High Level Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="high_level_overview.html#library-functionalities">Library Functionalities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="high_level_overview.html#model">Model</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_BTYD_visualisation.html">Synthetic data generation: data exploration with BTYD data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_notebook_BTYD_visualisation.html#Introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebook_BTYD_visualisation.html#Setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebook_BTYD_visualisation.html#Visualising-a-customer">Visualising a customer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebook_BTYD_visualisation.html#Multi-customer-analysis">Multi-customer analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebook_BTYD_visualisation.html#Multi-modal-data">Multi-modal data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_use_own_dataset.html">Use your own dataset with <code class="docutils literal notranslate"><span class="pre">neural-lifetimes</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_notebook_use_own_dataset.html#Import-dependencies">Import dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebook_use_own_dataset.html#Explore-Dataset">Explore Dataset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebook_use_own_dataset.html#Use-neural-lifetimes">Use neural-lifetimes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">neural_lifetimes package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="neural_lifetimes.html">neural_lifetimes package</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="high_level_overview.html" class="btn btn-neutral float-right" title="High Level Overview" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Wise.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

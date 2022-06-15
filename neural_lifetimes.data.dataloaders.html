@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>neural_lifetimes.data.dataloaders package &mdash; Neural Lifetimes  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="neural_lifetimes.data.datamodules package" href="neural_lifetimes.data.datamodules.html" />
+    <link rel="prev" title="neural_lifetimes.data package" href="neural_lifetimes.data.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Neural Lifetimes
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="high_level_overview.html">High Level Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_BTYD_visualisation.html">Synthetic data generation: data exploration with BTYD data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_use_own_dataset.html">Use your own dataset with <code class="docutils literal notranslate"><span class="pre">neural-lifetimes</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">neural_lifetimes package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="neural_lifetimes.html">neural_lifetimes package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="neural_lifetimes.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="neural_lifetimes.data.html">neural_lifetimes.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.losses.html">neural_lifetimes.losses package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.models.html">neural_lifetimes.models package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="neural_lifetimes.utils.html">neural_lifetimes.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#neural-lifetimes-inference-module">neural_lifetimes.inference module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#neural-lifetimes-run-model-module">neural_lifetimes.run_model module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="neural_lifetimes.html#module-contents">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Neural Lifetimes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">neural_lifetimes package</a> &raquo;</li>
+          <li><a href="neural_lifetimes.html">neural_lifetimes package</a> &raquo;</li>
+          <li><a href="neural_lifetimes.data.html">neural_lifetimes.data package</a> &raquo;</li>
+      <li>neural_lifetimes.data.dataloaders package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/neural_lifetimes.data.dataloaders.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="neural-lifetimes-data-dataloaders-package">
+<h1>neural_lifetimes.data.dataloaders package<a class="headerlink" href="#neural-lifetimes-data-dataloaders-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-neural_lifetimes.data.dataloaders.sequence_loader">
+<span id="neural-lifetimes-data-dataloaders-sequence-loader-module"></span><h2>neural_lifetimes.data.dataloaders.sequence_loader module<a class="headerlink" href="#module-neural_lifetimes.data.dataloaders.sequence_loader" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.dataloaders.sequence_loader.</span></span><span class="sig-name descname"><span class="pre">SequenceLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="neural_lifetimes.data.datasets.html#neural_lifetimes.data.datasets.sequence_dataset.SequenceSubset" title="neural_lifetimes.data.datasets.sequence_dataset.SequenceSubset"><span class="pre">neural_lifetimes.data.datasets.sequence_dataset.SequenceSubset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Randomly samples a dataset of variable-length sequences into a batch with a maximum number of points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Subset</em>) – Subset of SequenceSamplingDataset</p></li>
+<li><p><strong>max_points</strong> (<em>int</em>) – maximum number of points in a batch</p></li>
+<li><p><strong>min_points</strong> (<em>int</em>) – minimum number of points in a batch. Defaults to 2.</p></li>
+<li><p><strong>transform</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>]</em>) – function to transform the data. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>data</strong> (<em>Subset</em>) – Subset of SequenceSamplingDataset.</p></li>
+<li><p><strong>max_points</strong> (<em>int</em>) – maximum number of points in a batch.</p></li>
+<li><p><strong>min_points</strong> (<em>int</em>) – minimum number of points in a batch.</p></li>
+<li><p><strong>next_ind</strong> (<em>int</em>) – index of the next item to be returned. Initialised to 0.</p></li>
+<li><p><strong>transform</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>]</em>) – function to transform the data.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.__iter__" title="Permalink to this definition"></a></dt>
+<dd><p>Get self as iterator of sequence batches.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.__len__" title="Permalink to this definition"></a></dt>
+<dd><p>Return 1e10 as a bodge.</p>
+<p>See <a class="reference external" href="https://github.com/PyTorchLightning/pytorch-lightning/issues/323#issuecomment-540840761">https://github.com/PyTorchLightning/pytorch-lightning/issues/323#issuecomment-540840761</a> for details</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.__next__">
+<span class="sig-name descname"><span class="pre">__next__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.__next__" title="Permalink to this definition"></a></dt>
+<dd><p>Return next batch of sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>torch.Tensor</em> – The next batch of sequences.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.bulk_transform">
+<span class="sig-name descname"><span class="pre">bulk_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.bulk_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Process bulk-extracted data by translating each sequence separately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>seqs</strong> (<em>Sequence</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>np.ndarray</em><em>]</em><em>]</em>) – Sequence of sequences to transform.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Dict[str, np.ndarray]</em> – Transformed sequences.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.datetime2tensor">
+<span class="sig-name descname"><span class="pre">datetime2tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.data.dataloaders.sequence_loader.SequenceLoader.datetime2tensor" title="Permalink to this definition"></a></dt>
+<dd><p>Create a timestamp(seconds) in hours since epoch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>np.ndarray</em>) – The array of datetimes to convert.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.ndarray[np.float64]</em> – int64 / float64 to maintain precision.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This should be converted to float32 before training using astype(np.float32)</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.data.dataloaders.sequence_loader.get_last">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.dataloaders.sequence_loader.</span></span><span class="sig-name descname"><span class="pre">get_last</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.dataloaders.sequence_loader.get_last" title="Permalink to this definition"></a></dt>
+<dd><p>Obtain the last element of each sequence in the batch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>torch.Tensor</em><em>]</em>) – batch of sequences</p></li>
+<li><p><strong>model_out</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>torch.Tensor</em><em>]</em>) – model output</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Dict[str, torch.Tensor]</em> – batch of sequences with only the last element</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.data.dataloaders.sequence_loader.trim_last">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.data.dataloaders.sequence_loader.</span></span><span class="sig-name descname"><span class="pre">trim_last</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.data.dataloaders.sequence_loader.trim_last" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.data.dataloaders">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-neural_lifetimes.data.dataloaders" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="neural_lifetimes.data.html" class="btn btn-neutral float-left" title="neural_lifetimes.data package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="neural_lifetimes.data.datamodules.html" class="btn btn-neutral float-right" title="neural_lifetimes.data.datamodules package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Wise.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>neural_lifetimes.utils.data package &mdash; Neural Lifetimes  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Neural Lifetimes
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="high_level_overview.html">High Level Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_BTYD_visualisation.html">Synthetic data generation: data exploration with BTYD data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebook_use_own_dataset.html">Use your own dataset with <code class="docutils literal notranslate"><span class="pre">neural-lifetimes</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">neural_lifetimes package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Neural Lifetimes</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>neural_lifetimes.utils.data package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/neural_lifetimes.utils.data.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="neural-lifetimes-utils-data-package">
+<h1>neural_lifetimes.utils.data package<a class="headerlink" href="#neural-lifetimes-utils-data-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-neural_lifetimes.utils.data.encoder_with_unknown">
+<span id="neural-lifetimes-utils-data-encoder-with-unknown-module"></span><h2>neural_lifetimes.utils.data.encoder_with_unknown module<a class="headerlink" href="#module-neural_lifetimes.utils.data.encoder_with_unknown" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.data.encoder_with_unknown.</span></span><span class="sig-name descname"><span class="pre">OrdinalEncoderWithUnknown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categories='auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float64'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_unknown='error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unknown_value=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoded_missing_value=nan</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.preprocessing._encoders.OrdinalEncoder</span></code></p>
+<p>An ordinal encoder that encodes unknown values as 0.</p>
+<p>The OrdinalEncoderWithUnknown works with unknown values. If an unknown value is passed into <code class="docutils literal notranslate"><span class="pre">transform()</span></code>,
+it will be encoded as <code class="docutils literal notranslate"><span class="pre">0</span></code>. The <code class="docutils literal notranslate"><span class="pre">inverse_transform</span></code> maps <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">&lt;Unknown&gt;</span></code>.
+The encoder acts as a surjective mapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables</dt>
+<dd class="field-odd"><p><strong>levels</strong> (<em>np.ndarray</em>) – The raw levels that can be decoded to. Includes the <code class="docutils literal notranslate"><span class="pre">&lt;Unknown&gt;</span></code> token.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Basis:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing.OrdinalEncoder</span></code></p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fits the encoder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>np.ndarray</em>) – The raw data array.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>_type_</em> – The encoded data array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.inverse_transform">
+<span class="sig-name descname"><span class="pre">inverse_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.inverse_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Transforms the data into the decoded format.</p>
+<p>Unknown values will be decoded as “&lt;Unknown&gt;”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>torch.Tensor</em><em>]</em>) – The encoded data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.ndarray</em> – The decoded data. The dtype will match the dtype of the array past into the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the string dtype passed into <code class="docutils literal notranslate"><span class="pre">fit</span></code> too short for “&lt;Unkown&gt;”, this token will be truncated.</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.levels">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">levels</span></span><a class="headerlink" href="#neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.levels" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the encoder into a dictionary structure mapping raw to encoded values. Includes unknown token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>Dict[str, int]</em> – Dictionary of form <code class="docutils literal notranslate"><span class="pre">raw:</span> <span class="pre">encoded</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.encoder_with_unknown.OrdinalEncoderWithUnknown.transform" title="Permalink to this definition"></a></dt>
+<dd><p>Transforms the data into encoded format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>np.ndarray</em>) – The raw data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.ndarray</em> – The encoded data with dtype <code class="docutils literal notranslate"><span class="pre">int64</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.encoder_with_unknown.normalize">
+<span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.data.encoder_with_unknown.</span></span><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.data.encoder_with_unknown.normalize" title="Permalink to this definition"></a></dt>
+<dd><p>Normalize the data. Only 1 encoding is handled at a time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – The data to be normalized.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.array</em> – The normalized data.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since we are using np.array, it may lead to errors with GPUs.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.utils.data.feature_encoder">
+<span id="neural-lifetimes-utils-data-feature-encoder-module"></span><h2>neural_lifetimes.utils.data.feature_encoder module<a class="headerlink" href="#module-neural_lifetimes.utils.data.feature_encoder" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.data.feature_encoder.</span></span><span class="sig-name descname"><span class="pre">FeatureDictionaryEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">continuous_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_encoded</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_token_discrete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'encode'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.__call__" title="Permalink to this definition"></a></dt>
+<dd><p>Transform a dictionary of features. This call can encode and decode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The input features.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The transform mode can be <code class="docutils literal notranslate"><span class="pre">enode</span></code> or <code class="docutils literal notranslate"><span class="pre">decode</span></code>. Defaults to “encode”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Dict[str, Any]</em> – The transformed features.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.config_dict">
+<span class="sig-name descname"><span class="pre">config_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.config_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Dump the encoder into a dictionary. It can be used to re-initialise the object using <code class="docutils literal notranslate"><span class="pre">.from_dict()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><p><em>Dict[str, Any]</em> –</p>
+<dl class="simple">
+<dt>The Encoder config dictionary. A dictionary containing all arguments required to initialise</dt><dd><p>the object.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.decode">
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.decode" title="Permalink to this definition"></a></dt>
+<dd><p>Decode a single feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – feature name.</p></li>
+<li><p><strong>x</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>torch.Tensor</em><em>]</em>) – encoded feature values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.ndarray</em> – decoded feature values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.encode">
+<span class="sig-name descname"><span class="pre">encode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.encode" title="Permalink to this definition"></a></dt>
+<dd><p>Encode a single feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – feature name.</p></li>
+<li><p><strong>x</strong> (<em>np.ndarray</em>) – raw feature values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>np.ndarray</em> – encoded feature values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.feature_size">
+<span class="sig-name descname"><span class="pre">feature_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.feature_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.features">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.features" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dictionary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.data.feature_encoder.FeatureDictionaryEncoder.from_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Initialise encoder from dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dictionary</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – A configuration dict as dumped by <code class="docutils literal notranslate"><span class="pre">.config_dict()</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.utils.data.target_creator">
+<span id="neural-lifetimes-utils-data-target-creator-module"></span><h2>neural_lifetimes.utils.data.target_creator module<a class="headerlink" href="#module-neural_lifetimes.utils.data.target_creator" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.target_creator.DummyTransform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.data.target_creator.</span></span><span class="sig-name descname"><span class="pre">DummyTransform</span></span><a class="headerlink" href="#neural_lifetimes.utils.data.target_creator.DummyTransform" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.target_creator.DummyTransform.output_len">
+<span class="sig-name descname"><span class="pre">output_len</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.data.target_creator.DummyTransform.output_len" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.target_creator.TargetCreator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.data.target_creator.</span></span><span class="sig-name descname"><span class="pre">TargetCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.data.target_creator.TargetCreator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class to create targets for a sequence of events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cols</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of columns to use as features.</p>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><p><strong>cols</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The list of columns to use as features.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.target_creator.TargetCreator.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.target_creator.TargetCreator.__call__" title="Permalink to this definition"></a></dt>
+<dd><p>Appends the data dict <code class="docutils literal notranslate"><span class="pre">x</span></code> with right-shifted copies for all keys specified in <code class="docutils literal notranslate"><span class="pre">cols</span></code> and <code class="docutils literal notranslate"><span class="pre">dt</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>np.ndarray</em><em>]</em>) – data dictionary.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Dict[str, Union[np.ndarray, Sequence[str]]]</em> – The appended data dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.target_creator.TargetCreator.build_parameter_dict">
+<span class="sig-name descname"><span class="pre">build_parameter_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.target_creator.TargetCreator.build_parameter_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Return a dictionary of parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>Dict[str, Any]</em> – A dictionary of the target transform parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.utils.data.tokenizer">
+<span id="neural-lifetimes-utils-data-tokenizer-module"></span><h2>neural_lifetimes.utils.data.tokenizer module<a class="headerlink" href="#module-neural_lifetimes.utils.data.tokenizer" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">neural_lifetimes.utils.data.tokenizer.</span></span><span class="sig-name descname"><span class="pre">Tokenizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">continuous_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_item_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_token_continuous</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.float32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_token_discrete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_token_timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_token_other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.float32</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A callable class to tokenize your dictionary-based batches.</p>
+<p>The Tokenizer left-truncates sequences and appends start tokens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>continuous_features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list containing the names of the continuous features.</p></li>
+<li><p><strong>discrete_features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list containing the names of the discrete features.</p></li>
+<li><p><strong>max_item_len</strong> (<em>int</em>) – The maximum length to which the sequence should be truncated.
+The tokenizer performs left-truncation. The length of returned sequences will be <code class="docutils literal notranslate"><span class="pre">max_item_len</span> <span class="pre">+</span> <span class="pre">1</span></code>.</p></li>
+<li><p><strong>start_token_continuous</strong> (<em>np.float32</em>) – The start token for variables specified in <code class="docutils literal notranslate"><span class="pre">continuous_features</span></code>.</p></li>
+<li><p><strong>start_token_discrete</strong> (<em>str</em>) – The start token for variables specified in <code class="docutils literal notranslate"><span class="pre">discrete_features</span></code>.</p></li>
+<li><p><strong>start_token_timestamp</strong> (<em>datetime.datetime</em>) – The start token for variables with data type <code class="docutils literal notranslate"><span class="pre">np.datetime64</span></code>.</p></li>
+<li><p><strong>start_token_other</strong> (<em>np.float32</em>) – The start token for variables not specified in <code class="docutils literal notranslate"><span class="pre">continuous_features</span></code>,
+<cite>discrete_features`</cite> or of type <code class="docutils literal notranslate"><span class="pre">np.datetime64</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>continuous_features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list containing the names of the continuous features.</p></li>
+<li><p><strong>discrete_features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list containing the names of the discrete features.</p></li>
+<li><p><strong>features</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list containing the names of both continuous and discrete features.</p></li>
+<li><p><strong>max_item_len</strong> (<em>int</em>) – The maximum length to which the sequence should be truncated.
+The tokenizer performs left-truncation. The length of returned sequences will be <code class="docutils literal notranslate"><span class="pre">max_item_len</span> <span class="pre">+</span> <span class="pre">1</span></code>.</p></li>
+<li><p><strong>start_token_continuous</strong> (<em>np.float32</em>) – The start token for variables specified in <code class="docutils literal notranslate"><span class="pre">continuous_features</span></code>.</p></li>
+<li><p><strong>start_token_discrete</strong> (<em>str</em>) – The start token for variables specified in <code class="docutils literal notranslate"><span class="pre">discrete_features</span></code>.</p></li>
+<li><p><strong>start_token_timestamp</strong> (<em>datetime.datetime</em>) – The start token for variables with numpy dtype of kind <code class="docutils literal notranslate"><span class="pre">datetime</span></code>,
+i.e. <code class="docutils literal notranslate"><span class="pre">dtype.kind</span> <span class="pre">==</span> <span class="pre">'M'</span></code>.</p></li>
+<li><p><strong>start_token_other</strong> (<em>np.float32</em>) – The start token for variables not specified in <code class="docutils literal notranslate"><span class="pre">continuous_features</span></code>,
+<cite>discrete_features`</cite> or of type <code class="docutils literal notranslate"><span class="pre">np.datetime64</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer.__call__" title="Permalink to this definition"></a></dt>
+<dd><p>Tokenizes and truncates the data <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>np.ndarray</em><em>]</em>) – The raw data dictionary.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Dict[str, np.ndarray]</em> – The transformed data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer.continuous_features">
+<span class="sig-name descname"><span class="pre">continuous_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer.continuous_features" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer.discrete_features">
+<span class="sig-name descname"><span class="pre">discrete_features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer.discrete_features" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer.features">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer.features" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer.max_item_len">
+<span class="sig-name descname"><span class="pre">max_item_len</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer.max_item_len" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer.start_token_continuous">
+<span class="sig-name descname"><span class="pre">start_token_continuous</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.float32</span></em><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer.start_token_continuous" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer.start_token_discrete">
+<span class="sig-name descname"><span class="pre">start_token_discrete</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer.start_token_discrete" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer.start_token_other">
+<span class="sig-name descname"><span class="pre">start_token_other</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">numpy.float32</span></em><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer.start_token_other" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="neural_lifetimes.utils.data.tokenizer.Tokenizer.start_token_timestamp">
+<span class="sig-name descname"><span class="pre">start_token_timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">datetime.datetime</span></em><a class="headerlink" href="#neural_lifetimes.utils.data.tokenizer.Tokenizer.start_token_timestamp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-neural_lifetimes.utils.data">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-neural_lifetimes.utils.data" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Wise.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
