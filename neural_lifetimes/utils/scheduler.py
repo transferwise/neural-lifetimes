@@ -63,7 +63,7 @@ class ExponentialWarmupScheduler(WeightScheduler):
         Often model training benefit from starting training with no penalty and slowing increasing it after a few
         first steps. This is called warmup. In particular, the information bottleneck requires this. The exponential
         scheduler returns penalty weight 0 until step ``n_cold_steps`` is reached and then increases the weight every
-        step by factor ``gamma`` until ``n_warmup_steps``, when ``target_weight`` is reached.
+        step by factor ``gamma`` for ``n_warmup_steps`` steps, when ``target_weight`` is reached.
 
         Args:
             n_cold_steps (int): Number of cold start steps with 0 weight.
