@@ -119,7 +119,9 @@ class InformationBottleneckLoss(nn.Module):
 
     @property
     def reg_weight(self) -> float:
-        """The weight currently used for the mutual information. This is an alias and determined through the
+        """The weight currently used for the mutual information.
+
+        This is an alias and determined through the
         ``WeightScheduler``.
 
         Returns:
