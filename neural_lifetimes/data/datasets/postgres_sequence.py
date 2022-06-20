@@ -150,7 +150,7 @@ class PostgresSequenceDataset(SequenceDataset):
         uids = np.array(sorted([self.uids[i] for i in inds]))
         # get the data for all the ids
         query = f"""
-            SELECT * from {self.database}.{self.table_name}
+            SELECT * from {self.table_name}
             where "{self.uid_name}" in ({','.join(uids.astype(str))})
             {self.last_event_filter}
             order by "{self.uid_name}", "{self.time_col}"
@@ -160,7 +160,14 @@ class PostgresSequenceDataset(SequenceDataset):
         pre_out = {}
 
         # get the data types and column names
-        dtypes = dtypes_from_table(self.host, self.database, table=self.table_name, port=self.port)
+        dtypes = dtypes_from_table(
+            self.user,
+            self.password,
+            self.host,
+            self.database,
+            table=self.table_name,
+            port=self.port
+        )
 
         # match data to column names and cast the variables to correct types
         for x, (cname, ctype) in zip(data, dtypes.iteritems()):

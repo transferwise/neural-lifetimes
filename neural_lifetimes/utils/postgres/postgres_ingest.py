@@ -29,7 +29,7 @@ def dtypes_from_table(
     ch_engine = create_engine(ch_url, echo=False)
 
     if query is None:
-        query = f"select *  from {database}.{table} limit 1"
+        query = f"select *  from {table} limit 1"
     else:
         query += " limit 1"
 
