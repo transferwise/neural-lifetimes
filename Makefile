@@ -60,4 +60,4 @@ docs:
 	. $(venv_activate_path) ;\
 	cd docs/ ;\
 	sphinx-apidoc -o . ../neural_lifetimes ;\
-	sphinx-build -b html . build
+	sphinx-multiversion . build
