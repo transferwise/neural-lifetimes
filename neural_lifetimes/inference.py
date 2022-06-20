@@ -1,3 +1,4 @@
+from typing import Dict, Any
 import datetime
 import random
 from typing import List
@@ -29,8 +30,11 @@ class ModelInference:
         model (ClassicModel): Model instance.
     """
 
-    def __init__(self, model_filename: str):
-        self.model = ClassicModel.load_from_checkpoint(model_filename)
+    def __init__(self, model_filename: str, init_kwargs: Dict[str, Any] = None):
+        if init_kwargs is None:
+            init_kwargs = {}
+        self.model = ClassicModel.load_from_checkpoint(model_filename, **init_kwargs)
+        print(f"Model loaded from: {model_filename} with args: {init_kwargs}")
 
     def predict(self, loader: SequenceLoader, n_samples=1, return_input=True):
         """
