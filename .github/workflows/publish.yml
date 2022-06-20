@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2.3.4
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip setuptools wheel twine
+
+      - name: Build distributable package
+        run: python setup.py bdist_wheel sdist
+
+      - name: Check distributable
+        run: twine check --strict dist/*.whl
+
+      - name: Publish package
+        if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
