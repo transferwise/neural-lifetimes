@@ -172,7 +172,7 @@ class SequenceDataModule(pl.LightningDataModule):
         return self._build_dataloader(self.forecast_dataset, self.predict_inds)
 
     def _forecast_indices(self, indices):
-        if indices is None or len(indices) <= self.forecast_limit:
+        if self.forecast_limit is None or len(indices) <= self.forecast_limit:
             return indices
         else:
             return random.sample(indices, self.forecast_limit)
