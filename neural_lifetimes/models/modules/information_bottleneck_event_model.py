@@ -228,7 +228,7 @@ class InformationBottleneckEventModel(EventModel):  # TODO Add better docstring
         loss, loss_components = self.criterion(y_pred, y_true)
         loss_components = {f"{split}_{name}": loss for name, loss in loss_components.items()}
         self.log_dict(loss_components, batch_size=y_true["next_dt"].shape[0])
-        self.criterion.weight_scheduler.step()
+        self.log("ib_weight", self.criterion.weight_scheduler.step())
         return loss
 
     def get_and_log_metrics(
