@@ -13,7 +13,7 @@ class WeightScheduler(ABC):
         pass
 
     @abstractmethod
-    def step(self) -> None:
+    def step(self) -> float:
         pass
 
 
@@ -51,9 +51,10 @@ class LinearWarmupScheduler(WeightScheduler):
         else:
             return self.target_weight
 
-    def step(self):
+    def step(self) -> float:
         """Increases the step."""
         self._step += 1
+        return self.weight
 
 
 class ExponentialWarmupScheduler(WeightScheduler):
@@ -92,6 +93,7 @@ class ExponentialWarmupScheduler(WeightScheduler):
         else:
             return self.target_weight
 
-    def step(self):
+    def step(self) -> float:
         """Increases the step."""
         self._step += 1
+        return self.weight
