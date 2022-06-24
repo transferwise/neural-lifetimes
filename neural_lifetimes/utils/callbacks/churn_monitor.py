@@ -15,6 +15,9 @@ class MonitorChurn(pl.Callback):
 
     def on_train_batch_end(self, trainer, net, outputs, batch, batch_idx):
         out = net(batch)
+        # the following line is not very elegant, but with the IB penalty, some sequences have different length and the
+        # "remove_initial_event" does not make sense, nor works. Thus, these sequences are removed.
+        out = {n: t for n, t in out.items() if len(t) == len(out["next_dt"])}
         _, x_remove_initial = remove_initial_event(batch, out)  # TODO Cornelius: why how what?
         _, x_last = get_last(batch, out)  # TODO Cornelius: why how what?
 
@@ -57,6 +60,10 @@ class MonitorChurn(pl.Callback):
             return
 
         out = net(batch)
+        # the following line is not very elegant, but with the IB penalty, some sequences have different length and the
+        # "remove_initial_event" does not make sense, nor works. Thus, these sequences are removed.
+        out = {n: t for n, t in out.items() if len(t) == len(out["next_dt"])}
+
         _, x_remove_initial = remove_initial_event(batch.copy(), out)
         _, x_last = get_last(batch.copy(), out)
 

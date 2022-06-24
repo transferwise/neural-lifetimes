@@ -1012,13 +1012,10 @@ def expected_time_interval_from_priors(r: Union[float, List[float]], alpha: Unio
 def expected_num_transactions_from_priors(
     a: List[float], b: List[float], r: List[float], alpha: List[float], time_interval: List[float]
 ) -> List[float]:
-    """
-    Compute the expected number of transactions per customer from priors per mode.
+    """Compute the expected number of transactions per customer from priors per mode.
 
     If parameters are provided, these will be used to to calculated the expected value.
-
     Otherwise, the internal priors are used.
-
     See Fader et al. (http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf) for details.
 
     Args:
@@ -1032,7 +1029,6 @@ def expected_num_transactions_from_priors(
     Returns:
         List[float]: Expected customer lifetime values.
     """
-
     as_, bs = a, b
     rs, alphas = r, alpha
 
@@ -1143,6 +1139,7 @@ def expected_num_transactions_from_parameters_and_history(
 
 def marginal_parameter_likelihood(p: float, lambda_: float, x: int, tx: float, T: float) -> float:
     """Computes the marginal likelihood of the parameters lambda and p, given the transaction history.
+
     See http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf equation (3).
 
     Args:

@@ -1,27 +1,26 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Union
 
-import numpy as np
-import pytorch_lightning as pl
 import torch
 from torch import nn
 from torchmetrics import Accuracy, MeanAbsoluteError, MetricCollection
 
-from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss, VariationalEncoderDecoderLoss
+from neural_lifetimes.losses import ChurnLoss, SumLoss, TauLoss
+from neural_lifetimes.models.modules import EventModel
 
 from ...data.dataloaders.sequence_loader import trim_last
 from ..nets.embedder import CombinedEmbedder
-from ..nets.encoder_decoder import VariationalEncoderDecoder
 from ..nets.event_model import EventEncoder
 from ..nets.heads import CategoricalHead, ChurnProbabilityHead, CompositeHead, ExponentialHeadNoLoss, NormalHead
-
+from neural_lifetimes.losses import InformationBottleneckLoss
+from neural_lifetimes.utils.scheduler import LinearWarmupScheduler
 from neural_lifetimes.utils.data import FeatureDictionaryEncoder
 
 from neural_lifetimes.utils.callbacks import GitInformationLogger
 from .configure_optimizers import configure_optimizers
 
 
-class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder, Add better docstring
-    """Initialises a ClassicModel instance.
+class InformationBottleneckEventModel(EventModel):  # TODO Add better docstring
+    """Initialises an EventModel instance.
 
     This is the model class. Each different model / method gets their own class.
     Docs: https://pytorch-lightning.readthedocs.io/en/latest/common/lightning_module.html
@@ -33,6 +32,7 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         bottleneck_dim (int): dimensions of information bottleneck.
         lr (float): learning rate.
         **kwargs: Additional arguments for the pl.LighteningModule constructor
+        encoder_noise: the noise for the encoder, scalar of N(0,1)
     """
 
     def __init__(
@@ -44,12 +44,11 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         bottleneck_dim: int,
         lr: float,
         target_cols: List[str],
-        vae_sample_z: bool = True,
-        vae_sampling_scaler: float = 1.0,
-        vae_KL_weight: float = 1.0,
+        loss_cfg: Dict[str, Any],
         optimizer_kwargs: Dict[str, Any] = None,
         log_git_information: bool = False,
         config_dict_to_log: Dict[str, Any] = None,
+        encoder_noise: float = 1e-6,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
@@ -68,19 +67,14 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
             drop_rate=drop_rate,
         )
 
+        self.loss_cfg = loss_cfg
+
         self.event_encoder = EventEncoder(self.emb, rnn_dim, drop_rate)
-        self.vae_sample_z = vae_sample_z
-        self.vae_KL_weight = vae_KL_weight
-        self.vae_sampling_scaler = vae_sampling_scaler
+        self.encoder_noise = encoder_noise
+        self.project_encoding = nn.Linear(in_features=rnn_dim, out_features=bottleneck_dim)
         self.optimizer_kwargs = optimizer_kwargs if optimizer_kwargs is not None else {}
 
         self.head = self.configure_heads(self.feature_encoder)
-        self.net = VariationalEncoderDecoder(
-            self.event_encoder,
-            self.head,
-            sample_z=vae_sample_z,
-            epsilon_std=vae_sampling_scaler,
-        )
 
         self.criterion = self.configure_criterion()
         # The awkward inclusion of git information is necessary for Tensorboard
@@ -98,17 +92,14 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         """Return a dictionary of parameters.
 
         Returns:
-            Dict[str, Any]: Parameters of the ClassicModel instance
+            Dict[str, Any]: Parameters of the EventModel instance
         """
-        hparams = {
+        hparams = {  # TODO add IB parameters
             "rnn_dim": self.rnn_dim,
             "drop_rate": self.drop_rate,
             "bottleneck_dim": self.bottleneck_dim,
             "lr": self.lr,
             "target_cols": self.target_cols,
-            "vae_sample_z": self.vae_sample_z,
-            "vae_sampling_scaler": self.vae_sampling_scaler,
-            "vae_KL_weight": self.vae_KL_weight,
             **self.emb.build_parameter_dict(),
         }
 
@@ -127,17 +118,36 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
             **kwargs,
         )
 
-    def forward(self, x: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+    def forward(self, x: Dict[str, torch.Tensor], ib_only_last_event: bool = True) -> Dict[str, torch.Tensor]:
         """Conducts a forward pass of this model.
 
         Args:
             x (Dict[str, torch.Tensor]): batch input
+            ib_only_last_event (bool): If `True`, the information bottleneck penalty is only applied to the last item
+                in a sequence. Else it is applied to all items. Default is True.
 
         Returns:
             Dict[str, torch.Tensor]: model output
         """
-        pred = self.net.forward(x)
-        return pred
+        out = self.event_encoder(x)
+        event_encoding = out + torch.randn_like(out) * self.encoder_noise
+        bottleneck = self.project_encoding(event_encoding)
+
+        out = self.head(bottleneck)
+
+        if ib_only_last_event:
+            last_elements = x["offsets"][1:] - 1
+            bottleneck = bottleneck.index_select(0, last_elements)
+            event_encoding = event_encoding.index_select(0, last_elements)
+
+        out["bottleneck"] = bottleneck
+        out["event_encoding"] = event_encoding
+        return out
+
+    def encode(self, x: Dict[str, torch.Tensor], stochastic: bool = False) -> Tuple[torch.Tensor]:
+        out = self.event_encoder(x)
+        event_encoding = out + torch.randn_like(out) * self.encoder_noise * int(stochastic)
+        return (self.project_encoding(event_encoding), None)
 
     def configure_criterion(self) -> nn.Module:
         """Configures a loss function. This might be a composite function.
@@ -154,7 +164,17 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
                 "churn": ChurnLoss(self.head.heads["next_dt"], scale_by_seq=False),
             }
         )
-        loss_fn = VariationalEncoderDecoderLoss(pre_loss, reg_weight=self.vae_KL_weight if self.vae_sample_z else None)
+        weight_scheduler = LinearWarmupScheduler(
+            n_cold_steps=self.loss_cfg["n_cold_steps"],
+            n_warmup_steps=self.loss_cfg["n_warmup_steps"],
+            target_weight=self.loss_cfg["target_weight"],
+        )
+        loss_fn = InformationBottleneckLoss(
+            fit_loss=pre_loss,
+            weight_scheduler=weight_scheduler,
+            n_eigen=self.loss_cfg["n_eigen"],
+            n_eigen_threshold=self.loss_cfg["n_eigen_threshold"],
+        )
         return loss_fn
 
     def configure_heads(self, feature_encoder: FeatureDictionaryEncoder) -> nn.Module:
@@ -216,49 +236,8 @@ class ClassicModel(pl.LightningModule):  # TODO rename to VariationalGRUEncoder,
         loss, loss_components = self.criterion(y_pred, y_true)
         loss_components = {f"{split}_{name}": loss for name, loss in loss_components.items()}
         self.log_dict(loss_components, batch_size=y_true["next_dt"].shape[0])
+        self.log("ib_weight", self.criterion.weight_scheduler.step())
         return loss
-
-    def get_and_log_clv(self, output, batch, split):
-        """Estimate CLV and compare to dataset.
-
-        Args:
-            output (Dict[str, torch.Tensor]): model output
-            batch (Dict[str, Any]): batch
-            split (str): the split of the step: (i.e. train, val, test)
-
-        Returns:
-            metrics (Dict[str, torch.Tensor]): dictionary with metrics
-
-        Notes:
-            Currently only returns an empty dictionary -- is this intended?
-        """
-        return dict()
-        # parametric estimate of CLV
-        par_clv = self.trainer.datamodule.val_dataset._get_E_num_transactions(
-            output["p_churn"].mean(), 1 / output["next_dt"].mean()
-        )
-        # par_clv = self.trainer.datamodule.val_dataset._get_E_num_transactions(
-        #   output['p_churn'], 1/output['t_to_next']
-        # )
-
-        # non-parametric
-        users, user_idx, user_transactions = np.unique(batch["USER_PROFILE_ID"], return_index=True, return_counts=True)
-        users_true_clv = batch["clv"][
-            user_idx
-        ]  # TODO is this correct? Are we guaranteeing all transactions of the same user in the same batch?
-
-        # calculate metrics
-        metrics = {}
-        metrics["par_clv_mean"] = par_clv.mean()
-        metrics["par_clv_l1_error"] = torch.abs(par_clv.squeeze() - batch["clv"]).mean()
-        metrics["npar_clv_mean"] = user_transactions.mean()
-        metrics["npar_clv_var"] = user_transactions.var()
-        metrics["npar_clv_l1_error"] = np.abs(user_transactions - users_true_clv.detach().cpu().numpy()).mean()
-
-        # add split to metric names
-        metrics = {f"{split}_{k}": v for k, v in metrics.items()}
-
-        return metrics
 
     def get_and_log_metrics(
         self, y_pred: Dict[str, torch.Tensor], y_true: Dict[str, Any], split: str

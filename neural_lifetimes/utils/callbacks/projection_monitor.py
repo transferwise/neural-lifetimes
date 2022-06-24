@@ -22,7 +22,8 @@ class MonitorProjection(pl.Callback):
                     if isinstance(v, torch.Tensor):
                         mini_batch[k] = v.to(pl_module.device)
                 batch_offsets = mini_batch["offsets"][1:] - 1
-                embedded = pl_module.net.fc_mu(pl_module.net.encoder(mini_batch))
+                embedded, _ = pl_module.encode(mini_batch)
+                # embedded = pl_module.net.fc_mu(pl_module.net.encoder(mini_batch))
                 emb_lastevent = embedded[batch_offsets]
                 encoded_data.append(emb_lastevent)
                 if "btyd_mode" in mini_batch.keys():

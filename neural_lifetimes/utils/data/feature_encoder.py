@@ -14,7 +14,9 @@ class FeatureDictionaryEncoder:
         pre_encoded: bool = False,
         start_token_discrete: Optional[str] = None,
     ) -> None:
-        """This Encoder applies an ``utils.data.OrdinalEncoderWithUnknown`` discrete features and
+        """A Combined encoder for dictionary-based batches.
+
+        This Encoder applies an ``utils.data.OrdinalEncoderWithUnknown`` discrete features and
         the identity function to continuous features in a dictionary. It further, converts values to normalised types
         for Pytorch training, i.e. `int64` for discrete and `float32` for continuous features.
 
@@ -24,9 +26,9 @@ class FeatureDictionaryEncoder:
                 levels as value.
             pre_encoded (bool, optional): If features are loaded pre-encoded, set this to ``True``.
                 This will skip encoding while still enabling decoding. Defaults to False.
-            start_token_discrete (Optional[str], optional): This encoder assumes that the start token of discrete features
-                is part of the levels as passed into ``discrete_values``. If it isn't, specify the token here to append it
-                manually. Defaults to None.
+            start_token_discrete (Optional[str], optional): This encoder assumes that the start token of discrete
+                features is part of the levels as passed into ``discrete_values``. If it isn't, specify the token here
+                to append it manually. Defaults to None.
         """
         self.continuous_features = continuous_features
         self.discrete_features = discrete_features
@@ -59,7 +61,6 @@ class FeatureDictionaryEncoder:
         Returns:
             np.ndarray: encoded feature values.
         """
-
         # if discrete features are not pre-encoded, encode them
         if not self.pre_encoded and name in self.discrete_features:
             x = self.enc[name].transform(x).reshape(-1)
