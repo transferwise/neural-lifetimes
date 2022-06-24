@@ -98,8 +98,10 @@ class InformationBottleneckLoss(nn.Module):
         Returns:
             Tuple[torch.Tensor, Dict[str, torch.Tensor]]: The loss.
         """
+        bottleneck = pred.pop("bottleneck")
+        event_encoding = pred.pop("event_encoding")
         fit_loss, losses_dict = self.fit_loss(pred, target)
-        latent_loss = self.mi(pred["event_encoding"], pred["bottleneck"])
+        latent_loss = self.mi(event_encoding, bottleneck)
         loss = fit_loss + self.reg_weight * latent_loss
 
         losses_dict["model_fit"] = fit_loss

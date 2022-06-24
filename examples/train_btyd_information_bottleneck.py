@@ -78,7 +78,7 @@ if __name__ == "__main__":
     loss_cfg = {
         "n_cold_steps": 100,
         "n_warmup_steps": 100,
-        "n_target_weight": 0.001,
+        "target_weight": 0.001,
         "n_eigen": None,
         "n_eigen_threshold": None,
     }

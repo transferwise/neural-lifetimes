@@ -118,11 +118,13 @@ class InformationBottleneckEventModel(EventModel):  # TODO Add better docstring
             **kwargs,
         )
 
-    def forward(self, x: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+    def forward(self, x: Dict[str, torch.Tensor], ib_only_last_event: bool = True) -> Dict[str, torch.Tensor]:
         """Conducts a forward pass of this model.
 
         Args:
             x (Dict[str, torch.Tensor]): batch input
+            ib_only_last_event (bool): If `True`, the information bottleneck penalty is only applied to the last item
+                in a sequence. Else it is applied to all items. Default is True.
 
         Returns:
             Dict[str, torch.Tensor]: model output
@@ -132,6 +134,12 @@ class InformationBottleneckEventModel(EventModel):  # TODO Add better docstring
         bottleneck = self.project_encoding(event_encoding)
 
         out = self.head(bottleneck)
+
+        if ib_only_last_event:
+            last_elements = x["offsets"][1:] - 1
+            bottleneck = bottleneck.index_select(0, last_elements)
+            event_encoding = event_encoding.index_select(0, last_elements)
+
         out["bottleneck"] = bottleneck
         out["event_encoding"] = event_encoding
         return out
@@ -159,7 +167,7 @@ class InformationBottleneckEventModel(EventModel):  # TODO Add better docstring
         weight_scheduler = LinearWarmupScheduler(
             n_cold_steps=self.loss_cfg["n_cold_steps"],
             n_warmup_steps=self.loss_cfg["n_warmup_steps"],
-            target_weight=self.loss_cfg["n_target_weight"],
+            target_weight=self.loss_cfg["target_weight"],
         )
         loss_fn = InformationBottleneckLoss(
             fit_loss=pre_loss,
