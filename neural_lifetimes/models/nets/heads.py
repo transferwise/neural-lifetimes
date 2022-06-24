@@ -51,19 +51,19 @@ class ExponentialHead(BasicHead):
     """
 
     def __init__(self, input_dim: int, drop_rate: float):
-        eps = 0.00001
-
-        def normalize(x: torch.Tensor):
-            x = torch.exp(torch.clamp(x, min=eps, max=60))
-            return x
-
-        super().__init__(input_dim, drop_rate, 1, normalize)
+        super().__init__(input_dim, drop_rate, 1, self.normalize)
 
     def distribution(self, v: torch.Tensor) -> d.Distribution:
         return d.exponential.Exponential(1 / v)
 
     def loss_function(self):
         return ExponentialLoss()
+
+    @staticmethod
+    def normalize(x: torch.Tensor):
+        eps = 0.00001
+        x = torch.exp(torch.clamp(x, min=eps, max=60))
+        return x
 
 
 class ExponentialHeadNoLoss(ExponentialHead):
@@ -81,7 +81,7 @@ class ProbabilityHead(BasicHead):
             input_dim,
             drop_rate,
             1,
-            lambda x: torch.sigmoid(x),  # was 0.5*x
+            self.sigmoid,  # was 0.5*x
             init_norm=False,
         )
 
@@ -91,6 +91,10 @@ class ProbabilityHead(BasicHead):
     def loss_function(self):
         # TODO: insert the right thing here
         return NotImplementedError
+
+    @staticmethod
+    def sigmoid(x: torch.Tensor):
+        return torch.sigmoid(x)
 
 
 class ChurnProbabilityHead(ProbabilityHead):
@@ -111,18 +115,19 @@ class NormalHead(BasicHead):
     """
 
     def __init__(self, input_dim: int, drop_rate: float):
-        def normalize(x: torch.Tensor):
-            # x[:, 1] = torch.exp(x[:, 1]/10)
-            # x[:, 1] = x[:, 1]**2
-            return x
-
-        super().__init__(input_dim, drop_rate, 2, normalize)
+        super().__init__(input_dim, drop_rate, 2, self.normalize)
 
     def distribution(self, v: torch.Tensor) -> d.Distribution:
         return d.normal.Normal(v[:, 0], torch.exp(torch.clamp(v[:, 1], min=-30, max=50)))
 
     def loss_function(self):
         return NormalLoss()
+
+    @staticmethod
+    def normalize(x: torch.Tensor):
+        # x[:, 1] = torch.exp(x[:, 1]/10)
+        # x[:, 1] = x[:, 1]**2
+        return x
 
 
 class CategoricalHead(BasicHead):
@@ -131,13 +136,17 @@ class CategoricalHead(BasicHead):
     """
 
     def __init__(self, input_dim: int, num_categories: int, drop_rate: float):
-        super().__init__(input_dim, drop_rate, num_categories, lambda x: F.log_softmax(x, dim=-1))
+        super().__init__(input_dim, drop_rate, num_categories, self.softmax)
 
     def distribution(self, v: torch.Tensor) -> d.Distribution:
         return d.categorical.Categorical(v)
 
     def loss_function(self):
         return CategoricalLoss()
+
+    @staticmethod
+    def softmax(x: torch.Tensor):
+        return F.log_softmax(x, dim=-1)
 
 
 class CompositeDistribution:

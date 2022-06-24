@@ -3,6 +3,7 @@ from typing import Callable, Dict, Sequence
 
 import numpy as np
 from clickhouse_driver import Client
+from sqlalchemy.engine import Engine
 
 from neural_lifetimes.data.utils import normalize_types
 from neural_lifetimes.utils.aws import caching_query
@@ -60,7 +61,11 @@ def clickhouse_ingest(
 
     return dtypes
 
+def clickhouse_ranges(
+    engine: Engine,
+    discr_feat: Sequence[str],
+    table_name: str
+) -> Dict[str, np.ndarray]:
 
-def clickhouse_ranges(client: Client, discr_feat: Sequence[str], table_name: str) -> Dict[str, np.ndarray]:
-    out = {f: np.array(client.execute(f"SELECT DISTINCT {f} from {table_name}")) for f in discr_feat}
+    out = {f: np.array(engine.execute(f"SELECT DISTINCT {f} from {table_name}").fetchall()) for f in discr_feat}
     return out
