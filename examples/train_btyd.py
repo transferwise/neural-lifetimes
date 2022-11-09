@@ -8,12 +8,12 @@ import pytorch_lightning as pl
 from neural_lifetimes import run_model
 from neural_lifetimes.data.datamodules import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
-from neural_lifetimes.models.modules import ClassicModel
+from neural_lifetimes.models.modules import VariationalEventModel
 from neural_lifetimes.utils.data import FeatureDictionaryEncoder, Tokenizer, TargetCreator
 from examples import eventsprofiles_datamodel
 
 
-LOG_DIR = str(Path(__file__).parent)
+LOG_DIR = str(Path(__file__).parent / 'logs')
 data_dir = str(Path(__file__).parent.absolute())
 
 START_TOKEN_DISCR = "<StartToken>"
@@ -24,8 +24,8 @@ if __name__ == "__main__":
 
     btyd_dataset = BTYD.from_modes(
         modes=[
-            GenMode(a=1.5, b=20, r=1, alpha=14),
-            GenMode(a=2, b=50, r=2, alpha=6),
+            GenMode(a=2, b=10, r=5, alpha=10),
+            GenMode(a=2, b=10, r=10, alpha=600),
         ],
         num_customers=1000,
         mode_ratios=[2.5, 1],  # generate equal number of transactions from each mode
@@ -75,9 +75,10 @@ if __name__ == "__main__":
         min_points=1,
     )
 
-    net = ClassicModel(
+    net = VariationalEventModel(
         feature_encoder_config=encoder.config_dict(),
         rnn_dim=256,
+        emb_dim=256,
         drop_rate=0.5,
         bottleneck_dim=32,
         lr=0.001,

@@ -9,7 +9,7 @@ import pytest
 from neural_lifetimes import run_model
 from neural_lifetimes.data.datamodules.sequence_datamodule import SequenceDataModule
 from neural_lifetimes.data.datasets.btyd import BTYD, GenMode
-from neural_lifetimes.models.modules import ClassicModel
+from neural_lifetimes.models.modules import VariationalEventModel
 from neural_lifetimes.utils.data import FeatureDictionaryEncoder, TargetCreator, Tokenizer
 
 from ..test_datasets.datamodels import EventprofilesDataModel
@@ -29,7 +29,7 @@ def data_dir() -> str:
 
 
 @pytest.mark.slow
-class TestClassicModel:
+class TestVariationalEventModel:
     @pytest.mark.parametrize("vae_sample_z", ("True", "False"))
     def test_btyd(self, vae_sample_z: bool, log_dir: str, data_dir: str) -> None:
         # create btyd data and dependent modules
@@ -72,7 +72,7 @@ class TestClassicModel:
         )
 
         # create model
-        model = ClassicModel(
+        model = VariationalEventModel(
             feature_encoder_config=transform.config_dict(),
             rnn_dim=256,
             emb_dim=256,

@@ -6,13 +6,12 @@ from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers import LightningLoggerBase, TensorBoardLogger
 
 from .data.datamodules.sequence_datamodule import SequenceDataModule
-from .models.modules.classic_model import ClassicModel
 from .utils.callbacks import MonitorChurn, DistributionMonitor, MonitorProjection
 
 
 def run_model(
     datamodule: SequenceDataModule,
-    model: ClassicModel,
+    model: pl.LightningModule,
     log_dir: str,
     num_epochs: int = 100,
     checkpoint_path: Optional[str] = None,

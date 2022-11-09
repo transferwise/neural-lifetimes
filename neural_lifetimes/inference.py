@@ -7,7 +7,7 @@ import numpy as np
 import torch
 
 from neural_lifetimes.data.dataloaders.sequence_loader import SequenceLoader
-from neural_lifetimes.models.modules.classic_model import ClassicModel
+from neural_lifetimes.models.modules import VariationalEventModel
 
 
 class ModelInference:
@@ -26,16 +26,14 @@ class ModelInference:
             It should be a ``.ckpt`` file.
 
     Attributes:
-        model (ClassicModel): Model instance.
+        model (EventModel): Model instance.
     """
 
     def __init__(self, model_filename: str):
-        self.model = ClassicModel.load_from_checkpoint(model_filename)
+        self.model = VariationalEventModel.load_from_checkpoint(model_filename)
 
     def predict(self, loader: SequenceLoader, n_samples=1, return_input=True):
-        """
-        Samples the following event for every sequence in a SequenceLoader from the output distributions
-        of the model
+        """Samples the following event for every sequence in a SequenceLoader from the output distributions of the model.
 
         Args:
             loader: Sequence Loader
