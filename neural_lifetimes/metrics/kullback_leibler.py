@@ -9,7 +9,7 @@ import torchmetrics
 
 class KullbackLeiblerDivergence(torchmetrics.Metric):
     def __init__(self, compute_on_step: Optional[bool] = None, **kwargs: Dict[str, Any]) -> None:
-        super().__init__(compute_on_step, **kwargs)
+        super().__init__()
         self.add_state("preds", default=[], dist_reduce_fx="cat")
         self.add_state("target", default=[], dist_reduce_fx="cat")
 
@@ -33,7 +33,7 @@ class ParametricKullbackLeiblerDivergence(torchmetrics.Metric):
         compute_on_step: Optional[bool] = None,
         **kwargs: Dict[str, Any]
     ) -> None:
-        super().__init__(compute_on_step, **kwargs)
+        super().__init__()
         self.add_state("preds", default=[], dist_reduce_fx="cat")
         self.add_state("target", default=[], dist_reduce_fx="cat")
         self.distribution = distribution

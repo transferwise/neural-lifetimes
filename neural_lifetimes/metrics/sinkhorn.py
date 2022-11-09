@@ -12,7 +12,7 @@ import torchmetrics
 
 class WassersteinMetric(torchmetrics.Metric):
     def __init__(self, compute_on_step: Optional[bool] = None, **kwargs: Dict[str, Any]) -> None:
-        super().__init__(compute_on_step, **kwargs)
+        super().__init__()
         # intiialise states
         self.add_state("preds", default=[], dist_reduce_fx="cat")
         self.add_state("target", default=[], dist_reduce_fx="cat")
